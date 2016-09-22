@@ -1,27 +1,8 @@
-# webpack
+南阳市微信前端项目
+=============
 
-> A Vue.js project
+### 已知bug
+- 注册还是需要验证码
+- 启动流程中，有几项不能用，提交数据应该是没有问题的，应该是后端的问题
 
-## Build Setup
 
-``` bash
-# install dependencies
-npm install
-
-# serve with hot reload at localhost:8080
-npm run dev
-
-# build for production with minification
-npm run build
-
-# run unit tests
-npm run unit
-
-# run e2e tests
-npm run e2e
-
-# run all tests
-npm test
-```
-
-For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
