@@ -1,0 +1,203 @@
+<template lang="jade">
+div
+  div(style='height: 80px; width: 100%;')
+  .menu-content
+    a.menu.button-collapse(data-activates="slide-out")
+      span.fa.fa-bars
+    a.menu.dropdown-button(@click='itemBar')
+      span.fa.fa-ellipsis-v
+    #itemBar.modal.bottom-sheet(style='max-height: 80%; text-align: center;')
+      .modal-content
+        ul.itemList
+          li
+            a.waves-effect(v-link="{ path: '/User/UserProfessor' }", @click='closeItemBar') 专业职称
+          li
+            a.waves-effect(v-link="{ path: '/User/UserProSkill' }", @click='closeItemBar') 专业技能
+          li
+            a.waves-effect(v-link="{ path: '/User/UserHonor' }", @click='closeItemBar') 荣誉证书
+          li
+            a.waves-effect(v-link="{ path: '/User/UserResults' }", @click='closeItemBar') 人才业绩
+          li
+            a.waves-effect(v-link="{ path: '/User/UserOtherFileList' }", @click='closeItemBar') 其他附件
+  ul#slide-out.side-nav(style='color: #666')
+    li
+      a.waves-effect(style='height: 60px')
+    li
+      a.waves-effect(v-link="{ path: '/' }")
+        span.fa.fa-home
+        span(style='margin-left: 15px') 首页
+    li
+      a.waves-effect(v-link="{ path: '/User' }")
+        span.fa.fa-user
+        span(style='margin-left: 15px') 人才基本信息
+    li
+      a.waves-effect(v-link="{ path: '/Other/HighLvPersonId' }")
+        span.fa.fa-level-up
+        span(style='margin-left: 15px') 高层次人才认定
+    li
+      a.waves-effect(v-link="{ path: '/Other/LifePayment' }")
+        span.fa.fa-money
+        span(style='margin-left: 15px') 生活津贴
+    li
+      a.waves-effect(v-link="{ path: '/Other/BuyHouse' }")
+        span.fa.fa-home
+        span(style='margin-left: 15px') 购房补贴
+    li
+      a.waves-effect(v-link="{ path: '/Other/Children' }")
+        span.fa.fa-child
+        span(style='margin-left: 15px') 子女择校
+    li
+      a.waves-effect(v-link="{ path: '/Other/RentHouse' }")
+        span.fa.fa-hotel
+        span(style='margin-left: 15px') 租房补贴
+    li
+      a.waves-effect(v-link="{ path: '/Other/RentHouse' }")
+        span.fa.fa-bookmark
+        span(style='margin-left: 15px') 人才落户
+    br
+    li
+      a.waves-effect(@click='logout') 注销
+  router-view
+</template>
+
+<script>
+import UserInfo from './UserInfo.vue'
+import UserProfessor from './UserProfessor.vue'
+
+export default {
+  data () {
+    return {
+      tabs: {
+        info: true,
+        professor: false
+      },
+      user: {
+        ssoOpenId: '1544902973BD4F4A9C4E621479DCF9CA',
+        rcId: '1544902973BD4F4A9C4E621479DCF9CA'
+      }
+    }
+  },
+  computed: {},
+  ready () {
+    // this.$root.user = {
+    //   ssoOpenId: '1544902973BD4F4A9C4E621479DCF9CA',
+    //   rcId: '1544902973BD4F4A9C4E621479DCF9CA'
+    // }
+  },
+  attached () {
+    $('.button-collapse').sideNav({
+       menuWidth: 300, // Default is 240
+       edge: 'left', // Choose the horizontal origin
+       closeOnClick: true // Closes side-nav on <a> clicks, useful for Angular/Meteor
+       }
+     )
+    $('.dropdown-button').dropdown({
+        inDuration: 300,
+        outDuration: 225,
+        constrain_width: false, // Does not change width of dropdown to that of the activator
+        gutter: 0, // Spacing from edge
+        belowOrigin: false, // Displays dropdown below the button
+        alignment: 'left' // Displays dropdown with edge aligned to the left of button
+      }
+    )
+  },
+  methods: {
+    logout() {
+
+      localStorage.clear()
+      return this.$router.go({name: 'Login'})
+    },
+    itemBar() {
+      $('#itemBar').openModal()
+    },
+    closeItemBar() {
+      $('#itemBar').closeModal()
+
+    },
+    change (tab) {
+      var me = this
+
+      Object.keys(this.tabs).forEach(key => {
+        me.tabs[key] = false
+      })
+      this.tabs[tab] = true
+    }
+  },
+  components: {
+    UserInfo,
+    UserProfessor
+  }
+};
+</script>
+
+<style lang="css">
+.bottom-sheet {
+  max-height: 80%
+}
+.modal .modal-content {
+  padding: 25px 0 !important;
+}
+.card-image {
+  padding-top: 0 !important;
+}
+.itemList {
+  color: #666
+}
+.itemList li {
+  background: white;
+  border: 1px solid#eee;
+  height: 50px;
+  line-height: 50px;
+  /*padding-left: 20px;*/
+  margin: 0 10px;
+  color: #666;
+}
+.itemList li a {
+  color: #666;
+  display: block;
+  width: 100%;
+  height: 50px;
+  font-size: 15px;
+}
+.menu-content{
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 50px;
+  display: flex;
+  justify-content: space-between;
+  line-height: 50px;
+  padding: 0 20px;
+  color: white;
+  background: #26a69a;
+  font-size: 21px;
+  z-index: 99999999;
+  box-shadow: 0 1px 2px #999;
+}
+#dropdown2 {
+  width: 50% !important;
+  padding: 0;
+  z-index: 9999;
+  right: 0 !important;
+  left: auto !important;
+}
+#dropdown2 a {
+  color: #666;
+}
+.v-select>.dropdown-menu {
+  padding: 3px;
+  border: 1px solid#9e9e9e;
+}
+.menu {
+  color: white;
+}
+/*.expand-transition {
+}
+
+.expand-enter {
+  -webkit-animation: fadeInRight .3s forwards;
+}*/
+/*.expand-leave {
+  animation: fadeOutLeft .8s forwards;
+}*/
+</style>

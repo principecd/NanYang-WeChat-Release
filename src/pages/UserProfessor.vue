@@ -1,0 +1,343 @@
+<template lang="jade">
+.col.s12
+  div.col.s12
+
+    table
+      thead
+        tr
+          th(style='text-align: center') 文件名
+          th(style='text-align: center') 进度
+          th(style='text-align: center') 状态
+          th(style='text-align: center') action
+      tbody
+        tr(v-for='file in files', style='text-align: center')
+          td(v-text='file.name', style='text-align: center')
+          td(v-text='file.progress', style='text-align: center')
+          td(v-text='onStatus(file)', style='text-align: center')
+          td(style='text-align: center')
+            button(type='button',@click="uploadItem(file)") 上传
+    .col.s12
+      br
+      a.btn.btn-up
+        vue-file-upload(v-bind:url='fileUploadUrl',
+          v-bind:files.sync = 'files',
+          v-bind:filters = "filters",
+          v-bind:events = 'cbEvents',
+          v-bind:request-options = "reqopts"
+          name='fileData',
+          label='添加专业职称证书'
+          )
+    br
+    hr
+    .row
+      v-loading(:show='loading')
+      .col.s12(v-for='item in list')
+        .card
+          .card-content
+            table
+              thead
+              tbody
+                tr
+                  th.col.s4 性质
+                  td.col.s6 {{item.zyxz}}
+                  th.col.s4 系列
+                  td.col.s6 {{item.zyxl}}
+                tr
+                  th.col.s4 专业名称
+                  td.col.s6 {{item.zymc}}
+                  th.col.s4 主管部门
+                  td.col.s6 {{item.zgbmStr}}
+          //- .card-action
+          //-   a(@click='deleteItem(item.zyzcId)') 删除
+    .col.s12(v-for='item in fileList')
+      .card
+        .card-image
+          .preloader-wrapper.active(v-show='')
+            .spinner-layer.spinner-green-only
+              .circle-clipper.left
+                .circle
+              .gap-patch
+                .circle
+              .circle-clipper.right
+                .circle
+          img(v-bind:src='getSrc(item.fileId)', style='width: 100%')
+
+    a(v-on:click="modal" class='btn-floating btn-large waves-effect waves-light red btn-add')
+      span.fa.fa-plus
+    .modal#modal1.col.s12.bottom-sheet
+      .modal-content
+        .row
+          form.col.s12
+            .col.s12
+              label.active 性质
+              v-select(:options='zyxz', :value.sync='postData.zyxz')
+            .col.s12
+              label.active 系列
+              v-select(:options='zyxl', :value.sync='postData.zyxl')
+            .input-field.col.s12
+              input.validate(type="text" v-model='postData.zymc' placeholder='')
+              label.active 专业名称
+            .col.s12
+              label.active 等级
+              v-select(:options='zydj', :value.sync='postData.zydj')
+            .input-field.col.s12
+              input.validate(type="text" v-model='postData.zshm' placeholder='')
+              label.active 证件号码
+            .col.s12
+              label.active 主管部门
+              v-select(:options='zgbmId', :value.sync='postData.zgbmId')
+      .modal-footer
+        a(class="btn waves-effect waves-light" v-on:click='submitData') 保存
+        a(class="modal-action modal-close waves-effect waves-green btn-flat") 取消
+</template>
+<script>
+import rest from '../rest'
+import VueFileUpload from 'vue-file-upload'
+import randomToken from 'random-token'
+import vSelect from 'vue-select'
+import VLoading from './VLoading.vue'
+import sha1 from 'sha1'
+
+var localStorage = window.localStorage
+
+export default{
+  // vuex: {
+  //   getters: {
+  //     count: getCount
+  //   }
+  // },
+  data () {
+    return {
+      loading: false,
+      fileUploadUrl: 'http://www.hzts.com.cn:8088/rcjk/rccore/RcxxFile/insert' + this.beforeUpload(),
+      zyxz: [],
+      zyxl: [],
+      zydj: [],
+      zgbmId: [],
+      zyzcId: {},
+      postData: {
+      },
+      list: [],
+      files: [],
+      //文件过滤器，只能上传图片
+      fileList: [],
+      filters: [
+        {
+          name:"imageFilter",
+          fn (file) {
+              var type = '|' + file.type.slice(file.type.lastIndexOf('/') + 1) + '|'
+              return '|jpg|png|jpeg|bmp|gif|'.indexOf(type) !== -1
+          }
+        }
+      ],
+      //回调函数绑定
+      cbEvents: {
+        onCompleteUpload: (file,response,status,header) => {
+          console.log(response)
+          console.log(file)
+          console.log("finish upload")
+          this.getFileList()
+        }
+      },
+      //xhr请求附带参数
+
+      reqopts: {
+        alias: 'fileData',
+        formData:{
+          'Encoding': 'utf-8',
+          'Rpencoding': 'utf-8',
+          '_x-requested-with': true,
+          'ssoOpenId': this.user.ssoOpenId,
+          'rcId': this.user.rcId,
+          'useType': 'ZCZS'
+        },
+        responseType: 'json',
+        withCredentials: false
+      }
+    }
+  },
+  init () {
+    var me = this
+    this.user = JSON.parse(localStorage.getItem('baseInfo'))
+
+    rest.getOptions('rczyzc_xz').then(res => {
+      me.zyxz = this.rebuildOptions(res)
+    })
+    rest.getOptions('rczyzc_xl').then(res => {
+      me.zyxl = this.rebuildOptions(res)
+    })
+    rest.getOptions('rczyzc_dj').then(res => {
+      me.zydj = this.rebuildOptions(res)
+    })
+    rest.getOptions('rczyzc_zgbm').then(res => {
+      me.zgbmId = this.rebuildOptions(res)
+    })
+  },
+  ready () {
+    var me = this
+    this.loading = true
+    rest.post(this.user, {}, 'http://www.hzts.com.cn:8088/rcjk/rccore/Rczyzc/list').then(res => {
+
+      me.loading = false
+      me.list = res.datas
+    })
+
+    rest.post(this.user, {useType: 'ZCZS'}, 'http://www.hzts.com.cn:8088/rcjk/rccore/RcxxFile/fileList').then(res => {
+      me.fileList = res.datas
+    })
+  },
+  attached () {
+  },
+  methods:{
+    deleteItem (id) {
+      rest.post(this.user, {zyzcId: id}, 'http://www.hzts.com.cn:8088/rcjk/rccore/Rczyzc/delete').then(res => {
+
+        this.getList()
+      })
+    },
+    beforeUpload () {
+      var now = Date.now()
+      var signature = ['NaRcJk4WeChat', now, '123332'].sort().join('')
+      var timestamp = now
+      var nonce = '123332'
+      var encoding = 'utf-8'
+      var rpencoding = 'utf-8'
+
+      var r = {
+        signature : sha1(signature),
+        timestamp : timestamp,
+        nonce : '123332',
+        'ssoOpenId': this.user.ssoOpenId,
+        'encoding' : 'utf-8',
+        'rpencoding' : 'utf-8',
+        '_x-requested-with' : true,
+      }
+      var k = '?'
+      Object.keys(r).forEach(v => {
+        k = k + v + '=' + r[v] + '&'
+      })
+
+      return k
+    },
+    getList () {
+      var me = this
+      rest.post(this.user, {}, 'http://www.hzts.com.cn:8088/rcjk/rccore/Rczyzc/list').then(res => {
+        me.list = res.datas
+      })
+    },
+    rebuildOptions (options) {
+      var report = []
+
+      options.forEach(option => {
+        var item = {
+          label: option.itemName,
+          value: option.itemCode
+        }
+        report.push(item)
+      })
+
+      return report
+    },
+    onStatus (file) {
+      if(file.isSuccess){
+        return "上传成功"
+      }else if(file.isError){
+        return "上传失败"
+      }else if(file.isUploading){
+        return "正在上传"
+      }else{
+        return "待上传"
+      }
+    },
+    uploadItem (file) {
+      file.upload()
+    },
+    submitData (e) {
+      e.preventDefault()
+      var me = this
+      this.postData.zyzcId = randomToken(32)
+      this.postData.isAdd = true
+      this.loading = true
+      rest.post(this.user, this.postData, 'http://www.hzts.com.cn:8088/rcjk/rccore/Rczyzc/save').then(res => {
+        me.getList()
+        this.loading = false
+        Materialize.toast('保存成功', 2000)
+        $('#modal1').closeModal()
+        this.postData = {}
+      })
+    },
+    getSrc (fileId) {
+      var now = Date.now()
+      var signature = ['NaRcJk4WeChat', now, '123332'].sort().join('')
+      var timestamp = now
+      var nonce = '123332'
+      var query = {
+        signature : sha1(signature),
+        timestamp : timestamp,
+        nonce : '123332',
+        'ssoOpenId': this.user.ssoOpenId,
+        'rcId': this.user.rcId,
+        refId: fileId
+      }
+      var r = 'http://www.hzts.com.cn:8088/rcjk/rccore/RcxxFile/download?'
+
+      Object.keys(query).forEach(key => {
+
+        r = r + key + '=' + query[key] + '&'
+      })
+
+      return r
+    },
+    modal () {
+      $('#modal1').openModal()
+    },
+    getFileList () {
+      var me = this
+
+      rest.post(this.user, {useType: 'ZCZS'}, 'http://www.hzts.com.cn:8088/rcjk/rccore/RcxxFile/fileList').then(res => {
+        me.fileList = res.datas
+      })
+    }
+  },
+  components: {
+    VueFileUpload,
+    vSelect,
+    VLoading
+  }
+}
+</script>
+<style scoped>
+
+.card-image {
+  text-align: center;
+  min-height: 150px;
+  padding-top: 55px;
+}
+
+.btn-add {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+}
+.modal {
+  width: 100%;
+}
+.btn-up {
+  width: 90%;
+  margin-left: 5%;
+  padding: 0;
+  height: 100px;
+  background-color: transparent;
+  box-shadow: none;
+}
+.fileupload-button {
+  background: transparent;
+  height: 100px;
+  border: 2px solid #26a69a;
+  color: #26a69a;
+  line-height: 100px;
+  border-style: dashed;
+  border-radius: 5px;
+  width: 100%;
+}
+</style>
