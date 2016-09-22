@@ -352,12 +352,15 @@ export default{
   /*float: left;*/
   width: 120px;
   background: none;
+  color: #fff !important;
+  line-height: 20px !important;
+  height: 40px !important;
   /*border: 5px soild#666;
   color: #666;*/
 }
 .btn-floating2 {
   display: inline-block;
-  color: #fff;
+  color: #fff !important;
   position: relative;
   overflow: hidden;
   z-index: 1;

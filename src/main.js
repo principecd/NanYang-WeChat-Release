@@ -1,6 +1,9 @@
 require('../static/css/materialize.min.css')
 require('../static/css/font-awesome.min.css')
 require('../static/css/animate.css')
+// var $ = require('jquery')
+// window.$ = $
+// require('../static/js/materialize.js')
 
 var Vue = require('vue')
 var VueRouter = require('vue-router')

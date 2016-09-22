@@ -86,7 +86,7 @@
               div.col-lg-10
                 input(type="text" class="form-control" placeholder="与申请人关系" v-model="child.cygx")
           div.modal-footer
-            //- button(type="button" class="btn-default" data-dismiss="modal") 取消
+            a(type="button" class="btn-default", @click='closeModal') 取消
             a(type="button" class="btn" v-on:click="addChild") 确认
     br
     br
@@ -228,6 +228,9 @@ export default{
   attached () {
   },
   methods: {
+    closeModal() {
+      $('#modal1').closeModal()
+    },
     fileUploadUrl (useType) {
       return 'http://www.hzts.com.cn:8088/rcjk/rccore/RcpoFile/insert' + this.beforeUpload(useType)
     },

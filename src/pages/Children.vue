@@ -51,7 +51,7 @@
               div.col-lg-10
                 input(type="text" class="form-control" placeholder="拟申请就读学校及年级" v-model="child.sqxxnj")
           div.modal-footer
-            //- button(type="button" class="btn-default" data-dismiss="modal") 取消
+            a(type="button" class="btn-default", @click='closeModal') 取消
             a(type="button" class="btn" v-on:click="addChild") 确认
     table
       thead
@@ -212,6 +212,9 @@ export default{
   watch: {
   },
   methods: {
+    closeModal() {
+      $('#modal1').closeModal()
+    },
     addChild() {
       this.child.znId = randomToken(32)
       this.child.rcId = this.user.rcId
