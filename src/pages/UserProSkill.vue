@@ -41,7 +41,7 @@
 <script>
 import rest from '../rest'
 import randomToken from 'random-token'
-import vSelect from 'vue-select'
+import vSelect from './VSelect.vue'
 import VLoading from './VLoading.vue'
 
 var localStorage = window.localStorage
@@ -117,11 +117,13 @@ export default{
       this.loading = true
       this.postData.zyjnId = randomToken(32)
       this.postData.isAdd = true
+      $('#modal1').closeModal()
       rest.post(this.user, this.postData, '/rccore/Rczyjn/save').then(res => {
+        this.loading = false
+        if (!res.success) return Materialize.toast(res.message, 4000)
+
         me.getList()
-        me.loading = false
         Materialize.toast('保存成功', 2000)
-        $('#modal1').closeModal()
         me.postData = {}
       })
     },

@@ -141,7 +141,7 @@ export default{
   },
   methods: {
     fileUploadUrl (useType) {
-      return '/rccore/RcpoFile/insert' + this.beforeUpload(useType)
+      return rest.basicUrl + '/rccore/RcpoFile/insert' + this.beforeUpload(useType)
     },
     // deleteItem (id) {
     //   rest.post(this.user, {ryId: id}, '/rccore/Rych/delete').then(res => {

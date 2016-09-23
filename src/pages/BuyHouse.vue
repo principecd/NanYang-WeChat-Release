@@ -232,7 +232,7 @@ export default{
       $('#modal1').closeModal()
     },
     fileUploadUrl (useType) {
-      return '/rccore/RcpoFile/insert' + this.beforeUpload(useType)
+      return rest.basicUrl + '/rccore/RcpoFile/insert' + this.beforeUpload(useType)
     },
     // deleteItem (id) {
     //   rest.post(this.user, {ryId: id}, '/rccore/Rych/delete').then(res => {
@@ -340,7 +340,7 @@ export default{
         'rcId': this.user.rcId,
         refId: fileId
       }
-      var r = '/rccore/RcxxFile/download?'
+      var r = rest.basicUrl + '/rccore/RcxxFile/download?'
 
       Object.keys(query).forEach(key => {
 

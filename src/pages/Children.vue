@@ -225,7 +225,7 @@ export default{
       this.child = {}
     },
     fileUploadUrl (useType) {
-      return '/rccore/ZxFile/insert' + this.beforeUpload(useType)
+      return rest.basicUrl + '/rccore/ZxFile/insert' + this.beforeUpload(useType)
     },
     // deleteItem (id) {
     //   rest.post(this.user, {ryId: id}, '/rccore/Rych/delete').then(res => {

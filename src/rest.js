@@ -19,6 +19,7 @@ function init () {
 }
 
 module.exports = {
+  basicUrl: basicUrl,
   post (user, query, url) {
     return new Promise((resolve, reject) => {
       var data = init()

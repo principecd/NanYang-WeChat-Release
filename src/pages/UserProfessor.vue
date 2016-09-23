@@ -1,36 +1,13 @@
 <template lang="jade">
-.col.s12
-  div.col.s12
-
-    table
-      thead
-        tr
-          th(style='text-align: center') 文件名
-          th(style='text-align: center') 进度
-          th(style='text-align: center') 状态
-          th(style='text-align: center') action
-      tbody
-        tr(v-for='file in files', style='text-align: center')
-          td(v-text='file.name', style='text-align: center')
-          td(v-text='file.progress', style='text-align: center')
-          td(v-text='onStatus(file)', style='text-align: center')
-          td(style='text-align: center')
-            button(type='button',@click="uploadItem(file)") 上传
-    .col.s12
-      br
-      a.btn.btn-up
-        vue-file-upload(v-bind:url='fileUploadUrl',
-          v-bind:files.sync = 'files',
-          v-bind:filters = "filters",
-          v-bind:events = 'cbEvents',
-          v-bind:request-options = "reqopts"
-          name='fileData',
-          label='添加专业职称证书'
-          )
-    br
-    hr
-    .row
-      v-loading(:show='loading')
+.row(style='margin-top: -25px;')
+  v-loading(:show='loading')
+  div
+    ul.tabs
+      li.tab.col.s3
+        a(href="#formContent") 专业职称
+      li.tab.col.s3
+        a(href="#fileContent") 专业职称附件
+    #formContent
       .col.s12(v-for='item in list')
         .card
           .card-content
@@ -47,54 +24,75 @@
                   td.col.s6 {{item.zymc}}
                   th.col.s4 主管部门
                   td.col.s6 {{item.zgbmStr}}
-          //- .card-action
-          //-   a(@click='deleteItem(item.zyzcId)') 删除
-    .col.s12(v-for='item in fileList')
-      .card
-        .card-image
-          .preloader-wrapper.active(v-show='')
-            .spinner-layer.spinner-green-only
-              .circle-clipper.left
-                .circle
-              .gap-patch
-                .circle
-              .circle-clipper.right
-                .circle
-          img(v-bind:src='getSrc(item.fileId)', style='width: 100%')
-
-    a(v-on:click="modal" class='btn-floating btn-large waves-effect waves-light red btn-add')
-      span.fa.fa-plus
-    .modal#modal1.col.s12.bottom-sheet
-      .modal-content
-        .row
-          form.col.s12
-            .col.s12
-              label.active 性质
-              v-select(:options='zyxz', :value.sync='postData.zyxz')
-            .col.s12
-              label.active 系列
-              v-select(:options='zyxl', :value.sync='postData.zyxl')
-            .input-field.col.s12
-              input.validate(type="text" v-model='postData.zymc' placeholder='')
-              label.active 专业名称
-            .col.s12
-              label.active 等级
-              v-select(:options='zydj', :value.sync='postData.zydj')
-            .input-field.col.s12
-              input.validate(type="text" v-model='postData.zshm' placeholder='')
-              label.active 证件号码
-            .col.s12
-              label.active 主管部门
-              v-select(:options='zgbmId', :value.sync='postData.zgbmId')
-      .modal-footer
-        a(class="btn waves-effect waves-light" v-on:click='submitData') 保存
-        a(class="modal-action modal-close waves-effect waves-green btn-flat") 取消
+      a(v-on:click="modal" class='btn-floating btn-large waves-effect waves-light red btn-add')
+        span.fa.fa-plus
+      .modal#modal1.col.s12.bottom-sheet
+        .modal-content
+          .row
+            form.col.s12
+              .col.s12
+                label.active 性质
+                v-select(:options='zyxz', :value.sync='postData.zyxz')
+              .col.s12
+                label.active 系列
+                v-select(:options='zyxl', :value.sync='postData.zyxl')
+              .input-field.col.s12
+                input.validate(type="text" v-model='postData.zymc' placeholder='')
+                label.active 专业名称
+              .col.s12
+                label.active 等级
+                v-select(:options='zydj', :value.sync='postData.zydj')
+              .input-field.col.s12
+                input.validate(type="text" v-model='postData.zshm' placeholder='')
+                label.active 证件号码
+              .col.s12
+                label.active 主管部门
+                v-select(:options='zgbmId', :value.sync='postData.zgbmId')
+        .modal-footer
+          a(class="btn waves-effect waves-light" v-on:click='submitData') 保存
+          a(class="modal-action modal-close waves-effect waves-green btn-flat") 取消
+    #fileContent
+        table
+          thead
+            tr
+              th(style='text-align: center') 文件名
+              th(style='text-align: center') 进度
+              th(style='text-align: center') 状态
+              th(style='text-align: center') action
+          tbody
+            tr(v-for='file in files', style='text-align: center')
+              td(v-text='file.name', style='text-align: center')
+              td(v-text='file.progress', style='text-align: center')
+              td(v-text='onStatus(file)', style='text-align: center')
+              td(style='text-align: center')
+                button(type='button',@click="uploadItem(file)") 上传
+        a.btn.btn-up
+          vue-file-upload(v-bind:url='fileUploadUrl',
+            v-bind:files.sync = 'files',
+            v-bind:filters = "filters",
+            v-bind:events = 'cbEvents',
+            v-bind:request-options = "reqopts"
+            name='fileData',
+            label='添加专业职称证书'
+            )
+        .col.s12(v-for='item in fileList')
+          .card
+            .card-image
+              .preloader-wrapper.active(v-show='')
+                .spinner-layer.spinner-green-only
+                  .circle-clipper.left
+                    .circle
+                  .gap-patch
+                    .circle
+                  .circle-clipper.right
+                    .circle
+              img(v-bind:src='getSrc(item.fileId)', style='width: 100%')
 </template>
 <script>
 import rest from '../rest'
 import VueFileUpload from 'vue-file-upload'
 import randomToken from 'random-token'
-import vSelect from 'vue-select'
+import vSelect from './VSelect.vue'
 import VLoading from './VLoading.vue'
 import sha1 from 'sha1'
 
@@ -109,7 +107,7 @@ export default{
   data () {
     return {
       loading: false,
-      fileUploadUrl: '/rccore/RcxxFile/insert' + this.beforeUpload(),
+      fileUploadUrl: rest.basicUrl + '/rccore/RcxxFile/insert' + this.beforeUpload(),
       zyxz: [],
       zyxl: [],
       zydj: [],
@@ -187,6 +185,7 @@ export default{
     })
   },
   attached () {
+    $('ul.tabs').tabs()
   },
   methods:{
     deleteItem (id) {
@@ -258,11 +257,13 @@ export default{
       this.postData.zyzcId = randomToken(32)
       this.postData.isAdd = true
       this.loading = true
+      $('#modal1').closeModal()
       rest.post(this.user, this.postData, '/rccore/Rczyzc/save').then(res => {
-        me.getList()
         this.loading = false
+        if (!res.success) return Materialize.toast(res.message, 4000)
+
+        me.getList()
         Materialize.toast('保存成功', 2000)
-        $('#modal1').closeModal()
         this.postData = {}
       })
     },
@@ -279,7 +280,7 @@ export default{
         'rcId': this.user.rcId,
         refId: fileId
       }
-      var r = '/rccore/RcxxFile/download?'
+      var r = rest.basicUrl + '/rccore/RcxxFile/download?'
 
       Object.keys(query).forEach(key => {
 

@@ -1,83 +1,88 @@
 <template lang="jade">
-.col.s12
-  div.col.s12
-    table
-      thead
-        tr
-          th(style='text-align: center') 文件名
-          th(style='text-align: center') 进度
-          th(style='text-align: center') 状态
-          th(style='text-align: center') action
-      tbody
-        tr(v-for='file in files', style='text-align: center')
-          td(v-text='file.name', style='text-align: center')
-          td(v-text='file.progress', style='text-align: center')
-          td(v-text='onStatus(file)', style='text-align: center')
-          td(style='text-align: center')
-            button(type='button',@click="uploadItem(file)") 上传
-    .col.s12
-      br
-      a.btn.btn-up
-        vue-file-upload(v-bind:url='fileUploadUrl',
-          v-bind:files.sync = 'files',
-          v-bind:filters = "filters",
-          v-bind:events = 'cbEvents',
-          v-bind:request-options = "reqopts"
-          name='fileData',
-          label='添加荣誉证书'
-          )
-    br
-    .row
-      v-loading(:show='loading')
-
+.row(style='margin-top: -25px;')
+  v-loading(:show='loading')
+  div
+    ul.tabs
+      li.tab.col.s3.active
+        a(href="#formContent") 荣誉证书
+      li.tab.col.s3
+        a(href="#fileContent") 荣誉证书附件
+    #formContent
       .col.s12(v-for='item in list')
         .card
           .card-content
             table
               thead
-
               tbody
                 tr
                   th.col.s4 等级
                   td.col.s6 {{item.dengJi_Str}}
                   th.col.s4 荣誉称号
                   td.col.s6 {{item.rych_Str}}
-          //- .card-action
-          //-   a(@click='deleteItem(item.zyzcId)') 删除
-    .col.s12(v-for='item in fileList')
-      .card
-        .card-image
-          .preloader-wrapper.active(v-show='')
-            .spinner-layer.spinner-green-only
-              .circle-clipper.left
-                .circle
-              .gap-patch
-                .circle
-              .circle-clipper.right
-                .circle
-          img(v-bind:src='getSrc(item.fileId)', style='width: 100%')
+      a(v-on:click="modal" class='btn-floating btn-large waves-effect waves-light red btn-add')
+        span.fa.fa-plus
+      .modal#modal1.col.s12.bottom-sheet
+        .modal-content
+          .row
+            form.col.s12
+              .col.s12
+                label.active 等级
+                v-select(:options='dengJi', :value.sync='postData.dengJi')
+              .col.s12
+                label.active 荣誉称号
+                v-select(v-if='postData.dengJi ==="rych_guoJia"', :options='guoJia', :value.sync='postData.rych')
+                v-select(v-if='postData.dengJi ==="rych_shengJi"', :options='shengJi', :value.sync='postData.rych')
+                v-select(v-if='postData.dengJi ==="rych_quanZhou"', :options='quanZhou', :value.sync='postData.rych')
+                v-select(v-if='postData.dengJi ==="rych_nanAn"', :options='nanAn', :value.sync='postData.rych')
 
-    a(v-on:click="modal" class='btn-floating btn-large waves-effect waves-light red btn-add')
-      span.fa.fa-plus
-    .modal#modal1.col.s12.bottom-sheet
-      .modal-content
-        .row
-          form.col.s12
-            .col.s12
-              label.active 等级
-              v-select(:options='dengJi', :value.sync='postData.dengJi')
-            .col.s12
-              label.active 荣誉称号
-              v-select(:options='rych', :value.sync='postData.rych')
-      .modal-footer
-        a(class="btn waves-effect waves-light" v-on:click='submitData') 保存
-        a(class="modal-action modal-close waves-effect waves-green btn-flat") 取消
+        .modal-footer
+          a(class="btn waves-effect waves-light" v-on:click='submitData') 保存
+          a(class="modal-action modal-close waves-effect waves-green btn-flat") 取消
+    #fileContent
+      div.col.s12
+        table
+          thead
+            tr
+              th(style='text-align: center') 文件名
+              th(style='text-align: center') 进度
+              th(style='text-align: center') 状态
+              th(style='text-align: center') action
+          tbody
+            tr(v-for='file in files', style='text-align: center')
+              td(v-text='file.name', style='text-align: center')
+              td(v-text='file.progress', style='text-align: center')
+              td(v-text='onStatus(file)', style='text-align: center')
+              td(style='text-align: center')
+                button(type='button',@click="uploadItem(file)") 上传
+        .col.s12
+          br
+          a.btn.btn-up
+            vue-file-upload(v-bind:url='fileUploadUrl',
+              v-bind:files.sync = 'files',
+              v-bind:filters = "filters",
+              v-bind:events = 'cbEvents',
+              v-bind:request-options = "reqopts"
+              name='fileData',
+              label='添加荣誉证书'
+              )
+      .col.s12(v-for='item in fileList')
+        .card
+          .card-image
+            .preloader-wrapper.active(v-show='')
+              .spinner-layer.spinner-green-only
+                .circle-clipper.left
+                  .circle
+                .gap-patch
+                  .circle
+                .circle-clipper.right
+                  .circle
+            img(v-bind:src='getSrc(item.fileId)', style='width: 100%')
 </template>
 <script>
 import rest from '../rest'
 import VueFileUpload from 'vue-file-upload'
 import randomToken from 'random-token'
-import vSelect from 'vue-select'
+import vSelect from './VSelect.vue'
 import VLoading from './VLoading.vue'
 import sha1 from 'sha1'
 
@@ -91,12 +96,21 @@ export default{
   data () {
     return {
       loading: false,
-      fileUploadUrl: '/rccore/RcxxFile/insert' + this.beforeUpload(),
+      fileUploadUrl: rest.basicUrl + '/rccore/RcxxFile/insert' + this.beforeUpload(),
       dengJi: [],
-      rych: [],
+      rych: {
+        'rych_guoJia': this.guoJia,
+        'rych_nanAn': this.nanAn,
+        'rych_shengJi': this.shengJi,
+        'rych_quanZhou': this.quanZhou
+      },
       zydj: [],
       zgbmId: [],
       ryId: {},
+      quanZhou: [],
+      guoJia: [],
+      nanAn: [],
+      shengJi: [],
       postData: {
       },
       list: [],
@@ -139,6 +153,12 @@ export default{
       }
     }
   },
+  // watch: {
+  //   'postData.dengJi': (newVal, old) => {
+  //     var k = newVal.split('_')[1]
+  //     this.rclb = this[k]
+  //   }
+  // },
   init () {
     var me = this
     this.user = JSON.parse(localStorage.getItem('baseInfo'))
@@ -146,8 +166,17 @@ export default{
     rest.getOptions('rych_dengJi').then(res => {
       me.dengJi = this.rebuildOptions(res)
     })
-    rest.getOptions('rych_dengJi').then(res => {
-      me.rych = this.rebuildOptions(res)
+    rest.getOptions('rych_guoJia').then(res => {
+      me.guoJia = this.rebuildOptions(res)
+    })
+    rest.getOptions('rych_nanAn').then(res => {
+      me.nanAn = this.rebuildOptions(res)
+    })
+    rest.getOptions('rych_quanZhou').then(res => {
+      me.quanZhou = this.rebuildOptions(res)
+    })
+    rest.getOptions('rych_shengJi').then(res => {
+      me.shengJi = this.rebuildOptions(res)
     })
 
   },
@@ -165,8 +194,12 @@ export default{
     })
   },
   attached () {
+    $('ul.tabs').tabs()
   },
   methods: {
+    formatSelect() {
+
+    },
     deleteItem (id) {
       rest.post(this.user, {ryId: id}, '/rccore/Rych/delete').then(res => {
 
@@ -236,11 +269,13 @@ export default{
       this.postData.ryId = randomToken(32)
       this.postData.isAdd = true
       this.loading = true
+      $('#modal1').closeModal()
+
       rest.post(this.user, this.postData, '/rccore/Rych/save').then(res => {
-        me.getList()
         me.loading = false
+        if (!res.success) return Materialize.toast(res.message, 4000)
+        me.getList()
         Materialize.toast('保存成功', 2000)
-        $('#modal1').closeModal()
         me.postData = {}
       })
     },
@@ -257,7 +292,7 @@ export default{
         'rcId': this.user.rcId,
         refId: fileId
       }
-      var r = '/rccore/RcxxFile/download?'
+      var r = rest.basicUrl + '/rccore/RcxxFile/download?'
 
       Object.keys(query).forEach(key => {
 

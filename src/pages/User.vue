@@ -6,19 +6,29 @@ div
       span.fa.fa-bars
     a.menu.dropdown-button(@click='itemBar')
       span.fa.fa-ellipsis-v
-    #itemBar.modal.bottom-sheet(style='max-height: 80%; text-align: center;')
-      .modal-content
+    #itemBar.modal.bottom-sheet(style='max-height: 80%;background: #f3f3f3;')
+      .modal-content(style='padding: 0 !important')
         ul.itemList
           li
-            a.waves-effect(v-link="{ path: '/User/UserProfessor' }", @click='closeItemBar') 专业职称
+            a.waves-effect(v-link="{ path: '/User/UserProfessor' }", @click='closeItemBar')
+              i.fa.fa-graduation-cap(style='margin:0 15px 0 20px; font-size: 20px')
+              | 专业职称
           li
-            a.waves-effect(v-link="{ path: '/User/UserProSkill' }", @click='closeItemBar') 专业技能
+            a.waves-effect(v-link="{ path: '/User/UserProSkill' }", @click='closeItemBar')
+              i.fa.fa-magic(style='margin:0 20px 0 20px; font-size: 20px')
+              | 专业技能
           li
-            a.waves-effect(v-link="{ path: '/User/UserHonor' }", @click='closeItemBar') 荣誉证书
+            a.waves-effect(v-link="{ path: '/User/UserHonor' }", @click='closeItemBar')
+              i.fa.fa-book(style='margin:0 20px 0 20px; font-size: 20px')
+              | 荣誉证书
           li
-            a.waves-effect(v-link="{ path: '/User/UserResults' }", @click='closeItemBar') 人才业绩
+            a.waves-effect(v-link="{ path: '/User/UserResults' }", @click='closeItemBar')
+              i.fa.fa-road(style='margin:0 20px 0 20px; font-size: 20px')
+              | 人才业绩成果
           li
-            a.waves-effect(v-link="{ path: '/User/UserOtherFileList' }", @click='closeItemBar') 其他附件
+            a.waves-effect(v-link="{ path: '/User/UserOtherFileList' }", @click='closeItemBar')
+              i.fa.fa-file(style='margin:0 20px 0 20px; font-size: 20px')
+              | 其他附件
   ul#slide-out.side-nav(style='color: #666')
     li
       a.waves-effect(style='height: 60px')
@@ -54,9 +64,9 @@ div
       a.waves-effect(v-link="{ path: '/Other/RentHouse' }")
         span.fa.fa-bookmark
         span(style='margin-left: 15px') 人才落户
-    br
-    li
-      a.waves-effect(@click='logout') 注销
+    //- br
+    //- li
+    //-   a.waves-effect(@click='logout') 注销
   router-view
 </template>
 
@@ -144,8 +154,8 @@ export default {
   color: #666
 }
 .itemList li {
-  background: white;
-  border: 1px solid#eee;
+  /*background: white;*/
+  /*border: 1px solid#eee;*/
   height: 50px;
   line-height: 50px;
   /*padding-left: 20px;*/

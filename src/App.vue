@@ -39,9 +39,9 @@
       a.waves-effect(v-link="{ path: '/Other/RentHouse' }")
         span.fa.fa-bookmark
         span(style='margin-left: 15px') 人才落户
-    br
-    li
-      a.waves-effect(@click='logout') 注销
+    //- br
+    //- li
+    //-   a.waves-effect(@click='logout') 注销
     //- ul#dropdown1.dropdown-content(style='margin-left: -20px')
     //-   li(style='margin-top: 20px')
     //-     a(v-link="{ path: '/User' }") 人才基本信息
@@ -79,18 +79,36 @@
   //-     h6(v-if='bottomStatus === "drop"', style='font-size: 20px') 加载更过
   //-     moon-loader(v-if='bottomStatus === "loading"', :loading='bottomStatus === "loading"', :color="color", :size="size")
       //- i.fa.fa-spinner.fa-spin(v-if='bottomStatus === "loading"', style='font-size: 30px; color: #999')
-  #itemList
-    .col.s12(v-for='item in list', transition="item")
-      .card(v-bind:class='{"blue-grey": item.flowDoStageInfo, "darken-1": item.flowDoStageInfo}')
-        .card-content(v-bind:class='{"white-text": item.flowDoStageInfo}')
-          span.card-title
-            i.fa(v-bind:class='{"fa-money": item.flowEntityUI === "/rccore/Shjt/flowUI", "fa-bookmark": item.flowEntityUI === "/rccore/SettledAddress/flowUI", "fa-level-up": item.flowEntityUI === "/rccore/Rcrd/flowUI", "fa-home": item.flowEntityUI === "/rccore/Rcpo/flowUI", "fa-child": item.flowEntityUI === "/rccore/Zx/flowUI", "fa-home": item.flowEntityUI === "/rccore/Poxx/flowUI"}')
-          |     {{item.flowEntityInfo}}
-          p {{item.flowEntityTime}}
-          p(v-if='item.flowDoStageInfo') 当前环节：{{item.flowDoStageInfo}}
-          p(v-if='!item.flowDoStageInfo') 当前状态：临时保存
-        .card-action(v-if='!item.flowDoStageInfo')
-          a(v-for='i in filter[item.flowEntityUI].tranList', @click='verStart({"i": i, "flowEntityUI": item.flowEntityUI, "flowEntityId": item.flowEntityId, "flowEntityInfo": item.flowEntityInfo})') {{i.tranName}}
+  div
+    ul.tabs(style='background: transparent')
+      li.tab.col.s3
+        a(href="#waiting") 临时保存
+      li.tab.col.s3
+        a(href="#active") 已启动流程
+    #waiting
+      .col.s12(v-for='item in list', transition="item")
+        .card(v-if='!item.flowDoStageInfo')
+          .card-content
+            span.card-title
+              i.fa(v-bind:class='{"fa-money": item.flowEntityUI === "/rccore/Shjt/flowUI", "fa-bookmark": item.flowEntityUI === "/rccore/SettledAddress/flowUI", "fa-level-up": item.flowEntityUI === "/rccore/Rcrd/flowUI", "fa-home": item.flowEntityUI === "/rccore/Rcpo/flowUI", "fa-child": item.flowEntityUI === "/rccore/Zx/flowUI", "fa-home": item.flowEntityUI === "/rccore/Poxx/flowUI"}')
+            |     {{item.flowEntityInfo}}
+            p {{item.flowEntityTime}}
+            p(v-if='item.flowDoStageInfo') 当前环节：{{item.flowDoStageInfo}}
+            p(v-if='!item.flowDoStageInfo') 当前状态：临时保存
+          .card-action(v-if='!item.flowDoStageInfo')
+            a(v-for='i in filter[item.flowEntityUI].tranList', @click='verStart({"i": i, "flowEntityUI": item.flowEntityUI, "flowEntityId": item.flowEntityId, "flowEntityInfo": item.flowEntityInfo})') {{i.tranName}}
+    #active
+      .col.s12(v-for='item in list', transition="item")
+        .card(v-if='item.flowDoStageInfo')
+          .card-content
+            span.card-title
+              i.fa(v-bind:class='{"fa-money": item.flowEntityUI === "/rccore/Shjt/flowUI", "fa-bookmark": item.flowEntityUI === "/rccore/SettledAddress/flowUI", "fa-level-up": item.flowEntityUI === "/rccore/Rcrd/flowUI", "fa-home": item.flowEntityUI === "/rccore/Rcpo/flowUI", "fa-child": item.flowEntityUI === "/rccore/Zx/flowUI", "fa-home": item.flowEntityUI === "/rccore/Poxx/flowUI"}')
+            |     {{item.flowEntityInfo}}
+            p {{item.flowEntityTime}}
+            p(v-if='item.flowDoStageInfo') 当前环节：{{item.flowDoStageInfo}}
+            p(v-if='!item.flowDoStageInfo') 当前状态：临时保存
+          .card-action(v-if='!item.flowDoStageInfo')
+            a(v-for='i in filter[item.flowEntityUI].tranList', @click='verStart({"i": i, "flowEntityUI": item.flowEntityUI, "flowEntityId": item.flowEntityId, "flowEntityInfo": item.flowEntityInfo})') {{i.tranName}}
   infinite-loading#infinite-loading(:on-infinite="onInfinite", :distance="distance", v-if='list.length < 300 &&  list.length')
 </template>
 
@@ -100,7 +118,7 @@ import rest from './rest'
 import VLoading from './components/VLoading.vue'
 import _ from 'lodash'
 import Loadmore from './components/loadmore.vue'
-import MoonLoader from 'vue-spinner/src/MoonLoader.vue'
+// import MoonLoader from 'vue-spinner/src/MoonLoader.vue'
 import InfiniteLoading from 'vue-infinite-loading'
 // /rccore/Rcrd/tranList
 // /rccore/Shjt/tranList
@@ -178,7 +196,7 @@ export default {
   components: {
     VLoading,
     Loadmore,
-    MoonLoader,
+    // MoonLoader,
     InfiniteLoading,
     'loadmore': Loadmore
   },
@@ -191,7 +209,7 @@ export default {
       // console.log('loading-more')
       var start = this.list.length
       if (!start) return
-      rest.post(this.user, {flowOwnerId: this.user.rcId, start: start,limit: 20}, '/flowengine/run/full/entityPage').then(res => {
+      rest.post(this.user, {flowOwnerId: this.user.rcId, start: start,limit: 50}, '/flowengine/run/full/entityPage').then(res => {
         // this.loading = false
         this.allLoaded = false
         this.bottomStatus = ''
@@ -263,7 +281,7 @@ export default {
       this.allLoaded = true
 
       var start = this.list.length
-      rest.post(this.user, {flowOwnerId: this.user.rcId, start: start,limit: 10}, '/flowengine/run/full/entityPage').then(res => {
+      rest.post(this.user, {flowOwnerId: this.user.rcId, start: start,limit: 50}, '/flowengine/run/full/entityPage').then(res => {
         // this.loading = false
         this.allLoaded = false
         this.bottomStatus = ''
@@ -289,6 +307,7 @@ export default {
     }
   },
   attached () {
+    $('ul.tabs').tabs()
     $('.button-collapse').sideNav({
      menuWidth: 300, // Default is 240
      edge: 'left', // Choose the horizontal origin

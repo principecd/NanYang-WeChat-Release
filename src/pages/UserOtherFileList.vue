@@ -47,7 +47,7 @@
 import rest from '../rest'
 import VueFileUpload from 'vue-file-upload'
 import randomToken from 'random-token'
-import vSelect from 'vue-select'
+import vSelect from './VSelect'
 import _ from 'lodash'
 import sha1 from 'sha1'
 
@@ -223,7 +223,7 @@ export default{
   },
   methods: {
     fileUploadUrl (useType) {
-      return '/rccore/RcxxFile/insert' + this.beforeUpload(useType)
+      return rest.basicUrl + '/rccore/RcxxFile/insert' + this.beforeUpload(useType)
     },
 
     beforeUpload (useType) {
@@ -314,7 +314,7 @@ export default{
         'rcId': this.user.rcId,
         refId: fileId
       }
-      var r = '/rccore/RcxxFile/download?'
+      var r = rest.basicUrl + '/rccore/RcxxFile/download?'
 
       Object.keys(query).forEach(key => {
 

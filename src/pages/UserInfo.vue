@@ -158,8 +158,10 @@ export default {
       var me = this
       this.basic.isAdd = false
       this.loading = true
-      console.log(this.basic.csxl985)
+
       rest.post(this.user, this.basic, '/rccore/Rcxx/save').then(res => {
+        if (!res.success) return Materialize.toast(res.message, 4000)
+
         this.basic = res.data
         Materialize.toast('保存成功', 2000)
         this.loading = false
