@@ -27,36 +27,38 @@
     .col.s12
       label.active 政治面貌
       v-select(v-bind:value.sync='basic.zzmm', v-bind:options='zzmm')
-    .input-field.col.s12
-      input(type="text" v-model='basic.csxl' placeholder='')
-      label.active 初始学历
-    .input-field.col.s12
-      input(type="text" v-model='basic.csxlyx' placeholder='')
-      label.active 毕业学院
-    .input-field.col.s12
-      input(type="text" v-model='basic.csxlzy' placeholder='')
-      label.active 专业
-    .col.s12(style='position: relative; margin: 7px 0; ')
-      input#csxl985(type="checkbox" v-model='basic.csxl985' v-bind:true-value="Y" v-bind:false-value="N")
-      label(for='csxl985') 985学院
-    .col.s12(style='position: relative; margin: 7px 0; ')
-      input#csxl211(type="checkbox" v-model='basic.csxl211' v-bind:true-value="Y" v-bind:false-value="N")
-      label(for='csxl211') 211学院
-    .input-field.col.s12
-      input(type="text" v-model='basic.zgxl' placeholder='')
-      label.active 最高学历
-    .input-field.col.s12
-      input(type="text" v-model='basic.zgxlyx' placeholder='')
-      label.active 毕业学院
-    .input-field.col.s12
-      input(type="text" v-model='basic.zgxlxl' placeholder='')
-      label.active 专业
-    .col.s12(style='position: relative; margin: 7px 0; ')
-      input#zgxl985(type="checkbox" v-model='basic.zgxl985' v-bind:true-value="Y" v-bind:false-value="N")
-      label(for='zgxl985') 985学院
-    .col.s12(style='position: relative; margin: 7px 0; ')
-      input#zgxl211(type="checkbox" v-model='basic.zgxl211' v-bind:true-value="Y" v-bind:false-value="N")
-      label(for='zgxl211') 211学院
+    .col.s12(style='border: 1px solid #ddd;padding: 20px 10px;')
+      .input-field.col.s12
+        input(type="text" v-model='basic.csxl' placeholder='')
+        label.active 初始学历
+      .input-field.col.s12
+        input(type="text" v-model='basic.csxlyx' placeholder='')
+        label.active 毕业学院
+      .input-field.col.s12
+        input(type="text" v-model='basic.csxlzy' placeholder='')
+        label.active 专业
+      .col.s12(style='position: relative; margin: 7px 0; ')
+        input#csxl985(type="checkbox" v-model='basic.csxl985' v-bind:true-value='"Y"' v-bind:false-value='"N"')
+        label(for='csxl985') 985学院
+      .col.s12(style='position: relative; margin: 7px 0; ')
+        input#csxl211(type="checkbox" v-model='basic.csxl211' v-bind:true-value='"Y"' v-bind:false-value='"N"')
+        label(for='csxl211') 211学院
+    .col.s12(style='border: 1px solid #ddd;padding: 20px 10px;margin-top: 10px;margin-bottom: 20px')
+      .input-field.col.s12
+        input(type="text" v-model='basic.zgxl' placeholder='')
+        label.active 最高学历
+      .input-field.col.s12
+        input(type="text" v-model='basic.zgxlyx' placeholder='')
+        label.active 毕业学院
+      .input-field.col.s12
+        input(type="text" v-model='basic.zgxlxl' placeholder='')
+        label.active 专业
+      .col.s12(style='position: relative; margin: 7px 0; ')
+        input#zgxl985(type="checkbox" v-model='basic.zgxl985' v-bind:true-value='"Y"' v-bind:false-value='"N"')
+        label(for='zgxl985') 985学院
+      .col.s12(style='position: relative; margin: 7px 0; ')
+        input#zgxl211(type="checkbox" v-model='basic.zgxl211' v-bind:true-value='"Y"' v-bind:false-value='"N"')
+        label(for='zgxl211') 211学院
     .input-field.col.s12
       input(type="text" v-model='basic.xgzdw' placeholder='')
       label.active 现工作单位
@@ -131,7 +133,7 @@ export default {
   ready () {
     var me = this
     this.loading = true
-    rest.post(this.user, {}, 'http://www.hzts.com.cn:8088/rcjk/rccore/Rcxx/get').then(res => {
+    rest.post(this.user, {}, '/rccore/Rcxx/get').then(res => {
       me.loading = false
       me.basic = res.data
     })
@@ -156,8 +158,8 @@ export default {
       var me = this
       this.basic.isAdd = false
       this.loading = true
-
-      rest.post(this.user, this.basic, 'http://www.hzts.com.cn:8088/rcjk/rccore/Rcxx/save').then(res => {
+      console.log(this.basic.csxl985)
+      rest.post(this.user, this.basic, '/rccore/Rcxx/save').then(res => {
         this.basic = res.data
         Materialize.toast('保存成功', 2000)
         this.loading = false

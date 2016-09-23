@@ -158,7 +158,7 @@ export default{
   ready () {
     var me = this
     this.loading = true
-    rest.post(this.user, {}, 'http://www.hzts.com.cn:8088/rcjk/rccore/Rcyj/list').then(res => {
+    rest.post(this.user, {}, '/rccore/Rcyj/list').then(res => {
       this.loading = false
       me.list = res.datas
     })
@@ -167,7 +167,7 @@ export default{
   },
   methods: {
     deleteItem(id) {
-      rest.post(this.user, {yjId: id}, 'http://www.hzts.com.cn:8088/rcjk/rccore/Rcyj/delete').then(res => {
+      rest.post(this.user, {yjId: id}, '/rccore/Rcyj/delete').then(res => {
 
         this.getList()
       })
@@ -175,7 +175,7 @@ export default{
     getList () {
       var me = this
 
-      rest.post(this.user, {}, 'http://www.hzts.com.cn:8088/rcjk/rccore/Rcyj/list').then(res => {
+      rest.post(this.user, {}, '/rccore/Rcyj/list').then(res => {
         me.list = res.datas
       })
     },
@@ -212,7 +212,7 @@ export default{
       this.postData.yjId = randomToken(32)
       this.postData.isAdd = true
       this.loading = true
-      rest.post(this.user, this.postData, 'http://www.hzts.com.cn:8088/rcjk/rccore/Rcyj/save').then(res => {
+      rest.post(this.user, this.postData, '/rccore/Rcyj/save').then(res => {
         me.getList()
         me.loading = false
         Materialize.toast('保存成功', 2000)
@@ -221,7 +221,7 @@ export default{
       })
     },
     getSrc (fileId) {
-      return 'http://www.hzts.com.cn:8088/rcjk/rccore/RcxxFile/dropdown?refId=' + fileId
+      return '/rccore/RcxxFile/dropdown?refId=' + fileId
     },
     modal () {
       $('#modal1').openModal()
@@ -229,7 +229,7 @@ export default{
     getFileList () {
       var me = this
 
-      rest.post(this.user, {useType: 'tsinnet/mbmodel/rccore/cnst/UseTypeENUM/ZCZS/code'}, 'http://www.hzts.com.cn:8088/rcjk/rccore/RcxxFile/fileList').then(res => {
+      rest.post(this.user, {useType: 'tsinnet/mbmodel/rccore/cnst/UseTypeENUM/ZCZS/code'}, '/rccore/RcxxFile/fileList').then(res => {
 
         me.fileList = res.datas
       })

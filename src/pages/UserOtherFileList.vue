@@ -208,13 +208,13 @@ export default{
         'rcId': this.user.rcId,
         useType: req.reqopts.formData.useType
       }
-      var url = 'http://www.hzts.com.cn:8088/rcjk/rccore/RcxxFile/fileList?'
+      var url = '/rccore/RcxxFile/fileList?'
 
       Object.keys(r).forEach(v => {
         url = url + v + '=' + r[v] + '&'
       })
 
-      rest.get(this.user, {useType: req.reqopts.formData.useType}, 'http://www.hzts.com.cn:8088/rcjk/rccore/RcxxFile/fileList').then(res => {
+      rest.get(this.user, {useType: req.reqopts.formData.useType}, '/rccore/RcxxFile/fileList').then(res => {
         me.fileList = _.union(me.fileList, res.datas)
       })
     })
@@ -223,7 +223,7 @@ export default{
   },
   methods: {
     fileUploadUrl (useType) {
-      return 'http://www.hzts.com.cn:8088/rcjk/rccore/RcxxFile/insert' + this.beforeUpload(useType)
+      return '/rccore/RcxxFile/insert' + this.beforeUpload(useType)
     },
 
     beforeUpload (useType) {
@@ -258,7 +258,7 @@ export default{
 
       this.buildDom.forEach(req => {
 
-        rest.post(this.user, {useType: req.reqopts.useType}, 'http://www.hzts.com.cn:8088/rcjk/rccore/RcxxFile/fileList').then(res => {
+        rest.post(this.user, {useType: req.reqopts.useType}, '/rccore/RcxxFile/fileList').then(res => {
           me.fileList = _.union(me.fileList, res.datas)
         })
       })
@@ -296,7 +296,7 @@ export default{
       this.postData.zyzcId = randomToken(32)
       this.postData.isAdd = true
 
-      rest.post(this.user, this.postData, 'http://www.hzts.com.cn:8088/rcjk/rccore/Rczyzc/save').then(res => {
+      rest.post(this.user, this.postData, '/rccore/Rczyzc/save').then(res => {
         me.getList()
         this.postData = {}
       })
@@ -314,7 +314,7 @@ export default{
         'rcId': this.user.rcId,
         refId: fileId
       }
-      var r = 'http://www.hzts.com.cn:8088/rcjk/rccore/RcxxFile/download?'
+      var r = '/rccore/RcxxFile/download?'
 
       Object.keys(query).forEach(key => {
 
@@ -329,7 +329,7 @@ export default{
     getFileList () {
       var me = this
 
-      // rest.post(this.user, {useType: 'ZCZS'}, 'http://www.hzts.com.cn:8088/rcjk/rccore/RcxxFile/fileList').then(res => {
+      // rest.post(this.user, {useType: 'ZCZS'}, '/rccore/RcxxFile/fileList').then(res => {
       //
       //   me.fileList = res.datas
       // })

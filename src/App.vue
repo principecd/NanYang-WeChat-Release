@@ -137,39 +137,39 @@ export default {
       busy: false,
       filter: {
         '/rccore/Rcrd/flowUI': {
-          getUrl: 'http://www.hzts.com.cn:8088/rcjk/rccore/Rcrd/get',
-          tranListUrl: 'http://www.hzts.com.cn:8088/rcjk/rccore/Rcrd/tranList',
-          verStartUrl: 'http://www.hzts.com.cn:8088/rcjk/rccore/Rcrd/verStart',
+          getUrl: '/rccore/Rcrd/get',
+          tranListUrl: '/rccore/Rcrd/tranList',
+          verStartUrl: '/rccore/Rcrd/verStart',
           flowId: '403942F8F0B920C372128083DCFF75A0'
         },
         '/rccore/Shjt/flowUI': {
-          getUrl: 'http://www.hzts.com.cn:8088/rcjk/rccore/Shjt/get',
-          tranListUrl: 'http://www.hzts.com.cn:8088/rcjk/rccore/Shjt/tranList',
-          verStartUrl: 'http://www.hzts.com.cn:8088/rcjk/rccore/Shjt/verStart',
+          getUrl: '/rccore/Shjt/get',
+          tranListUrl: '/rccore/Shjt/tranList',
+          verStartUrl: '/rccore/Shjt/verStart',
           flowId: '1C4C5A0B871558CDE9C465856D5F3B0C'
         },
         '/rccore/Zx/flowUI': {
-          getUrl: 'http://www.hzts.com.cn:8088/rcjk/rccore/Zx/get',
-          tranListUrl: 'http://www.hzts.com.cn:8088/rcjk/rccore/Zx/tranList',
-          verStartUrl: 'http://www.hzts.com.cn:8088/rcjk/rccore/Zx/verStart',
+          getUrl: '/rccore/Zx/get',
+          tranListUrl: '/rccore/Zx/tranList',
+          verStartUrl: '/rccore/Zx/verStart',
           flowId: 'FE195B8E150946A5AB871DA314142C80'
         },
         '/rccore/Rcpo/flowUI': {
-          getUrl: 'http://www.hzts.com.cn:8088/rcjk/rccore/Rcpo/get',
-          tranListUrl: 'http://www.hzts.com.cn:8088/rcjk/rccore/Rcpo/tranList',
-          verStartUrl: 'http://www.hzts.com.cn:8088/rcjk/rccore/Rcpo/verStart',
+          getUrl: '/rccore/Rcpo/get',
+          tranListUrl: '/rccore/Rcpo/tranList',
+          verStartUrl: '/rccore/Rcpo/verStart',
           flowId: '092FBACA67D7442613CC824B7025F953'
         },
         '/rccore/Poxx/flowUI': {
-          getUrl: 'http://www.hzts.com.cn:8088/rcjk/rccore/Poxx/get',
-          tranListUrl: 'http://www.hzts.com.cn:8088/rcjk/rccore/Poxx/tranList',
-          verStartUrl: 'http://www.hzts.com.cn:8088/rcjk/rccore/Poxx/verStart',
+          getUrl: '/rccore/Poxx/get',
+          tranListUrl: '/rccore/Poxx/tranList',
+          verStartUrl: '/rccore/Poxx/verStart',
           flowId: '2aecc2e9691811e6add500155d017903'
         },
         '/rccore/SettledAddress/flowUI': {
-          getUrl: 'http://www.hzts.com.cn:8088/rcjk/rccore/SettledAddress/get',
-          tranListUrl: 'http://www.hzts.com.cn:8088/rcjk/rccore/SettledAddress/tranList',
-          verStartUrl: 'http://www.hzts.com.cn:8088/rcjk/rccore/SettledAddress/verStart',
+          getUrl: '/rccore/SettledAddress/get',
+          tranListUrl: '/rccore/SettledAddress/tranList',
+          verStartUrl: '/rccore/SettledAddress/verStart',
           flowId: '3937D50EF0AA76803976CF9B12EBA618'
         }
       }
@@ -191,7 +191,7 @@ export default {
       // console.log('loading-more')
       var start = this.list.length
       if (!start) return
-      rest.post(this.user, {flowOwnerId: this.user.rcId, start: start,limit: 20}, 'http://www.hzts.com.cn:8088/rcjk/flowengine/run/full/entityPage').then(res => {
+      rest.post(this.user, {flowOwnerId: this.user.rcId, start: start,limit: 20}, '/flowengine/run/full/entityPage').then(res => {
         // this.loading = false
         this.allLoaded = false
         this.bottomStatus = ''
@@ -263,7 +263,7 @@ export default {
       this.allLoaded = true
 
       var start = this.list.length
-      rest.post(this.user, {flowOwnerId: this.user.rcId, start: start,limit: 10}, 'http://www.hzts.com.cn:8088/rcjk/flowengine/run/full/entityPage').then(res => {
+      rest.post(this.user, {flowOwnerId: this.user.rcId, start: start,limit: 10}, '/flowengine/run/full/entityPage').then(res => {
         // this.loading = false
         this.allLoaded = false
         this.bottomStatus = ''
@@ -279,7 +279,7 @@ export default {
       // console.log('loading-more')
       this.loading = true
       this.list = []
-      rest.post(this.user, {flowOwnerId: this.user.rcId, start: 0,limit: 10}, 'http://www.hzts.com.cn:8088/rcjk/flowengine/run/full/entityPage').then(res => {
+      rest.post(this.user, {flowOwnerId: this.user.rcId, start: 0,limit: 10}, '/flowengine/run/full/entityPage').then(res => {
         this.loading = false
         this.topStatus = ''
 
@@ -308,7 +308,7 @@ export default {
   ready() {
     var me = this
     this.loading = true
-    rest.post(this.user, {flowOwnerId: this.user.rcId, start: 0,limit: 10}, 'http://www.hzts.com.cn:8088/rcjk/flowengine/run/full/entityPage').then(res => {
+    rest.post(this.user, {flowOwnerId: this.user.rcId, start: 0,limit: 10}, '/flowengine/run/full/entityPage').then(res => {
       if (!res.success) return Materialize.toast(res.message, 4000)
        this.listCache = res.datas
 

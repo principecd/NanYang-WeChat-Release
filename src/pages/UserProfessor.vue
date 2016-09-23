@@ -109,7 +109,7 @@ export default{
   data () {
     return {
       loading: false,
-      fileUploadUrl: 'http://www.hzts.com.cn:8088/rcjk/rccore/RcxxFile/insert' + this.beforeUpload(),
+      fileUploadUrl: '/rccore/RcxxFile/insert' + this.beforeUpload(),
       zyxz: [],
       zyxl: [],
       zydj: [],
@@ -176,13 +176,13 @@ export default{
   ready () {
     var me = this
     this.loading = true
-    rest.post(this.user, {}, 'http://www.hzts.com.cn:8088/rcjk/rccore/Rczyzc/list').then(res => {
+    rest.post(this.user, {}, '/rccore/Rczyzc/list').then(res => {
 
       me.loading = false
       me.list = res.datas
     })
 
-    rest.post(this.user, {useType: 'ZCZS'}, 'http://www.hzts.com.cn:8088/rcjk/rccore/RcxxFile/fileList').then(res => {
+    rest.post(this.user, {useType: 'ZCZS'}, '/rccore/RcxxFile/fileList').then(res => {
       me.fileList = res.datas
     })
   },
@@ -190,7 +190,7 @@ export default{
   },
   methods:{
     deleteItem (id) {
-      rest.post(this.user, {zyzcId: id}, 'http://www.hzts.com.cn:8088/rcjk/rccore/Rczyzc/delete').then(res => {
+      rest.post(this.user, {zyzcId: id}, '/rccore/Rczyzc/delete').then(res => {
 
         this.getList()
       })
@@ -221,7 +221,7 @@ export default{
     },
     getList () {
       var me = this
-      rest.post(this.user, {}, 'http://www.hzts.com.cn:8088/rcjk/rccore/Rczyzc/list').then(res => {
+      rest.post(this.user, {}, '/rccore/Rczyzc/list').then(res => {
         me.list = res.datas
       })
     },
@@ -258,7 +258,7 @@ export default{
       this.postData.zyzcId = randomToken(32)
       this.postData.isAdd = true
       this.loading = true
-      rest.post(this.user, this.postData, 'http://www.hzts.com.cn:8088/rcjk/rccore/Rczyzc/save').then(res => {
+      rest.post(this.user, this.postData, '/rccore/Rczyzc/save').then(res => {
         me.getList()
         this.loading = false
         Materialize.toast('保存成功', 2000)
@@ -279,7 +279,7 @@ export default{
         'rcId': this.user.rcId,
         refId: fileId
       }
-      var r = 'http://www.hzts.com.cn:8088/rcjk/rccore/RcxxFile/download?'
+      var r = '/rccore/RcxxFile/download?'
 
       Object.keys(query).forEach(key => {
 
@@ -294,7 +294,7 @@ export default{
     getFileList () {
       var me = this
 
-      rest.post(this.user, {useType: 'ZCZS'}, 'http://www.hzts.com.cn:8088/rcjk/rccore/RcxxFile/fileList').then(res => {
+      rest.post(this.user, {useType: 'ZCZS'}, '/rccore/RcxxFile/fileList').then(res => {
         me.fileList = res.datas
       })
     }

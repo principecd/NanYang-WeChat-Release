@@ -217,7 +217,7 @@ export default{
   ready () {
     // var me = this
     // me.loading = true
-    // rest.post(this.user, {}, 'http://www.hzts.com.cn:8088/rcjk/rccore/Rcpo/get').then(res => {
+    // rest.post(this.user, {}, '/rccore/Rcpo/get').then(res => {
     //   me.loading = false
     //   console.log(res)
     //   me.basicData = res.data
@@ -232,10 +232,10 @@ export default{
       $('#modal1').closeModal()
     },
     fileUploadUrl (useType) {
-      return 'http://www.hzts.com.cn:8088/rcjk/rccore/RcpoFile/insert' + this.beforeUpload(useType)
+      return '/rccore/RcpoFile/insert' + this.beforeUpload(useType)
     },
     // deleteItem (id) {
-    //   rest.post(this.user, {ryId: id}, 'http://www.hzts.com.cn:8088/rcjk/rccore/Rych/delete').then(res => {
+    //   rest.post(this.user, {ryId: id}, '/rccore/Rych/delete').then(res => {
     //
     //     this.getList()
     //   })
@@ -277,7 +277,7 @@ export default{
     getList () {
       var me = this
 
-      rest.post(this.user, {}, 'http://www.hzts.com.cn:8088/rcjk/rccore/Rcpo/page').then(res => {
+      rest.post(this.user, {}, '/rccore/Rcpo/page').then(res => {
         this.list = res.datas
       })
     },
@@ -316,10 +316,12 @@ export default{
       this.basicData.flowEntityId = this.basicData.poId
       this.basicData.isAdd = true
       this.loading = true
+      this.basicData.flowEntityInfo = this.user.username + ' 申请购房补贴'
+
       this.basicData.qtcyInfo = this.myChildren
       this.basicData.qtcyInfo = JSON.stringify(this.basicData.qtcyInfo)
 
-      rest.post(this.user, this.basicData, 'http://www.hzts.com.cn:8088/rcjk/rccore/Rcpo/entitySave').then(res => {
+      rest.post(this.user, this.basicData, '/rccore/Rcpo/entitySave').then(res => {
         me.loading = false
         if (!res.success) return Materialize.toast(res.message, 4000)
         Materialize.toast('保存成功', 2000)
@@ -338,7 +340,7 @@ export default{
         'rcId': this.user.rcId,
         refId: fileId
       }
-      var r = 'http://www.hzts.com.cn:8088/rcjk/rccore/RcxxFile/download?'
+      var r = '/rccore/RcxxFile/download?'
 
       Object.keys(query).forEach(key => {
 
@@ -353,7 +355,7 @@ export default{
     getFileList () {
       var me = this
 
-      rest.post(this.user, {useType: 'RYZS'}, 'http://www.hzts.com.cn:8088/rcjk/rccore/RcxxFile/fileList').then(res => {
+      rest.post(this.user, {useType: 'RYZS'}, '/rccore/RcxxFile/fileList').then(res => {
 
         me.fileList = res.datas
       })

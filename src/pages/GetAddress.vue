@@ -190,7 +190,7 @@ export default{
   ready () {
     // var me = this
     // me.loading = true
-    // rest.post(this.user, {}, 'http://www.hzts.com.cn:8088/rcjk/rccore/SettledAddress/get').then(res => {
+    // rest.post(this.user, {}, '/rccore/SettledAddress/get').then(res => {
     //   me.loading = false
     //   console.log(res)
     //   me.basicData = res.data
@@ -213,10 +213,10 @@ export default{
       this.child = {}
     },
     fileUploadUrl (useType) {
-      return 'http://www.hzts.com.cn:8088/rcjk/rccore/SettledAddressFile/insert' + this.beforeUpload(useType)
+      return '/rccore/SettledAddressFile/insert' + this.beforeUpload(useType)
     },
     // deleteItem (id) {
-    //   rest.post(this.user, {ryId: id}, 'http://www.hzts.com.cn:8088/rcjk/rccore/Rych/delete').then(res => {
+    //   rest.post(this.user, {ryId: id}, '/rccore/Rych/delete').then(res => {
     //
     //     this.getList()
     //   })
@@ -250,7 +250,7 @@ export default{
     getList () {
       var me = this
 
-      rest.post(this.user, {}, 'http://www.hzts.com.cn:8088/rcjk/rccore/SettledAddress/page').then(res => {
+      rest.post(this.user, {}, '/rccore/SettledAddress/page').then(res => {
         this.list = res.datas
       })
     },
@@ -291,8 +291,10 @@ export default{
       this.basicData.flowEntityId = this.basicData.settledGuid
       this.basicData.isAdd = true
       this.loading = true
+      this.basicData.flowEntityInfo = this.user.username + ' 申请人才落户'
+
       this.basicData.zxznData = this.myChildren
-      rest.post(this.user, this.basicData, 'http://www.hzts.com.cn:8088/rcjk/rccore/SettledAddress/entitySave').then(res => {
+      rest.post(this.user, this.basicData, '/rccore/SettledAddress/entitySave').then(res => {
         me.loading = false
         if (!res.success) return Materialize.toast(res.message, 4000)
         Materialize.toast('保存成功，正在上传，请等待上传完成', 4000)
@@ -314,7 +316,7 @@ export default{
         'rcId': this.user.rcId,
         refId: fileId
       }
-      var r = 'http://www.hzts.com.cn:8088/rcjk/rccore/RcxxFile/download?'
+      var r = '/rccore/RcxxFile/download?'
 
       Object.keys(query).forEach(key => {
 
@@ -329,7 +331,7 @@ export default{
     getFileList () {
       var me = this
 
-      rest.post(this.user, {useType: 'RYZS'}, 'http://www.hzts.com.cn:8088/rcjk/rccore/RcxxFile/fileList').then(res => {
+      rest.post(this.user, {useType: 'RYZS'}, '/rccore/RcxxFile/fileList').then(res => {
 
         me.fileList = res.datas
       })

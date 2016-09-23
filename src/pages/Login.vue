@@ -41,7 +41,7 @@ export default {
     login() {
       var me = this
       this.loading = true
-      rest.post({}, this.user, 'http://www.hzts.com.cn:8088/rcjk/rccore/WeChatUser/insert').then(res => {
+      rest.post({}, this.user, '/rccore/WeChatUser/insert').then(res => {
         this.loading = false
         if (!res.success) return Materialize.toast(res.message, 4000)
         Materialize.toast('登录成功', 2000)

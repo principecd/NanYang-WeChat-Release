@@ -1,14 +1,9 @@
 var Promise = require('bluebird')
 var sha1 = require('sha1')
 var _ = require('lodash')
-// var $ = require('jquery')
-// var VueResource = require('vue-resource')
-// var charset = document.charset
 // var enGbk = require('liveinjs-gbk')
-// var fs = require('fs')
 
-// Vue.use(VueResource)
-// Vue.http.headers.common['Access-Control-Allow-Origin'] = '*';
+var basicUrl = 'http://www.hzts.com.cn:8088/rcjk'
 
 function init () {
   var now = Date.now()
@@ -23,17 +18,13 @@ function init () {
   }
 }
 
-// var errorCallback = (e) => {
-//   console.log(e)
-// }
-
 module.exports = {
   post (user, query, url) {
     return new Promise((resolve, reject) => {
       var data = init()
+
       data = _.assignIn(data, query, user)
-      // console.log(data)
-      // console.log('post:', data)
+      url = basicUrl + url
       $.ajax({
         type: 'post',
         url: url,
@@ -71,6 +62,7 @@ module.exports = {
       // Object.keys(data).forEach(key => {
       //   url = `${url}${key}=${data[key]}&`
       // })
+      url = basicUrl + url
       $.ajax({
         type: 'get',
         url: url,
@@ -94,7 +86,8 @@ module.exports = {
   },
   getOptions (dictCode) {
     return new Promise((resolve, reject) => {
-      var url = 'http://www.hzts.com.cn:8088/rcjk/corej2ee/utils/dict/all'
+      var url = basicUrl + '/corej2ee/utils/dict/all'
+
       // url = url + '?'
       var data = init()
       data.dictCode = dictCode

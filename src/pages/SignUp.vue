@@ -53,7 +53,7 @@ export default {
   methods: {
     signUp() {
       this.user.password = sha1(this.user.pwd)
-      rest.post({}, this.user, 'http://www.hzts.com.cn:8088/rcjk/rccore/WeChatUser/noneToInsert').then(res => {
+      rest.post({}, this.user, '/rccore/WeChatUser/noneToInsert').then(res => {
         if (!res.success) return Materialize.toast(res.message, 4000)
         var baseInfo = {
           ssoOpenId: res.data.rcId,
@@ -70,7 +70,7 @@ export default {
         return Materialize.toast('请输入完整信息', 4000)
       }
       this.loading = true
-      rest.post({}, {mobilePhone: this.user.mobilePhone, lxrZj: this.user.lxrZj}, 'http://www.hzts.com.cn:8088/rcjk/rccore/Register/getCode').then(res => {
+      rest.post({}, {mobilePhone: this.user.mobilePhone, lxrZj: this.user.lxrZj}, '/rccore/Register/getCode').then(res => {
         if (!res.success) {
           return Materialize.toast(res.message, 4000)
         }
