@@ -34,7 +34,7 @@
 import rest from '../rest'
 import VLoading from './VLoading.vue'
 var sha1 = require('sha1')
-
+var localStorage = window.localStorage
 export default {
   data() {
     return {
@@ -53,6 +53,7 @@ export default {
   methods: {
     signUp() {
       this.user.password = sha1(this.user.pwd)
+      this.user.wcOpenId = JSON.parse(localStorage.getItem('bind')).wcOpenId
       rest.post({}, this.user, '/rccore/WeChatUser/noneToInsert').then(res => {
         if (!res.success) return Materialize.toast(res.message, 4000)
         var baseInfo = {
