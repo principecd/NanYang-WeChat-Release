@@ -80,10 +80,6 @@ export default {
       tabs: {
         info: true,
         professor: false
-      },
-      user: {
-        ssoOpenId: '1544902973BD4F4A9C4E621479DCF9CA',
-        rcId: '1544902973BD4F4A9C4E621479DCF9CA'
       }
     }
   },
