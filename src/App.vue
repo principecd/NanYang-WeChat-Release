@@ -324,11 +324,12 @@ export default {
     var me = this
     this.loading = true
     rest.post(this.user, {flowOwnerId: this.user.rcId, start: 0,limit: 10}, '/flowengine/run/full/entityPage').then(res => {
+      this.loading = false
+
       if (!res.success) return Materialize.toast(res.message, 4000)
        this.listCache = res.datas
 
        if (me.filter['/rccore/Rcrd/flowUI'].tranList && me.filter['/rccore/Shjt/flowUI'].tranList && me.filter['/rccore/Zx/flowUI'].tranList && me.filter['/rccore/Rcpo/flowUI'].tranList && me.filter['/rccore/Poxx/flowUI'].tranList && me.filter['/rccore/SettledAddress/flowUI'].tranList && me.listCache.length) {
-         this.loading = false
          me.list = me.listCache
        }
     })
