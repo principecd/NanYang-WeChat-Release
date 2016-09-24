@@ -119,7 +119,7 @@ import VLoading from './components/VLoading.vue'
 import _ from 'lodash'
 import Loadmore from './components/loadmore.vue'
 // import MoonLoader from 'vue-spinner/src/MoonLoader.vue'
-import InfiniteLoading from 'vue-infinite-loading'
+  import InfiniteLoading from 'vue-infinite-loading'
 // /rccore/Rcrd/tranList
 // /rccore/Shjt/tranList
 // /rccore/Zx/tranList

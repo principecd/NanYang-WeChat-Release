@@ -6,7 +6,7 @@
       .col.s12
         ul.collapsible(data-collapsible="accordion")
           li(v-for='item in list')
-            div.collapsible-heade
+            div.collapsible-header
               table.responsive-table
                 thead
                   tr
@@ -25,9 +25,8 @@
                     td {{item.dengji_Str}}
                     td {{item.cengci_Str}}
             div.collapsible-body(style='text-align: center')
-              i.fa.fa-spinner.fa-spin(style='font-size: 30px;', v-if='item.fileList')
-              div(v-if='item.fileList', v-for='i in item.fileList')
-                img(style='width: 100%', v-bind:src='getSrc(i.fileId)')
+              div(v-for='foo in fileList', v-if='foo.yjId === item.yjId')
+                img(style='width: 100%', v-bind:src='getSrc(foo.fileId)')
       a(v-on:click="modal" class='btn-floating btn-large waves-effect waves-light red btn-add')
         span.fa.fa-plus
       .modal#modal1.col.s12.bottom-sheet
@@ -200,12 +199,12 @@ export default{
       this.loading = false
 
       me.list = res.datas
-      console.log(me.list)
-      me.list.forEach((v, i) => {
-        console.log(v, i)
-        rest.post(me.user, {yjId: v.yjId}, '/rccore/RcyjFile/fileList').then(cb => {
+      me.list.forEach((value, index) => {
+        rest.post(me.user, {yjId: value.yjId}, '/rccore/RcyjFile/fileList').then(cb => {
           if (!res.success) return Materialize.toast(res.message, 4000)
-          me.list[i].fileList = cb.datas
+          console.log(cb)
+          me.fileList = _.concat(me.fileList, cb.datas)
+
         })
       })
     })
@@ -310,7 +309,26 @@ export default{
       })
     },
     getSrc (fileId) {
-      return rest.basicUrl + '/rccore/RcxxFile/dropdown?refId=' + fileId
+      var now = Date.now()
+      var signature = ['NaRcJk4WeChat', now, '123332'].sort().join('')
+      var timestamp = now
+      var nonce = '123332'
+      var query = {
+        signature : sha1(signature),
+        timestamp : timestamp,
+        nonce : '123332',
+        'ssoOpenId': this.user.ssoOpenId,
+        'rcId': this.user.rcId,
+        refId: fileId
+      }
+      var r = rest.basicUrl + '/rccore/RcxxFile/download?'
+
+      Object.keys(query).forEach(key => {
+
+        r = r + key + '=' + query[key] + '&'
+      })
+
+      return r
     },
     modal () {
       $('#modal1').openModal()
@@ -364,5 +382,8 @@ export default{
   border-style: dashed;
   border-radius: 5px;
   width: 100%;
+}
+td,th {
+  padding: 0;
 }
 </style>
