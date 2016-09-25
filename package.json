@@ -18,9 +18,11 @@
     "vue": "1.0.21",
     "vue-animated-list": "1.0.2",
     "vue-file-upload": "0.0.7",
+    "vue-form": "^0.3.1",
     "vue-infinite-loading": "1.0.0",
     "vue-router": "0.7.13",
-    "vue-spinner": "1.0.2"
+    "vue-spinner": "1.0.2",
+    "vue-validator": "^2.1.7"
   },
   "devDependencies": {
     "babel-core": "^6.0.0",

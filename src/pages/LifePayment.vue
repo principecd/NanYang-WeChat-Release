@@ -72,9 +72,6 @@ export default{
       zgbmId: [],
       ryId: {},
       basicData: {
-        flowEntityInfo: 'admin申请人才认定',
-        flowVerId: 'BDB6AAC5734A2C5C3A44FA369A272E93',
-        flowEntityUI: '/rccore/Shjt/flowUI'
       },
       list: [],
       files:[],
@@ -127,6 +124,8 @@ export default{
 
   },
   ready () {
+    if (this.$router._currentRoute.query) this.basicData = this.$router._currentRoute.query
+
     // var me = this
     // me.loading = true
     // rest.post(this.user, {}, '/rccore/Rcpo/get').then(res => {
@@ -213,11 +212,14 @@ export default{
       e.preventDefault()
       var me = this
 
-      this.basicData.jtId = randomToken(32)
+      this.basicData.isAdd = this.basicData.jtId ? false : true
+      this.basicData.jtId = this.basicData.jtId || randomToken(32)
       this.basicData.flowEntityId = this.basicData.jtId
-      this.basicData.isAdd = true
-      this.loading = true
       this.basicData.flowEntityInfo = this.user.username + ' 申请生活津贴'
+      this.basicData.flowVerId = 'BDB6AAC5734A2C5C3A44FA369A272E93',
+      this.basicData.flowEntityUI = '/rccore/Shjt/flowUI'
+
+      this.loading = true
 
       rest.post(this.user, this.basicData, '/rccore/Shjt/entitySave').then(res => {
         me.loading = false

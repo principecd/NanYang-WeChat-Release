@@ -1,32 +1,33 @@
 <template lang="jade">
 .dad
   v-loading(:show='loading')
-  form.col.content
+  form.col.content(v-form name="myform")
     .input-field.col.s10
       i.fa.fa-mobile-phone.prefix
-      input.validate(type="text" v-model='user.mobilePhone' placeholder='')
-      label 手机号码
+      input.validate(type="text", name='mobilePhone' v-model='user.mobilePhone', v-form-ctrl, required, pattern='0?(13|14|15|18)[0-9]{9}', number)
+      label(v-bind:class='{active: user.mobilePhone}') 手机号码
     .input-field.col.s10
       i.fa.fa-credit-card.prefix
-      input.validate(type="text" v-model='user.lxrZj' placeholder='')
-      label 身份证号码
+      input.validate(type="text", name='lxrZj' v-model='user.lxrZj', v-form-ctrl, required, number)
+      label(v-bind:class='{active: user.lxrZj}') 身份证号码
     .input-field.col.s10
       i.fa.fa-user.prefix
-      input.validate(type="text" v-model='user.rcName' placeholder='')
-      label 用户名
+      input.validate(type="text", name='rcName' v-model='user.rcName', v-form-ctrl, required, autocomplete="off")
+      label(v-bind:class='{active: user.rcName}') 用户名
     //- .input-field.col.s10
     //-   i.fa.fa-wechat.prefix
     //-   input.validate(type="text" v-model='user.wcOpenId' placeholder='')
     //-   label 微信账号
     .input-field.col.s10
       i.fa.fa-lock.prefix
-      input.validate(type="password" v-model='user.pwd' placeholder='')
-      label 密码
+      input.validate(type="password", name='pwd' v-model='user.pwd', v-form-ctrl, required, autocomplete="off")
+      label(v-bind:class='{active: user.pwd}') 密码
+    //- pre {{myform | json}}
     //- .verifyCode
     //-   button.waves-effect.waves-light.btn(@click='getCode') {{verifyBtn}}
     //-   input.validate(type="text" v-model='user.codePhone' placeholder='')
     .button(style='margin-top: 50px !important')
-      a.waves-effect.waves-light.btn(@click='signUp') 注册
+      a.waves-effect.waves-light.btn(@click='signUp', v-bind:disabled='myform.$invalid') 注册
       a.signUp.waves-effect(v-link="{ path: '/Login' }", style='height: 36px; text-align: center;line-height: 36px;') 登录
 </template>
 
@@ -40,20 +41,22 @@ export default {
     return {
       loading: false,
       user: {
-        mobilePhone: '',
-        lxrZj: '',
-        wcOpenId: ''
       },
       verifyBtn: '验证码'
     };
   },
   computed: {},
+  init() {
+    if (this.$router._currentRoute.query) this.user = this.$router._currentRoute.query
+  },
   ready() {},
   attached() {},
   methods: {
     signUp() {
+
       this.user.password = sha1(this.user.pwd)
       this.user.wcOpenId = JSON.parse(localStorage.getItem('bind')).wcOpenId
+
       rest.post({}, this.user, '/rccore/WeChatUser/noneToInsert').then(res => {
         if (!res.success) return Materialize.toast(res.message, 4000)
         var baseInfo = {

@@ -61,9 +61,17 @@ div
         span.fa.fa-hotel
         span(style='margin-left: 15px') 租房补贴
     li
-      a.waves-effect(v-link="{ path: '/Other/RentHouse' }")
+      a.waves-effect(v-link="{ path: '/Other/GetAddress' }")
         span.fa.fa-bookmark
         span(style='margin-left: 15px') 人才落户
+    li
+      a.waves-effect(v-link="{ path: '/suggestions' }")
+        span.fa.fa-edit
+        span(style='margin-left: 15px') 意见建议
+    li
+      a.waves-effect(v-link="{ path: '/Applications' }")
+        span.fa.fa-list
+        span(style='margin-left: 15px') 政策申报
     //- br
     //- li
     //-   a.waves-effect(@click='logout') 注销

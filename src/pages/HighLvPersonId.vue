@@ -70,10 +70,6 @@ export default{
       zgbmId: [],
       ryId: {},
       basicData: {
-        sqId: sqId,
-        flowEntityInfo: 'admin申请人才认定',
-        flowVerId: 'BDB6AAC5734A2C5C3A44FA369A272E93',
-        flowEntityUI: '/rccore/Rcrd/flowUI'
       },
       list: [],
       files:[],
@@ -130,7 +126,6 @@ export default{
   },
   init () {
     this.user = JSON.parse(localStorage.getItem('baseInfo'))
-
     var me = this
     rest.getOptions('rcrd_cengci').then(res => {
       me.sqcc = this.rebuildOptions(res)
@@ -138,6 +133,8 @@ export default{
 
   },
   ready () {
+    if (this.$router._currentRoute.query) this.basicData = this.$router._currentRoute.query
+
     // var me = this
     // me.loading = true
     // rest.post(this.user, {}, '/rccore/Rcpo/get').then(res => {
@@ -224,9 +221,12 @@ export default{
       e.preventDefault()
       var me = this
 
+      this.basicData.isAdd = this.basicData.sqId ? false : true
+      this.basicData.sqId = this.basicData.sqId || sqId
       this.basicData.flowEntityId = this.basicData.sqId
-      this.basicData.isAdd = true
       this.basicData.flowEntityInfo = this.user.username + ' 申请人才认定'
+      this.basicData.flowVerId = 'BDB6AAC5734A2C5C3A44FA369A272E93'
+      this.basicData.flowEntityUI = '/rccore/Rcrd/flowUI'
       this.loading = true
 
       rest.post(this.user, this.basicData, '/rccore/Rcrd/entitySave').then(res => {

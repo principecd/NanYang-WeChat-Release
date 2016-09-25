@@ -45,7 +45,7 @@
                 input(type="text" class="form-control" placeholder="称谓" v-model="child.appellation")
             .col.s12
               label.active 性别
-              v-select(:value.sync='child.transferSex', :options='xb')
+              v-select(:value.sync='child.transferSex', :options='xb2')
             div.form-group
               div.col-lg-10
                 input(type="text" class="form-control" placeholder="居民身份证号码" v-model="child.denizenSfz")
@@ -53,8 +53,8 @@
               div.col-lg-10
                 input(type="text" class="form-control" placeholder="所在单位" v-model="child.denizenOrg")
           div.modal-footer
-            //- button(type="button" class="btn-default" data-dismiss="modal") 取消
-            a(type="button" class="btn" v-on:click="addChild") 确认
+            a(class="btn waves-effect waves-green" v-on:click="addChild") 确认
+            a(class="modal-action modal-close waves-effect waves-green btn-flat") 取消
     table
       thead
         tr
@@ -106,22 +106,26 @@ export default{
         {value: '1', label: '男'},
         {value: '0', label: '女'}
       ],
+      xb2: [
+        {value: 'man', label: '男'},
+        {value: 'girl', label: '女'}
+      ],
       uploading: false,
       progress: 0,
       loading: false,
       myChildren: [],
-      child: {},
+      child: {
+
+      },
       dengJi: [],
       sqcc: [],
       rych: [],
       zydj: [],
       zgbmId: [],
       ryId: {},
+      settledGuid: '',
       basicData: {
-        settledGuid: settledGuid,
-        flowEntityInfo: 'admin申请人才认定',
-        flowVerId: '41B557D7F306047DE5AF2892BC543065',
-        flowEntityUI: '/rccore/SettledAddress/flowUI'
+        settledGuid: '',
       },
       list: [],
       files:[],
@@ -156,7 +160,6 @@ export default{
           '_x-requested-with': true,
           'ssoOpenId': this.user.ssoOpenId,
           'rcId': this.user.rcId,
-          settledGuid: settledGuid,
           'useType': 'ZXHKB'
         },
         responseType: 'json',
@@ -170,7 +173,6 @@ export default{
           '_x-requested-with': true,
           'ssoOpenId': this.user.ssoOpenId,
           'rcId': this.user.rcId,
-          settledGuid: settledGuid,
           'useType': 'ZXCSZ'
         },
         responseType: 'json',
@@ -180,6 +182,7 @@ export default{
   },
   init () {
     this.user = JSON.parse(localStorage.getItem('baseInfo'))
+    settledGuid = randomToken(32)
 
     var me = this
     rest.getOptions('rcrd_cengci').then(res => {
@@ -188,6 +191,8 @@ export default{
 
   },
   ready () {
+    if (this.$router._currentRoute.query) this.basicData = this.$router._currentRoute.query
+
     // var me = this
     // me.loading = true
     // rest.post(this.user, {}, '/rccore/SettledAddress/get').then(res => {
@@ -205,7 +210,7 @@ export default{
   methods: {
     addChild() {
       this.child.transferGuid = randomToken(32)
-      this.child.settledGuid = settledGuid
+      this.child.settledGuid = this.basicData.settledGuid || settledGuid
       this.child.orderNo = this.myChildren.length + 1
       this.myChildren.push(this.child)
       $('#modal1').closeModal()
@@ -237,7 +242,7 @@ export default{
         'encoding' : 'utf-8',
         'rpencoding' : 'utf-8',
         '_x-requested-with' : true,
-        settledGuid: settledGuid,
+        settledGuid: this.basicData.settledGuid || settledGuid,
         useType: useType
       }
       var k = '?'
@@ -288,10 +293,14 @@ export default{
       e.preventDefault()
       var me = this
 
+      this.basicData.isAdd = this.basicData.settledGuid ? false : true
+      this.basicData.settledGuid = this.basicData.settledGuid || settledGuid
       this.basicData.flowEntityId = this.basicData.settledGuid
-      this.basicData.isAdd = true
-      this.loading = true
+      this.basicData.flowVerId = '41B557D7F306047DE5AF2892BC543065'
+      this.basicData.flowEntityUI = '/rccore/SettledAddress/flowUI'
       this.basicData.flowEntityInfo = this.user.username + ' 申请人才落户'
+
+      this.loading = true
 
       this.basicData.zxznData = this.myChildren
       rest.post(this.user, this.basicData, '/rccore/SettledAddress/entitySave').then(res => {

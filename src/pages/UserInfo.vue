@@ -4,8 +4,8 @@
 
   form.col.s12
     .input-field.col.s12
-      input.validate(type="text" v-model='basic.xm' placeholder='')
-      label.active 姓名
+      input.validate(type="text" v-model='basic.xm' placeholder='', v-bind:disabled.once='basic.xm')
+      label.active 用户名
     .col.s12
       label.active 性别
       v-select(:value.sync='basic.xb', :options='xb')
@@ -13,8 +13,8 @@
       input.validate(type='month', v-model='basic.csny' placeholder='')
       label.active 出生年月
     .input-field.col.s12
-      input(type="text" v-model='basic.sfz' placeholder='')
-      label.active 身份证号
+      input(type="text" v-model='basic.sfz' placeholder='', v-bind:disabled.once='basic.sfz')
+      label.active 身份证（护照）
     .input-field.col.s12
       input(type="text" v-model='basic.zym' placeholder='')
       label.active 曾用命
@@ -30,7 +30,7 @@
     .col.s12(style='border: 1px solid #ddd;padding: 20px 10px;')
       .input-field.col.s12
         input(type="text" v-model='basic.csxl' placeholder='')
-        label.active 初始学历
+        label.active 初始学历学位
       .input-field.col.s12
         input(type="text" v-model='basic.csxlyx' placeholder='')
         label.active 毕业学院
@@ -46,7 +46,7 @@
     .col.s12(style='border: 1px solid #ddd;padding: 20px 10px;margin-top: 10px;margin-bottom: 20px')
       .input-field.col.s12
         input(type="text" v-model='basic.zgxl' placeholder='')
-        label.active 最高学历
+        label.active 最高学历学位
       .input-field.col.s12
         input(type="text" v-model='basic.zgxlyx' placeholder='')
         label.active 毕业学院

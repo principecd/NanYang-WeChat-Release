@@ -2,21 +2,21 @@
 .dad
   v-loading(:show='loading')
 
-  form.col.content
+  form.col.content(v-form name="form")
     //- h6 请输入你的微信账号登录
     .input-field.col.s10
       i.fa.fa-user.prefix
-      input.validate(type="text" v-model='user.username')
-      label 用户名
+      input.validate(type="text" v-model='user.username', name='username',  v-form-ctrl, required)
+      label(v-bind:class='{active: user.username}') 用户名
     .input-field.col.s10
       i.fa.fa-lock.prefix
-      input.validate(type="password" v-model='user.password')
-      label 密码
+      input.validate(type="password" v-model='user.password', name='password',  v-form-ctrl, required)
+      label(v-bind:class='{active: user.password}') 密码
     br
     br
     br
     .button
-      a.waves-effect.waves-light.btn(@click='login') 登录
+      a.waves-effect.waves-light.btn(@click='login', v-bind:disabled='form.$invalid') 登录
       a.signUp.waves-effect(v-link="{ path: '/SignUp' }", style='height: 36px; text-align: center;line-height: 36px;') 注册
 </template>
 
@@ -35,6 +35,11 @@ export default {
     };
   },
   computed: {},
+  init() {
+    var bind = JSON.parse(localStorage.getItem('bind'))
+
+    if (bind && bind.wcOpenId) this.user = bind
+  },
   ready() {},
   attached() {},
   methods: {

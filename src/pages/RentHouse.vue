@@ -102,9 +102,6 @@ export default{
       zgbmId: [],
       ryId: {},
       basicData: {
-        flowEntityInfo: 'admin申请人才认定',
-        flowVerId: 'BDB6AAC5734A2C5C3A44FA369A272E93',
-        flowEntityUI: '/rccore/Poxx/flowUI'
       },
       list: [],
       files:[],
@@ -159,6 +156,8 @@ export default{
 
   },
   ready () {
+    if (this.$router._currentRoute.query) this.basicData = this.$router._currentRoute.query
+
     // var me = this
     // me.loading = true
     // rest.post(this.user, {}, '/rccore/Rcpo/get').then(res => {
@@ -250,11 +249,14 @@ export default{
       e.preventDefault()
       var me = this
 
-      this.basicData.poId = randomToken(32)
+      this.basicData.isAdd = this.basicData.poId ? false : true
+      this.basicData.poId = this.basicData.poId || randomToken(32)
       this.basicData.flowEntityId = this.basicData.poId
-      this.basicData.isAdd = true
-      this.loading = true
+      this.basicData.flowVerId = 'BDB6AAC5734A2C5C3A44FA369A272E93',
+      this.basicData.flowEntityUI = '/rccore/Poxx/flowUI'
       this.basicData.flowEntityInfo = this.user.username + ' 申请租房补贴'
+
+      this.loading = true
 
       this.basicData.qtcyInfo = this.myChildren
       rest.post(this.user, this.basicData, '/rccore/Poxx/entitySave').then(res => {

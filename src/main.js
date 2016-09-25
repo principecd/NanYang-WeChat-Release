@@ -4,12 +4,17 @@ require('../static/css/animate.css')
 //  http://www.hzts.com.cn:8088/rcjk
 
 var Vue = require('vue')
+// var VueValidator = require('vue-validator')
 var VueRouter = require('vue-router')
+var vueForm = require('vue-form')
 
 import rest from './rest'
 
 Vue.use(VueRouter)
 Vue.use(require('vue-animated-list'))
+Vue.use(vueForm)
+
+// Vue.use(VueValidator)
 
 init()
 
@@ -37,11 +42,15 @@ function init () {
     var newBind = {
       wcOpenId: query.wcOpenId
     }
+    // var old = JSON.parse(localStorage.getItem('bind'))
+
+    // if (old) old = old.wcOpenId
 
     localStorage.setItem('bind', JSON.stringify(newBind))
   }
 
   var bind = JSON.parse(localStorage.getItem('bind'))
+
 
   if (bind && bind.wcOpenId) {
     rest
@@ -55,6 +64,9 @@ function init () {
           }
 
           localStorage.setItem('baseInfo', JSON.stringify(baseInfo))
+        }
+        else {
+          localStorage.removeItem('baseInfo')
         }
 
         var App = Vue.extend({})
@@ -77,26 +89,40 @@ function init () {
 
                 component: require('./pages/SignUp.vue')
             },
+            'suggestions': {
+              name: 'suggestions',
+              component: require('./pages/suggestions.vue')
+            },
+            'Applications': {
+              name: 'Applications',
+              component: require('./pages/Applications.vue')
+            },
             'Other': {
               component: require('./pages/Other.vue'),
               subRoutes: {
+                'GetAddress': {
+                    name: 'GetAddress',
+                    component: require('./pages/GetAddress.vue')
+                },
                 'HighLvPersonId': {
+                    name: 'HighLvPersonId',
                     component: require('./pages/HighLvPersonId.vue')
                 },
                 'LifePayment': {
+                    name: 'LifePayment',
                     component: require('./pages/LifePayment.vue')
                 },
                 'Children': {
+                    name: 'Children',
                     component: require('./pages/Children.vue')
                 },
                 'BuyHouse': {
+                    name: 'BuyHouse',
                     component: require('./pages/BuyHouse.vue')
                 },
                 'RentHouse': {
+                    name: 'RentHouse',
                     component: require('./pages/RentHouse.vue')
-                },
-                'GetAddress': {
-                    component: require('./pages/GetAddress.vue')
                 }
               }
             },
@@ -135,7 +161,9 @@ function init () {
             return to.next()
           }
           else {
-            return to.redirect('/Login')
+            window.location.href = '/#!/Login'
+            // return router.go({name: 'Login'})
+            // return to.redirect('Login')
           }
         })
 
@@ -162,6 +190,14 @@ function init () {
             name: 'SignUp',
 
             component: require('./pages/SignUp.vue')
+        },
+        'Applications': {
+          name: 'Applications',
+          component: require('./pages/Applications.vue')
+        },
+        'suggestions': {
+          name: 'suggestions',
+          component: require('./pages/suggestions.vue')
         },
         'Other': {
           component: require('./pages/Other.vue'),
@@ -221,7 +257,9 @@ function init () {
         return to.next()
       }
       else {
-        return to.redirect('/Login')
+        window.location.href = '/#!/Login'
+        // return router.go({name: 'Login'})
+        // return to.redirect('Login')
       }
     })
 

@@ -51,8 +51,8 @@
               div.col-lg-10
                 input(type="text" class="form-control" placeholder="拟申请就读学校及年级" v-model="child.sqxxnj")
           div.modal-footer
-            a(type="button" class="btn-default", @click='closeModal') 取消
-            a(type="button" class="btn" v-on:click="addChild") 确认
+            a(class="btn waves-effect waves-green" v-on:click="addChild") 确认
+            a(class="modal-action modal-close waves-effect waves-green btn-flat") 取消
     table
       thead
         tr
@@ -127,10 +127,6 @@ export default{
       zgbmId: [],
       ryId: {},
       basicData: {
-        zxId: zxId,
-        flowEntityInfo: 'admin申请人才认定',
-        flowVerId: '41B557D7F306047DE5AF2892BC543065',
-        flowEntityUI: '/rccore/Zx/flowUI'
       },
       list: [],
       files:[],
@@ -197,6 +193,7 @@ export default{
 
   },
   ready () {
+    if (this.$router._currentRoute.query) this.basicData = this.$router._currentRoute.query
     // var me = this
     // me.loading = true
     // rest.post(this.user, {}, '/rccore/Zx/get').then(res => {
@@ -218,7 +215,7 @@ export default{
     addChild() {
       this.child.znId = randomToken(32)
       this.child.rcId = this.user.rcId
-      this.child.zxId = zxId
+      this.child.zxId = this.basicData.zxId || zxId
       this.myChildren.push(this.child)
       $('#modal1').closeModal()
 
@@ -300,13 +297,18 @@ export default{
       e.preventDefault()
       var me = this
 
+      this.basicData.isAdd = this.basicData.zxId ? false : true
+      this.basicData.zxId = this.basicData.zxId || zxId
       this.basicData.flowEntityId = this.basicData.zxId
-      this.basicData.isAdd = true
-      this.loading = true
       this.basicData.flowEntityInfo = this.user.username + ' 申请子女择校'
+      this.basicData.flowVerId = '41B557D7F306047DE5AF2892BC543065',
+      this.basicData.flowEntityUI = '/rccore/Zx/flowUI'
 
       this.basicData.zxznData = this.myChildren
       this.basicData.zxznData = JSON.stringify(this.basicData.zxznData)
+
+      this.loading = true
+
       rest.post(this.user, this.basicData, '/rccore/Zx/entitySave').then(res => {
         me.loading = false
         if (!res.success) return Materialize.toast(res.message, 4000)

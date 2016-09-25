@@ -2,9 +2,9 @@
 .row
   v-loading(:show='loading')
   form.col.s12.content
-    .input-field.col.s12
-      input.validate(type="text" v-model='basicData.rcName' placeholder='')
-      label.active 人才姓名
+    //- .input-field.col.s12
+    //-   input.validate(type="text" v-model='basicData.rcName' placeholder='', v-bind:disabled='user.username')
+    //-   label.active 人才姓名
     .input-field.col.s12
       input.validate(type="text" v-model='basicData.name' placeholder='')
       label.active 配偶姓名
@@ -86,8 +86,8 @@
               div.col-lg-10
                 input(type="text" class="form-control" placeholder="与申请人关系" v-model="child.cygx")
           div.modal-footer
-            a(type="button" class="btn-default", @click='closeModal') 取消
-            a(type="button" class="btn" v-on:click="addChild") 确认
+            a(class="btn waves-effect waves-green" v-on:click="addChild") 确认
+            a(class="modal-action modal-close waves-effect waves-green btn-flat") 取消
     br
     br
     br
@@ -158,9 +158,6 @@ export default{
       zgbmId: [],
       ryId: {},
       basicData: {
-        flowEntityInfo: 'admin申请人才认定',
-        flowVerId: 'BDB6AAC5734A2C5C3A44FA369A272E93',
-        flowEntityUI: '/rccore/Rcpo/flowUI'
       },
       list: [],
       files:[],
@@ -215,6 +212,8 @@ export default{
 
   },
   ready () {
+
+    if (this.$router._currentRoute.query) this.basicData = this.$router._currentRoute.query
     // var me = this
     // me.loading = true
     // rest.post(this.user, {}, '/rccore/Rcpo/get').then(res => {
@@ -242,7 +241,7 @@ export default{
     // },
     addChild() {
       this.child.cyId = randomToken(32)
-      this.child.poId = poId
+      this.child.poId = this.basicData.poId || poId
       this.child.saveInDatebase = true
       this.myChildren.push(this.child)
       $('#modal1').closeModal()
@@ -312,14 +311,17 @@ export default{
       e.preventDefault()
       var me = this
 
-      this.basicData.poId = poId
+      this.basicData.isAdd = this.basicData.poId ? false : true
+      this.basicData.poId = this.basicData.poId || poId
       this.basicData.flowEntityId = this.basicData.poId
-      this.basicData.isAdd = true
-      this.loading = true
       this.basicData.flowEntityInfo = this.user.username + ' 申请购房补贴'
-
+      this.basicData.flowVerId = 'BDB6AAC5734A2C5C3A44FA369A272E93',
+      this.basicData.flowEntityUI = '/rccore/Rcpo/flowUI'
       this.basicData.qtcyInfo = this.myChildren
       this.basicData.qtcyInfo = JSON.stringify(this.basicData.qtcyInfo)
+      this.basicData.rcName = this.user.username
+
+      this.loading = true
 
       rest.post(this.user, this.basicData, '/rccore/Rcpo/entitySave').then(res => {
         me.loading = false

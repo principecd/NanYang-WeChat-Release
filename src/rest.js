@@ -20,6 +20,40 @@ function init () {
 
 module.exports = {
   basicUrl: basicUrl,
+  delete () {
+    return new Promise((resolve, reject) => {
+      var data = init()
+
+      data = _.assignIn(data, query, user)
+      url = basicUrl + url
+      $.ajax({
+        type: 'post',
+        url: url,
+        data: data,
+        dataType: 'json',
+        beforeSend: function (xhr) {
+          xhr.overrideMimeType('text/html;charset=GBK')
+        }
+      })
+      .done(res => {
+        resolve(res)
+      })
+      // Vue.http.post(url, data).then((res) => {
+      //   // if (res.body !== 'string') {
+      //   //   res.body = JSON.stringify(res.body)
+      //   //   if (charset === 'UTF-8') {
+      //   //     res.body = gbk.toString('utf-8', res.body)
+      //   //   }
+      //   // }
+      //
+      //   if (res.body !== 'object') {
+      //     res.body = JSON.parse(res.body)
+      //   }
+      //
+      //   resolve(res.body)
+      // }, errorCallback)
+    })
+  },
   post (user, query, url) {
     return new Promise((resolve, reject) => {
       var data = init()

@@ -25,8 +25,9 @@
                     td {{item.dengji_Str}}
                     td {{item.cengci_Str}}
             div.collapsible-body(style='text-align: center')
-              div(v-for='foo in fileList', v-if='foo.yjId === item.yjId')
-                img(style='width: 100%', v-bind:src='getSrc(foo.fileId)')
+              div(v-for='foo in fileList')
+                i.fa.fa-spinner.fa-spin(style='font-size: 40px; color: #666;', v-if='foo.yjId !== item.yjId')
+                img(style='width: 100%', v-bind:src='getSrc(foo.fileId)', v-if='foo.yjId === item.yjId')
       a(v-on:click="modal" class='btn-floating btn-large waves-effect waves-light red btn-add')
         span.fa.fa-plus
       .modal#modal1.col.s12.bottom-sheet

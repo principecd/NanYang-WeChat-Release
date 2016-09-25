@@ -1,5 +1,6 @@
 <template lang="jade">
 .col.s12
+  v-loading(:show='loading')
   div.col.s12
     table
       thead
@@ -50,6 +51,7 @@ import randomToken from 'random-token'
 import vSelect from './VSelect'
 import _ from 'lodash'
 import sha1 from 'sha1'
+import VLoading from './VLoading.vue'
 
 var localStorage = window.localStorage
 
@@ -61,6 +63,7 @@ export default{
   // },
   data () {
     return {
+      loading: false,
       zyxz: [],
       zyxl: [],
       zydj: [],
@@ -213,8 +216,10 @@ export default{
       Object.keys(r).forEach(v => {
         url = url + v + '=' + r[v] + '&'
       })
-
+      this.loading = true
       rest.get(this.user, {useType: req.reqopts.formData.useType}, '/rccore/RcxxFile/fileList').then(res => {
+        this.loading = false
+
         me.fileList = _.union(me.fileList, res.datas)
       })
     })
@@ -336,6 +341,7 @@ export default{
     }
   },
   components: {
+    VLoading,
     VueFileUpload,
     vSelect
   }

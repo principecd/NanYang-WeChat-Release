@@ -8,6 +8,10 @@
     li
       a.waves-effect(style='height: 60px')
     li
+      a.waves-effect(v-link="{ path: '/' }")
+        span.fa.fa-home
+        span(style='margin-left: 15px') 首页
+    li
       a.waves-effect(v-link="{ path: '/User' }")
         span.fa.fa-user
         span(style='margin-left: 15px') 人才基本信息
@@ -32,9 +36,17 @@
         span.fa.fa-hotel
         span(style='margin-left: 15px') 租房补贴
     li
-      a.waves-effect(v-link="{ path: '/Other/RentHouse' }")
+      a.waves-effect(v-link="{ path: '/Other/GetAddress' }")
         span.fa.fa-bookmark
         span(style='margin-left: 15px') 人才落户
+    li
+      a.waves-effect(v-link="{ path: '/suggestions' }")
+        span.fa.fa-edit
+        span(style='margin-left: 15px') 意见建议
+    li
+      a.waves-effect(v-link="{ path: '/Applications' }")
+        span.fa.fa-list
+        span(style='margin-left: 15px') 政策申报
     //- a.menu.dropdown-button(data-activates='dropdown2')
     //-   span.fa.fa-ellipsis-v
 

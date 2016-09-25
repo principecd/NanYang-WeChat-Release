@@ -68,68 +68,57 @@
     //- a.menu.dropdown-button(data-activates='dropdown2')
     //-   span.fa.fa-ellipsis-v
   v-loading(:show='loading')
-  //- p
-  //-   br
-  //-   a(v-link="{ path: '/User' }") 人才信息
-  //-   br
-  //-   a(v-link="{ path: '/HighLvPersonId' }") 高层次人才认定
-  //-   a(v-link="{ path: '/LifePayment' }") 生活津贴
-  //-   br
-  //-   a(v-link="{ path: '/Children' }") 子女择校
-  //-   a(v-link="{ path: '/BuyHouse' }") 购房补贴
-  //-   br
-  //-   a(v-link="{ path: '/RentHouse' }") 租房补贴
-  //-   a(v-link="{ path: '/GetAddress' }")
-  //- loadmore(:top-method="loadTop", :bottom-method="loadBottom", :bottom-all-loaded="allLoaded", style='width: 100%; height: 100%;', topPullText='', topDropText='')
-  //- loadmore#cardList(:bottom-method="loadBottom", :bottom-all-loaded="allLoaded", :bottom-status.sync='bottomStatus', :translate='translate')
-  //-   div(slot="top" class="mint-loadmore-top")
-  //-   div(slot="bottom" class="mint-loadmore-bottom", style='text-align: center;')
-  //-     h6(v-if='bottomStatus === "drop"', style='font-size: 20px') 加载更过
-  //-     moon-loader(v-if='bottomStatus === "loading"', :loading='bottomStatus === "loading"', :color="color", :size="size")
-      //- i.fa.fa-spinner.fa-spin(v-if='bottomStatus === "loading"', style='font-size: 30px; color: #999')
-  div
-    ul.tabs(style='background: transparent')
-      li.tab.col.s3
-        a(href="#waiting") 未申请办理
-      li.tab.col.s3
-        a(href="#active") 已申请办理
-    #waiting
 
-        .card(v-for='item in list', v-if='!item.flowDoStageInfo')
-          .card-content
-            div
-                span.card-title
-                  i.fa(v-bind:class='{"fa-money": item.flowEntityUI === "/rccore/Shjt/flowUI", "fa-bookmark": item.flowEntityUI === "/rccore/SettledAddress/flowUI", "fa-level-up": item.flowEntityUI === "/rccore/Rcrd/flowUI", "fa-home": item.flowEntityUI === "/rccore/Rcpo/flowUI", "fa-child": item.flowEntityUI === "/rccore/Zx/flowUI", "fa-home": item.flowEntityUI === "/rccore/Poxx/flowUI"}')
-                |     {{item.flowEntityInfo}}
-                p {{item.flowEntityTime}}
-                p(v-if='item.flowDoStageInfo') 办理情况：{{item.flowDoStageInfo}}
-                p(v-if='!item.flowDoStageInfo') 当前状态：临时保存
-          .card-action
-            .btn-list
-              a.waves-effect(@click='getItemDetail(item)') 修改
-              a.waves-effect(v-for='i in filter[item.flowEntityUI].tranList', @click='verStart({"i": i, "flowEntityUI": item.flowEntityUI, "flowEntityId": item.flowEntityId, "flowEntityInfo": item.flowEntityInfo})') {{i.tranName}}
-
-    #active
-
-            .card(v-if='item.flowDoStageInfo', v-for='item in list')
-              .card-content
-                span.card-title
-                  i.fa(v-bind:class='{"fa-money": item.flowEntityUI === "/rccore/Shjt/flowUI", "fa-bookmark": item.flowEntityUI === "/rccore/SettledAddress/flowUI", "fa-level-up": item.flowEntityUI === "/rccore/Rcrd/flowUI", "fa-home": item.flowEntityUI === "/rccore/Rcpo/flowUI", "fa-child": item.flowEntityUI === "/rccore/Zx/flowUI", "fa-home": item.flowEntityUI === "/rccore/Poxx/flowUI"}')
-                |     {{item.flowEntityInfo}}
-                p {{item.flowEntityTime}}
-                p(v-if='item.flowDoStageInfo') 办理情况：{{item.flowDoStageInfo}}
-                p(v-if='!item.flowDoStageInfo') 当前状态：临时保存
+  ul.collapsible(data-collapsible="accordion")
+    //- ul.tabs(style='background: transparent')
+    //-   li.tab.col.s3
+    //-     a(href="#waiting") 意见
+      //- li.tab.col.s3
+      //-   a(href="#active") 已申请办理
+    //- #waiting
+    li(v-for='item in list')
+      .collapsible-header
+        .collection
+          a.collection-item(style='color:#666') {{item.jyzt}}
+            span.badge.new(v-bind:data-badge-caption="item.state_Str", v-bind:class='{blue: item.state_Str === "已回复", yellow: item.state_Str === "已提交", "darken-1": item.state_Str === "已提交"}')
+      .collapsible-body
+        .me(style='margin-top: 20px')
+          span(style='margin-left: 30px; font-size: 15px') {{user.username}}:
+          span(style='float: right; margin-right: 30px; font-size: 15px; color: #999')
+            //- i.fa.fa-calendar-minus-o
+            | {{item.submitTime}}
+        p(style='padding-top: 12px') {{item.jyContent}}
+        hr(v-if='item.state_Str === "已回复"')
+        p(v-if='item.state_Str === "已回复"', style='padding-top: 12px; padding-bottom: 5px') {{item.replyContent}}
+        p(v-if='item.state_Str === "已回复"', style='padding-top: 12px') {{item.replyTime}}
   infinite-loading#infinite-loading(:on-infinite="onInfinite", :distance="distance", v-if='list.length < 300 &&  list.length')
+  a(v-on:click="modal" class='btn-floating btn-large waves-effect waves-light red btn-add')
+    span.fa.fa-plus
+  .modal#modal1.col.s12.bottom-sheet
+    .modal-content
+      .row
+        form.col.s12
+          .input-field.col.s12
+            input.validate(type="text" v-model='postData.jyzt' placeholder='')
+            label.active 主题
+
+          .input-field.col.s12
+            textarea.materialize-textarea(v-model='postData.jyContent' placeholder='')
+            label.active 内容
+
+    .modal-footer
+      a(class="btn waves-effect waves-light" v-on:click='submitData') 保存
+      a(class="modal-action modal-close waves-effect waves-green btn-flat") 取消
 </template>
 
 <script>
-import UserInfo from './pages/UserInfo.vue'
-import rest from './rest'
-import VLoading from './components/VLoading.vue'
+import rest from '../rest'
+import VLoading from '../components/VLoading.vue'
 import _ from 'lodash'
-import Loadmore from './components/loadmore.vue'
+import Loadmore from '../components/loadmore.vue'
 // import MoonLoader from 'vue-spinner/src/MoonLoader.vue'
-  import InfiniteLoading from 'vue-infinite-loading'
+import InfiniteLoading from 'vue-infinite-loading'
+import randomToken from 'random-token'
 // /rccore/Rcrd/tranList
 // /rccore/Shjt/tranList
 // /rccore/Zx/tranList
@@ -144,6 +133,7 @@ export default {
     return {
       distance: 100,
       translate: '0',
+      postData: {},
       color: '#26a69a',
       size: '40px',
       bottomStatus: '',
@@ -217,6 +207,31 @@ export default {
 
   },
   methods: {
+    modal() {
+      $('#modal1').openModal()
+
+    },
+    submitData() {
+      var me = this
+      this.loading = true
+      this.postData.jyId = randomToken(32)
+      this.postData.isAdd = true
+      $('#modal1').closeModal()
+
+      rest.post(this.user, this.postData, '/rccore/Yjjy/insert').then(res => {
+        this.loading = false
+
+        if (!res.success) return Materialize.toast(res.message, 4000)
+        this.loading = true
+
+        rest.post(this.user, {start: 0, limit: 50}, '/rccore/Yjjy/page').then(res => {
+          me.loading = false
+          if (!res.success) return Materialize.toast(res.message, 4000)
+          me.list = res.datas
+        })
+
+      })
+    },
     redirect(item) {
       if (!item.detail) return
       var name = this.filter[item.flowEntityUI]
@@ -225,7 +240,7 @@ export default {
     onInfinite() {
       var start = this.list.length
       if (!start) return
-      rest.post(this.user, {flowOwnerId: this.user.rcId, start: start,limit: 50}, '/flowengine/run/full/entityPage').then(res => {
+      rest.post(this.user, {flowOwnerId: this.user.rcId, start: start,limit: 50}, '/rccore/Yjjy/page').then(res => {
         // this.loading = false
         this.allLoaded = false
         this.bottomStatus = ''
@@ -379,38 +394,10 @@ export default {
   ready() {
     var me = this
     this.loading = true
-    rest.post(this.user, {flowOwnerId: this.user.rcId, start: 0,limit: 50}, '/flowengine/run/full/entityPage').then(res => {
+    rest.post(this.user, {start: 0, limit: 50}, '/rccore/Yjjy/page').then(res => {
       this.loading = false
-
       if (!res.success) return Materialize.toast(res.message, 4000)
-       this.listCache = res.datas
-
-       if (me.filter['/rccore/Rcrd/flowUI'].tranList && me.filter['/rccore/Shjt/flowUI'].tranList && me.filter['/rccore/Zx/flowUI'].tranList && me.filter['/rccore/Rcpo/flowUI'].tranList && me.filter['/rccore/Poxx/flowUI'].tranList && me.filter['/rccore/SettledAddress/flowUI'].tranList && me.listCache.length) {
-         me.list = me.listCache
-       }
-    })
-
-    Object.keys(this.filter).forEach(key => {
-      var value = JSON.parse(localStorage.getItem(key))
-      if (!value) {
-        rest.get(this.user, {flowId: this.filter[key].flowId}, this.filter[key].tranListUrl).then(res => {
-          if (!res.success) return Materialize.toast(res.message, 4000)
-          me.filter[key].tranList = res.datas
-          localStorage.setItem(key, JSON.stringify(res.datas))
-          if (me.filter['/rccore/Rcrd/flowUI'].tranList && me.filter['/rccore/Shjt/flowUI'].tranList && me.filter['/rccore/Zx/flowUI'].tranList && me.filter['/rccore/Rcpo/flowUI'].tranList && me.filter['/rccore/Poxx/flowUI'].tranList && me.filter['/rccore/SettledAddress/flowUI'].tranList && me.listCache.length) {
-            this.loading = false
-            me.list = me.listCache
-          }
-        })
-      }
-      else {
-        me.filter[key].tranList = value
-
-        if (me.filter['/rccore/Rcrd/flowUI'].tranList && me.filter['/rccore/Shjt/flowUI'].tranList && me.filter['/rccore/Zx/flowUI'].tranList && me.filter['/rccore/Rcpo/flowUI'].tranList && me.filter['/rccore/Poxx/flowUI'].tranList && me.filter['/rccore/SettledAddress/flowUI'].tranList && me.listCache.length) {
-          this.loading = false
-          me.list = me.listCache
-        }
-      }
+      this.list = res.datas
     })
   }
 }
@@ -422,7 +409,11 @@ html, body {
   width: 100%;
   overflow: scroll;
 }
-
+.btn-add {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+}
 .bottom-sheet {
   min-height: 60%;
 }
