@@ -70,7 +70,7 @@ function init () {
         }
 
         var App = Vue.extend({})
-        var router = new VueRouter()
+        var router = new VueRouter({})
 
         router.map({
             '/': {
@@ -161,7 +161,11 @@ function init () {
             return to.next()
           }
           else {
-            window.location.href = '/#!/Login'
+            if (bind && bind.wcOpenId && !res.message) {
+              window.location.href = '/#!/SignUp'
+            } else {
+              window.location.href = '/#!/Login'
+            }
             // return router.go({name: 'Login'})
             // return to.redirect('Login')
           }
@@ -172,7 +176,7 @@ function init () {
   }
   else {
     var App = Vue.extend({})
-    var router = new VueRouter
+    var router = new VueRouter({})
 
     router.map({
         '/': {
@@ -258,6 +262,12 @@ function init () {
       }
       else {
         window.location.href = '/#!/Login'
+
+        // if (bind || bind.wcOpenId) {
+        //   window.location.href = '/#!/SignUp'
+        // } else {
+        //   window.location.href = '/#!/Login'
+        // }
         // return router.go({name: 'Login'})
         // return to.redirect('Login')
       }

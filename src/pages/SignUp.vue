@@ -49,7 +49,9 @@ export default {
   init() {
     if (this.$router._currentRoute.query) this.user = this.$router._currentRoute.query
   },
-  ready() {},
+  ready() {
+    console.log(this.$router)
+  },
   attached() {},
   methods: {
     signUp() {

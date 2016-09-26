@@ -40,7 +40,10 @@ export default {
 
     if (bind && bind.wcOpenId) this.user = bind
   },
-  ready() {},
+  ready() {
+    console.log(this.$router)
+
+  },
   attached() {},
   methods: {
     login() {
