@@ -40,7 +40,7 @@
         span.fa.fa-bookmark
         span(style='margin-left: 15px') 人才落户
     li
-      a.waves-effect(v-link="{ path: '/suggestions' }")
+      a.waves-effect(v-link="{ path: '/Suggestions' }")
         span.fa.fa-edit
         span(style='margin-left: 15px') 意见建议
     li

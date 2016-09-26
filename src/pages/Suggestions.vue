@@ -40,7 +40,7 @@
         span.fa.fa-bookmark
         span(style='margin-left: 15px') 人才落户
     li
-      a.waves-effect(v-link="{ path: '/suggestions' }")
+      a.waves-effect(v-link="{ path: '/Suggestions' }")
         span.fa.fa-edit
         span(style='margin-left: 15px') 意见建议
     li
@@ -68,15 +68,63 @@
     //- a.menu.dropdown-button(data-activates='dropdown2')
     //-   span.fa.fa-ellipsis-v
   v-loading(:show='loading')
+  h6(style='margin-top: 15px; color:#666; margin-left: 30px', v-if='today.length') 今天
+  ul.collapsible(data-collapsible="accordion", v-if='today.length')
+    li(v-for='(index, item) in today')
+      .collapsible-header
+        .collection
+          a.collection-item(style='color:#666') {{item.jyzt}}
+            span.badge.new(v-bind:data-badge-caption="item.state_Str", v-bind:class='{blue: item.state_Str === "已回复", yellow: item.state_Str === "已提交", "darken-1": item.state_Str === "已提交"}')
+      .collapsible-body
+        .me(style='margin-top: 20px')
+          span(style='margin-left: 30px; font-size: 15px') {{user.username}}:
+          span(style='float: right; margin-right: 30px; font-size: 15px; color: #999')
+            //- i.fa.fa-calendar-minus-o
+            | {{item.submitTime}}
+        p(style='padding-top: 12px') {{item.jyContent}}
+        hr(v-if='item.state_Str === "已回复"')
+        p(v-if='item.state_Str === "已回复"', style='padding-top: 12px; padding-bottom: 5px') {{item.replyContent}}
+        p(v-if='item.state_Str === "已回复"', style='padding-top: 12px') {{item.replyTime}}
+
+  h6(style='margin-top: 15px; color:#666; margin-left: 30px', v-if='') 三天内
+  ul.collapsible(data-collapsible="accordion", v-if='threeDays.length')
+    li(v-for='(index, item) in threeDays')
+      .collapsible-header
+        .collection
+          a.collection-item(style='color:#666') {{item.jyzt}}
+            span.badge.new(v-bind:data-badge-caption="item.state_Str", v-bind:class='{blue: item.state_Str === "已回复", yellow: item.state_Str === "已提交", "darken-1": item.state_Str === "已提交"}')
+      .collapsible-body
+        .me(style='margin-top: 20px')
+          span(style='margin-left: 30px; font-size: 15px') {{user.username}}:
+          span(style='float: right; margin-right: 30px; font-size: 15px; color: #999')
+            //- i.fa.fa-calendar-minus-o
+            | {{item.submitTime}}
+        p(style='padding-top: 12px') {{item.jyContent}}
+        hr(v-if='item.state_Str === "已回复"')
+        p(v-if='item.state_Str === "已回复"', style='padding-top: 12px; padding-bottom: 5px') {{item.replyContent}}
+        p(v-if='item.state_Str === "已回复"', style='padding-top: 12px') {{item.replyTime}}
+  h6(style='margin-top: 15px; color:#666; margin-left: 30px', v-if='thisMonth.length') 本月
 
   ul.collapsible(data-collapsible="accordion")
-    //- ul.tabs(style='background: transparent')
-    //-   li.tab.col.s3
-    //-     a(href="#waiting") 意见
-      //- li.tab.col.s3
-      //-   a(href="#active") 已申请办理
-    //- #waiting
-    li(v-for='item in list')
+    li(v-for='(index, item) in thisMonth')
+      .collapsible-header
+        .collection
+          a.collection-item(style='color:#666') {{item.jyzt}}
+            span.badge.new(v-bind:data-badge-caption="item.state_Str", v-bind:class='{blue: item.state_Str === "已回复", yellow: item.state_Str === "已提交", "darken-1": item.state_Str === "已提交"}')
+      .collapsible-body
+        .me(style='margin-top: 20px')
+          span(style='margin-left: 30px; font-size: 15px') {{user.username}}:
+          span(style='float: right; margin-right: 30px; font-size: 15px; color: #999')
+            //- i.fa.fa-calendar-minus-o
+            | {{item.submitTime}}
+        p(style='padding-top: 12px') {{item.jyContent}}
+        hr(v-if='item.state_Str === "已回复"')
+        p(v-if='item.state_Str === "已回复"', style='padding-top: 12px; padding-bottom: 5px') {{item.replyContent}}
+        p(v-if='item.state_Str === "已回复"', style='padding-top: 12px') {{item.replyTime}}
+  h6(style='margin-top: 15px; color:#666; margin-left: 30px', v-if='older.length') 更早
+
+  ul.collapsible(data-collapsible="accordion", v-if='older.length')
+    li(v-for='(index, item) in older')
       .collapsible-header
         .collection
           a.collection-item(style='color:#666') {{item.jyzt}}
@@ -131,6 +179,10 @@ var localStorage = window.localStorage
 export default {
   data () {
     return {
+      today: [],
+      threeDays: [],
+      thisMonth: [],
+      older: [],
       distance: 100,
       translate: '0',
       postData: {},
@@ -207,6 +259,10 @@ export default {
 
   },
   methods: {
+    isMargin(index) {
+      // console.log(index)
+      return index % 4 === 0 ? true : false
+    },
     modal() {
       $('#modal1').openModal()
 
@@ -373,7 +429,7 @@ export default {
   attached () {
     $('ul.tabs').tabs()
     $('.collapsible').collapsible({
-      accordion : false // A setting that changes the collapsible behavior to expandable instead of the default accordion style
+      accordion : false
     })
     $('.button-collapse').sideNav({
      menuWidth: 300, // Default is 240
@@ -397,7 +453,32 @@ export default {
     rest.post(this.user, {start: 0, limit: 50}, '/rccore/Yjjy/page').then(res => {
       this.loading = false
       if (!res.success) return Materialize.toast(res.message, 4000)
+      var now = new Date().getTime()
+
       this.list = res.datas
+      this.list.forEach(i => {
+        console.log(i)
+        var replyTime = new Date(i.replyTime || i.submitTime).getTime()
+        var submitTime = new Date(i.submitTime).getTime()
+        var oneDay = 1000 * 60 * 60* 24
+        var threeDays = 1000 * 60 * 60 * 24 * 3
+        var oneMonth = 1000 * 60 * 60 * 24 * 30
+        var a = Number(now) - Number(replyTime)
+        var b = Number(now) - Number(submitTime)
+        console.log(a / oneDay)
+        if (a < oneDay || b < oneDay) {
+          this.today.push(i)
+        }
+        else if (a < threeDays || b < threeDays ) {
+          this.threeDays.push(i)
+        }
+        else if (a < oneMonth || b < oneMonth ) {
+          this.thisMonth.push(i)
+        }
+        else {
+          this.older.push(i)
+        }
+      })
     })
   }
 }
@@ -421,6 +502,9 @@ body {
   font-family: Helvetica, sans-serif;
   background: #fafafa;
   display: block;
+}
+.marginBtn {
+  margin-bottom: 12px;
 }
 
 #app {
@@ -462,7 +546,9 @@ a:active{
   animation: fadeInUp 600ms cubic-bezier(.55,0,.1,1) forwards;
   -wekbit-animation: fadeInUp 600ms cubic-bezier(.55,0,.1,1) forwards;
 }
-
+hr {
+  width: 90%;
+}
 
 .menu-content{
   position: fixed;

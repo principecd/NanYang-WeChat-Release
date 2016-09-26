@@ -68,7 +68,9 @@ export default {
         }
 
         localStorage.setItem('baseInfo', JSON.stringify(baseInfo))
-        return this.$router.go({name: 'Home'})
+        // return this.$router.go({name: 'Home'})
+        window.history.back()
+
       })
     },
     getCode() {

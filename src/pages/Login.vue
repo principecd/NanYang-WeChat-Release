@@ -63,10 +63,11 @@ export default {
         }
 
         localStorage.setItem('baseInfo', JSON.stringify(baseInfo))
-        setTimeout(function() {
-          return me.$router.go({name: 'HomePage'})
-
-        }, 500)
+        // setTimeout(function() {
+        //   return me.$router.go({name: 'HomePage'})
+        //
+        // }, 500)
+        window.history.back()
       })
     }
   },
