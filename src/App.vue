@@ -274,7 +274,7 @@ export default {
 
         var name = this.filter[item.flowEntityUI].name
 
-        return me.$router.go({name: name, query: item.detail})
+        return this.$router.go({name: name, query: item.detail})
       })
     },
     verStart(a) {
