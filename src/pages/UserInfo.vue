@@ -139,6 +139,8 @@ export default {
     })
   },
   attached () {
+    $('#sidenav-overlay').remove()
+
   },
   methods: {
     rebuildOptions(options) {
