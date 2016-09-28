@@ -137,10 +137,17 @@ import vSelect from './VSelect.vue'
 import VLoading from './VLoading.vue'
 import sha1 from 'sha1'
 import _ from 'lodash'
+import { getData } from '../vuex/getters'
+
 var localStorage = window.localStorage
 var poId = randomToken(32)
 
 export default{
+  vuex: {
+    getters: {
+      dataValue: getData
+    }
+  },
   data () {
     return {
       loading: false,
@@ -213,7 +220,7 @@ export default{
   },
   ready () {
 
-    if (this.$router._currentRoute.query) this.basicData = this.$router._currentRoute.query
+    if (this.dataValue) this.basicData = this.dataValue
     // var me = this
     // me.loading = true
     // rest.post(this.user, {}, '/rccore/Rcpo/get').then(res => {
@@ -225,6 +232,8 @@ export default{
     // this.getList()
   },
   attached () {
+    $('#sidenav-overlay').remove()
+
   },
   methods: {
     closeModal() {

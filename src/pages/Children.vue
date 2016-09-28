@@ -2,6 +2,7 @@
 .row
   v-loading(:show='loading')
   v-progress(:progress='progress', :uploading='uploading')
+  //- pre {{dataValue | json}}
   form.col.s12.content
     .input-field.col.s12
       input.validate(type="text" v-model='basicData.najzdz' placeholder='')
@@ -104,11 +105,17 @@ import VLoading from './VLoading.vue'
 import sha1 from 'sha1'
 import _ from 'lodash'
 import VProgress from '../components/VProgress.vue'
+import { getData } from '../vuex/getters'
 
 var zxId = randomToken(32)
 var localStorage = window.localStorage
 
 export default{
+  vuex: {
+    getters: {
+      dataValue: getData
+    }
+  },
   data () {
     return {
       xb: [
@@ -193,18 +200,11 @@ export default{
 
   },
   ready () {
-    if (this.$router._currentRoute.query) this.basicData = this.$router._currentRoute.query
-    // var me = this
-    // me.loading = true
-    // rest.post(this.user, {}, '/rccore/Zx/get').then(res => {
-    //   me.loading = false
-    //   console.log(res)
-    //   me.basicData = res.data
-    // })
-    //
-    // this.getList()
+    if (this.dataValue) this.basicData = this.dataValue
   },
   attached () {
+    $('#sidenav-overlay').remove()
+
   },
   watch: {
   },

@@ -95,11 +95,17 @@ import VLoading from './VLoading.vue'
 import sha1 from 'sha1'
 import _ from 'lodash'
 import VProgress from '../components/VProgress.vue'
+import { getData } from '../vuex/getters'
 
 var settledGuid = randomToken(32)
 var localStorage = window.localStorage
 
 export default{
+  vuex: {
+    getters: {
+      dataValue: getData
+    }
+  },
   data () {
     return {
       xb: [
@@ -191,7 +197,7 @@ export default{
 
   },
   ready () {
-    if (this.$router._currentRoute.query) this.basicData = this.$router._currentRoute.query
+    if (this.dataValue) this.basicData = this.dataValue
 
     // var me = this
     // me.loading = true
@@ -204,6 +210,8 @@ export default{
     // this.getList()
   },
   attached () {
+    $('#sidenav-overlay').remove()
+
   },
   watch: {
   },

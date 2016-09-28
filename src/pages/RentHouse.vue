@@ -37,42 +37,6 @@
       label.active 邮箱
 
     button.waves-effect.waves-light.btn(@click='submitData') 保存
-    //- br
-    //- br
-    //- a.btn.btn-up
-    //-   vue-file-upload(v-bind:url='fileUploadUrl("ZZCL")',
-    //-     v-bind:files.sync = 'files',
-    //-     v-bind:filters = "filters",
-    //-     v-bind:events = 'cbEvents',
-    //-     v-bind:request-options = "reqoptsZZCL",
-    //-     name='fileData',
-    //-     label='资质材料'
-    //-     )
-    //- br
-    //- br
-    //- a.btn.btn-up
-    //-   vue-file-upload(v-bind:url='fileUploadUrl("LDHTS")',
-    //-     v-bind:files.sync = 'files',
-    //-     v-bind:filters = "filters",
-    //-     v-bind:events = 'cbEvents',
-    //-     v-bind:request-options = "reqoptsLDHTS",
-    //-     name='fileData',
-    //-     label='劳动合同书'
-    //-     )
-    //- table
-    //-   thead
-    //-     tr
-    //-       th(style='text-align: center') 文件名
-    //-       th(style='text-align: center') 进度
-    //-       th(style='text-align: center') 状态
-    //-       th(style='text-align: center') action
-    //-   tbody
-    //-     tr(v-for='file in files', style='text-align: center')
-    //-       td(v-text='file.name', style='text-align: center')
-    //-       td(v-text='file.progress', style='text-align: center')
-    //-       td(v-text='onStatus(file)', style='text-align: center')
-    //-       td(style='text-align: center')
-    //-         button(type='button',@click="uploadItem(file)") 上传
 </template>
 <script>
 import rest from '../rest'
@@ -82,9 +46,16 @@ import vSelect from './VSelect.vue'
 import VLoading from './VLoading.vue'
 import sha1 from 'sha1'
 import _ from 'lodash'
+import { getData } from '../vuex/getters'
+
 var localStorage = window.localStorage
 
 export default{
+  vuex: {
+    getters: {
+      dataValue: getData
+    }
+  },
   data () {
     return {
       loading: false,
@@ -150,36 +121,18 @@ export default{
     rest.getOptions('rcrd_cengci').then(res => {
       me.rclb = this.rebuildOptions(res)
     })
-    // rest.getOptions('rcgfbt_sqlb').then(res => {
-    //   me.sqlb = this.rebuildOptions(res)
-    // })
-
   },
   ready () {
-    if (this.$router._currentRoute.query) this.basicData = this.$router._currentRoute.query
-
-    // var me = this
-    // me.loading = true
-    // rest.post(this.user, {}, '/rccore/Rcpo/get').then(res => {
-    //   me.loading = false
-    //   console.log(res)
-    //   me.basicData = res.data
-    // })
-    //
-    // this.getList()
+    if (this.dataValue) this.basicData = this.dataValue
   },
   attached () {
+    $('#sidenav-overlay').remove()
+
   },
   methods: {
     fileUploadUrl (useType) {
       return rest.basicUrl + '/rccore/RcpoFile/insert' + this.beforeUpload(useType)
     },
-    // deleteItem (id) {
-    //   rest.post(this.user, {ryId: id}, '/rccore/Rych/delete').then(res => {
-    //
-    //     this.getList()
-    //   })
-    // },
     addChild() {
       this.myChildren.push(this.child)
       $('#modal1').closeModal()

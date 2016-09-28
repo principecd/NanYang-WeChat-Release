@@ -41,27 +41,27 @@ div
         span.fa.fa-user
         span(style='margin-left: 15px') 人才基本信息
     li
-      a.waves-effect(v-link="{ path: '/Other/HighLvPersonId' }")
+      a.waves-effect(v-link="{ path: '/HighLvPersonId' }")
         span.fa.fa-level-up
         span(style='margin-left: 15px') 高层次人才认定
     li
-      a.waves-effect(v-link="{ path: '/Other/LifePayment' }")
+      a.waves-effect(v-link="{ path: '/LifePayment' }")
         span.fa.fa-money
         span(style='margin-left: 15px') 生活津贴
     li
-      a.waves-effect(v-link="{ path: '/Other/BuyHouse' }")
+      a.waves-effect(v-link="{ path: '/BuyHouse' }")
         span.fa.fa-home
         span(style='margin-left: 15px') 购房补贴
     li
-      a.waves-effect(v-link="{ path: '/Other/Children' }")
+      a.waves-effect(v-link="{ path: '/Children' }")
         span.fa.fa-child
         span(style='margin-left: 15px') 子女择校
     li
-      a.waves-effect(v-link="{ path: '/Other/RentHouse' }")
+      a.waves-effect(v-link="{ path: '/RentHouse' }")
         span.fa.fa-hotel
         span(style='margin-left: 15px') 租房补贴
     li
-      a.waves-effect(v-link="{ path: '/Other/GetAddress' }")
+      a.waves-effect(v-link="{ path: '/GetAddress' }")
         span.fa.fa-bookmark
         span(style='margin-left: 15px') 人才落户
     li

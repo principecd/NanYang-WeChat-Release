@@ -10,6 +10,10 @@ var vueForm = require('vue-form')
 
 import rest from './rest'
 
+import Vuex from 'vuex'
+
+// 告诉 vue “使用” vuex
+Vue.use(Vuex)
 Vue.use(VueRouter)
 Vue.use(require('vue-animated-list'))
 Vue.use(vueForm)
@@ -75,31 +79,12 @@ function init () {
         router.map({
             '/': {
               name: 'HomePage',
-              component: require('./App.vue')
-            },
-            '/Foo': {
-              component: require('./pages/Foo.vue')
-            },
-            '/Login': {
-                name: 'Login',
-                component: require('./pages/Login.vue')
-            },
-            '/SignUp': {
-                name: 'SignUp',
-
-                component: require('./pages/SignUp.vue')
-            },
-            'Suggestions': {
-              name: 'Suggestions',
-              component: require('./pages/Suggestions.vue')
-            },
-            'Applications': {
-              name: 'Applications',
-              component: require('./pages/Applications.vue')
-            },
-            'Other': {
-              component: require('./pages/Other.vue'),
+              component: require('./App.vue'),
               subRoutes: {
+                '': {
+                  name: 'Home',
+                  component: require('./pages/TotalList.vue')
+                },
                 'GetAddress': {
                     name: 'GetAddress',
                     component: require('./pages/GetAddress.vue')
@@ -125,6 +110,26 @@ function init () {
                     component: require('./pages/RentHouse.vue')
                 }
               }
+            },
+            '/Foo': {
+              component: require('./pages/Foo.vue')
+            },
+            '/Login': {
+                name: 'Login',
+                component: require('./pages/Login.vue')
+            },
+            '/SignUp': {
+                name: 'SignUp',
+
+                component: require('./pages/SignUp.vue')
+            },
+            'Suggestions': {
+              name: 'Suggestions',
+              component: require('./pages/Suggestions.vue')
+            },
+            'Applications': {
+              name: 'Applications',
+              component: require('./pages/Applications.vue')
             },
             '/User': {
                 component: require('./pages/User.vue'),
@@ -177,7 +182,37 @@ function init () {
     router.map({
         '/': {
           name: 'HomePage',
-          component: require('./App.vue')
+          component: require('./App.vue'),
+          subRoutes: {
+            '': {
+              name: 'Home',
+              component: require('./pages/TotalList.vue')
+            },
+            'GetAddress': {
+                name: 'GetAddress',
+                component: require('./pages/GetAddress.vue')
+            },
+            'HighLvPersonId': {
+                name: 'HighLvPersonId',
+                component: require('./pages/HighLvPersonId.vue')
+            },
+            'LifePayment': {
+                name: 'LifePayment',
+                component: require('./pages/LifePayment.vue')
+            },
+            'Children': {
+                name: 'Children',
+                component: require('./pages/Children.vue')
+            },
+            'BuyHouse': {
+                name: 'BuyHouse',
+                component: require('./pages/BuyHouse.vue')
+            },
+            'RentHouse': {
+                name: 'RentHouse',
+                component: require('./pages/RentHouse.vue')
+            }
+          }
         },
         '/Foo': {
           component: require('./pages/Foo.vue')
@@ -198,29 +233,6 @@ function init () {
         'Suggestions': {
           name: 'Suggestions',
           component: require('./pages/Suggestions.vue')
-        },
-        'Other': {
-          component: require('./pages/Other.vue'),
-          subRoutes: {
-            'HighLvPersonId': {
-                component: require('./pages/HighLvPersonId.vue')
-            },
-            'LifePayment': {
-                component: require('./pages/LifePayment.vue')
-            },
-            'Children': {
-                component: require('./pages/Children.vue')
-            },
-            'BuyHouse': {
-                component: require('./pages/BuyHouse.vue')
-            },
-            'RentHouse': {
-                component: require('./pages/RentHouse.vue')
-            },
-            'GetAddress': {
-                component: require('./pages/GetAddress.vue')
-            }
-          }
         },
         '/User': {
             component: require('./pages/User.vue'),

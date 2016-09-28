@@ -2,6 +2,7 @@
 .row
   v-loading(:show='loading')
   form.col.s12.content
+    //- pre {{dataValue | json}}
     .col.s12
       label.active 补贴层次
       v-select(:value.sync='basicData.btcc', :options='sqcc')
@@ -55,13 +56,18 @@ import VueFileUpload from 'vue-file-upload'
 import randomToken from 'random-token'
 import vSelect from './VSelect.vue'
 import vSelect0 from '../components/VSelect0.vue'
-
+import { getData } from '../vuex/getters'
 import VLoading from './VLoading.vue'
 import sha1 from 'sha1'
 import _ from 'lodash'
 var localStorage = window.localStorage
 
 export default{
+  vuex: {
+    getters: {
+      dataValue: getData
+    }
+  },
   data () {
     return {
       loading: false,
@@ -137,6 +143,8 @@ export default{
     // this.getList()
   },
   attached () {
+    $('#sidenav-overlay').remove()
+
   },
   methods: {
     fileUploadUrl (useType) {
