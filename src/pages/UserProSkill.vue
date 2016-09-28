@@ -4,7 +4,7 @@
     .row
       v-loading(:show='loading')
       .col.s12(v-for='item in list')
-        .card
+        .card(@click='edit(item)')
           .card-content
             table
               thead
@@ -86,6 +86,10 @@ export default{
   attached () {
   },
   methods: {
+    edit(item) {
+      this.postData = item
+      $('#modal1').openModal()
+    },
     deleteItem(id) {
       rest.post(this.user, {zyjnId: id}, '/rccore/Rczyjn/delete').then(res => {
 
@@ -115,8 +119,9 @@ export default{
       e.preventDefault()
       var me = this
       this.loading = true
-      this.postData.zyjnId = randomToken(32)
-      this.postData.isAdd = true
+
+      this.postData.isAdd = this.postData.zyjnId ? 'false' : 'true'
+      this.postData.zyjnId = this.postData.zyjnId || randomToken(32)
       $('#modal1').closeModal()
       rest.post(this.user, this.postData, '/rccore/Rczyjn/save').then(res => {
         this.loading = false

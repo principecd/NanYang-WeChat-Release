@@ -25,6 +25,7 @@
                     td {{item.dengji_Str}}
                     td {{item.cengci_Str}}
             div.collapsible-body(style='text-align: center')
+              //- a.waves-effect.waves-green.btn-flat(@click='edit') 修改
               div(v-for='foo in fileList')
                 i.fa.fa-spinner.fa-spin(style='font-size: 40px; color: #666;', v-if='foo.yjId !== item.yjId')
                 img(style='width: 100%', v-bind:src='getSrc(foo.fileId)', v-if='foo.yjId === item.yjId')

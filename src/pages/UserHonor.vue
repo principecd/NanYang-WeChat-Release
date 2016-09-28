@@ -9,7 +9,7 @@
         a(href="#fileContent") 荣誉证书附件
     #formContent
       .col.s12(v-for='item in list')
-        .card
+        .card(@click='edit(item)')
           .card-content
             table
               thead
@@ -197,6 +197,10 @@ export default{
     $('ul.tabs').tabs()
   },
   methods: {
+    edit(item) {
+      this.postData = item
+      $('#modal1').openModal()
+    },
     formatSelect() {
 
     },
@@ -266,8 +270,9 @@ export default{
     submitData (e) {
       e.preventDefault()
       var me = this
-      this.postData.ryId = randomToken(32)
-      this.postData.isAdd = true
+
+      this.postData.isAdd = this.postData.ryId ? 'false' : 'true'
+      this.postData.ryId = this.postData.ryId || randomToken(32)
       this.loading = true
       $('#modal1').closeModal()
 

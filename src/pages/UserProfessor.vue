@@ -9,7 +9,7 @@
         a(href="#fileContent") 专业职称附件
     #formContent
       .col.s12(v-for='item in list')
-        .card
+        .card(@click='edit(item)')
           .card-content
             table
               thead
@@ -188,6 +188,10 @@ export default{
     $('ul.tabs').tabs()
   },
   methods:{
+    edit(item) {
+      this.postData = item
+      $('#modal1').openModal()
+    },
     deleteItem (id) {
       rest.post(this.user, {zyzcId: id}, '/rccore/Rczyzc/delete').then(res => {
 
@@ -254,8 +258,9 @@ export default{
     submitData (e) {
       e.preventDefault()
       var me = this
-      this.postData.zyzcId = randomToken(32)
-      this.postData.isAdd = true
+
+      this.postData.isAdd = this.postData.zyzcId ? 'false' : 'true'
+      this.postData.zyzcId = this.postData.zyzcId || randomToken(32)
       this.loading = true
       $('#modal1').closeModal()
       rest.post(this.user, this.postData, '/rccore/Rczyzc/save').then(res => {

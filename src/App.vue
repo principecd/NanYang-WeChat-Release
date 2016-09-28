@@ -67,7 +67,6 @@
     //-     a(v-link="{ path: '/Other/RentHouse' }") 人才落户
     //- a.menu.dropdown-button(data-activates='dropdown2')
     //-   span.fa.fa-ellipsis-v
-  v-loading(:show='loading')
   //- p
   //-   br
   //-   a(v-link="{ path: '/User' }") 人才信息
@@ -88,13 +87,13 @@
   //-     moon-loader(v-if='bottomStatus === "loading"', :loading='bottomStatus === "loading"', :color="color", :size="size")
       //- i.fa.fa-spinner.fa-spin(v-if='bottomStatus === "loading"', style='font-size: 30px; color: #999')
   div
-    ul.tabs(style='background: transparent')
+    ul.tabs(style='background: #26a69a; margin-top: -10px;')
       li.tab.col.s3
-        a(href="#waiting") 未申请办理
+        a(href="#waiting", style='color: white') 未申请办理
       li.tab.col.s3
-        a(href="#active") 已申请办理
+        a(href="#active", style='color: white') 已申请办理
     #waiting
-
+        v-loading(:show='loading')
         .card(v-for='item in list', v-if='!item.flowDoStageInfo')
           .card-content
             div
@@ -486,7 +485,7 @@ a:active{
   background: #26a69a;
   font-size: 21px;
   z-index: 99999999;
-  /*box-shadow: 0 1px 2px #999;*/
+  box-shadow: none;
 }
 #dropdown1 {
   width: 50% !important;
