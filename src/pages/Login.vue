@@ -23,6 +23,7 @@
 <script>
 import rest from '../rest'
 import VLoading from './VLoading.vue'
+import md5 from 'md5'
 var localStorage = window.localStorage
 
 export default {
@@ -50,7 +51,7 @@ export default {
       var me = this
       this.loading = true
       this.user.wcOpenId = JSON.parse(localStorage.getItem('bind')).wcOpenId
-
+      this.user.password = md5(this.user.password)
       rest.post({}, this.user, '/rccore/WeChatUser/insert').then(res => {
         this.loading = false
         if (!res.success) return Materialize.toast(res.message, 4000)

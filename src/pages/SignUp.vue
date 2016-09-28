@@ -35,6 +35,8 @@
 import rest from '../rest'
 import VLoading from './VLoading.vue'
 var sha1 = require('sha1')
+import md5 from 'md5'
+
 var localStorage = window.localStorage
 export default {
   data() {
@@ -56,7 +58,7 @@ export default {
   methods: {
     signUp() {
 
-      this.user.password = sha1(this.user.pwd)
+      this.user.password = md5(this.user.pwd)
       this.user.wcOpenId = JSON.parse(localStorage.getItem('bind')).wcOpenId
 
       rest.post({}, this.user, '/rccore/WeChatUser/noneToInsert').then(res => {
