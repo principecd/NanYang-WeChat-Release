@@ -55,6 +55,11 @@
           div.modal-footer
             a(class="btn waves-effect waves-green" v-on:click="addChild") 确认
             a(class="modal-action modal-close waves-effect waves-green btn-flat") 取消
+    .card(v-for='item in cacheFile')
+      .card-content
+        img(style='width: 100%;', v-bind:src='getSrc(item.fileId)')
+      .card-action
+        a(@click='deleteFlie(item)') 删除
     table
       thead
         tr
@@ -135,6 +140,7 @@ export default{
       },
       list: [],
       files:[],
+      cacheFile: [],
       //文件过滤器，只能上传图片
       fileList: [],
       filters:[
@@ -198,7 +204,19 @@ export default{
   },
   ready () {
     if (this.dataValue) this.basicData = this.dataValue
-
+    if (this.dataValue) {
+      rest.post(this.user, {settledGuid: this.dataValue.settledGuid}, '/rccore/TransferPerson/listBySettledGuid').then(res => {
+        res.datas.forEach(v => {
+          v.saveInDatebase = 'false'
+        })
+        this.basicData.zxznData  = res.datas
+      })
+    }
+    if (this.dataValue) {
+      rest.post(this.user, {settledGuid: this.dataValue.settledGuid}, '/rccore/SettledAddressFile/fileList').then(res => {
+        this.cacheFile  = res.datas
+      })
+    }
     // var me = this
     // me.loading = true
     // rest.post(this.user, {}, '/rccore/SettledAddress/get').then(res => {
@@ -314,10 +332,25 @@ export default{
       rest.post(this.user, this.basicData, '/rccore/SettledAddress/entitySave').then(res => {
         me.loading = false
         if (!res.success) return Materialize.toast(res.message, 4000)
-        Materialize.toast('保存成功，正在上传，请等待上传完成', 4000)
+        if (this.files.length) Materialize.toast('保存成功,正在上传', 2000)
+        else Materialize.toast('保存成功', 2000)
         this.files.forEach(file => {
           file.upload()
         })
+      })
+    },
+    deleteFlie(item) {
+      this.loading = true
+      rest.post(this.user, {refId: item.fileId}, '/rccore/SettledAddressFile/delete').then(res => {
+        this.loading = false
+
+        if (!res.success) return Materialize.toast(res.message, 4000)
+
+        if (this.dataValue) {
+          rest.post(this.user, {settledGuid: this.dataValue.settledGuid}, '/rccore/SettledAddressFile/fileList').then(res => {
+            this.cacheFile  = res.datas
+          })
+        }
       })
     },
     getSrc (fileId) {

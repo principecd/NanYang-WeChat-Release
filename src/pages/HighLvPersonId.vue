@@ -10,6 +10,16 @@
 
       v-select(:value.sync='basicData.sqcc', :options='sqcc')
     br
+    .card(v-for='item in cacheFile')
+      .card-content
+        img(style='width: 100%;', v-bind:src='getSrc(item.fileId)')
+      .card-action
+        a(@click='deleteFlie(item)') 删除
+    .card(v-for='item in cacheFile')
+      .card-content
+        img(style='width: 100%;', v-bind:src='getSrc(item.fileId)')
+      .card-action
+        a(@click='deleteFlie(item)') 删除
     br
     table
       thead
@@ -69,6 +79,8 @@ export default{
   },
   data () {
     return {
+      cacheFile: [],
+      cacheFile2: [],
       loading: false,
       dengJi: [],
       sqcc: [],
@@ -141,7 +153,16 @@ export default{
   },
   ready () {
     if (this.dataValue) this.basicData = this.dataValue
-
+    if (this.dataValue) {
+      rest.post(this.user, {useType: 'ZZCL', sqId: this.dataValue.sqId}, '/rccore/RcrdFile/fileList').then(res => {
+        this.cacheFile  = res.datas
+      })
+    }
+    if (this.dataValue) {
+      rest.post(this.user, {useType: 'LDHTS', sqId: this.dataValue.sqId}, '/rccore/RcrdFile/fileList').then(res => {
+        this.cacheFile2  = res.datas
+      })
+    }
     // var me = this
     // me.loading = true
     // rest.post(this.user, {}, '/rccore/Rcpo/get').then(res => {
@@ -241,8 +262,8 @@ export default{
       rest.post(this.user, this.basicData, '/rccore/Rcrd/entitySave').then(res => {
         me.loading = false
         if (!res.success) return Materialize.toast(res.message, 4000)
-        Materialize.toast('保存成功,正在上传', 2000)
-
+        if (this.files.length) Materialize.toast('保存成功,正在上传', 2000)
+        else Materialize.toast('保存成功', 2000)
         this.files.forEach(file => {
           file.upload()
         })

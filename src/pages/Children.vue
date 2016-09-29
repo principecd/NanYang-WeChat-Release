@@ -26,6 +26,11 @@
           td {{item.csny}}
           td {{item.xjdxxnj}}
           td {{item.sqxxnj}}
+    .card(v-for='item in cacheFile')
+      .card-content
+        img(style='width: 100%;', v-bind:src='getSrc(item.fileId)')
+      //- .card-action
+      //-   a(@click='deleteFlie(item)') 删除
     a(class='btn waves-effect waves-light red', @click='modal')
       i.fa.fa-plus
     div.modal#modal1.bottom-sheet
@@ -60,14 +65,14 @@
           th(style='text-align: center') 文件名
           th(style='text-align: center') 进度
           th(style='text-align: center') 状态
-          //- th(style='text-align: center') action
+          th(style='text-align: center') action
       tbody
         tr(v-for='file in files', style='text-align: center')
           td(v-text='file.name', style='text-align: center')
           td(v-text='file.progress', style='text-align: center')
           td(v-text='onStatus(file)', style='text-align: center')
-          //- td(style='text-align: center')
-          //-   a(type='button',@click="uploadItem(file)") 上传
+          td(style='text-align: center')
+            a(type='button',@click="uploadItem(file)") 上传
     br
     br
     a.btn.btn-up
@@ -122,6 +127,7 @@ export default{
         {value: '1', label: '男'},
         {value: '0', label: '女'}
       ],
+      cacheFile: [],
       uploading: false,
       progress: 0,
       loading: false,
@@ -162,29 +168,11 @@ export default{
 
       reqoptsZXHKB: {
         alias: 'fileData',
-        formData: {
-          'Encoding': 'utf-8',
-          'Rpencoding': 'utf-8',
-          '_x-requested-with': true,
-          'ssoOpenId': this.user.ssoOpenId,
-          'rcId': this.user.rcId,
-          zxId: zxId,
-          'useType': 'ZXHKB'
-        },
         responseType: 'json',
         withCredentials: false
       },
       reqoptsZXCSZ: {
         alias: 'fileData',
-        formData: {
-          'Encoding': 'utf-8',
-          'Rpencoding': 'utf-8',
-          '_x-requested-with': true,
-          'ssoOpenId': this.user.ssoOpenId,
-          'rcId': this.user.rcId,
-          zxId: zxId,
-          'useType': 'ZXCSZ'
-        },
         responseType: 'json',
         withCredentials: false
       }
@@ -201,6 +189,20 @@ export default{
   },
   ready () {
     if (this.dataValue) this.basicData = this.dataValue
+    if (this.dataValue) {
+      rest.post(this.user, {zxId: this.dataValue.zxId}, '/rccore/Zxzn/list').then(res => {
+        res.datas.forEach(v => {
+          v.saveInDatebase = 'false'
+        })
+
+        this.myChildren  = res.datas
+      })
+    }
+    // if (this.dataValue) {
+    //   rest.post(this.user, {settledGuid: this.dataValue.settledGuid}, '/rccore/SettledAddressFile/fileList').then(res => {
+    //     this.cacheFile  = res.datas
+    //   })
+    // }
   },
   attached () {
     $('#sidenav-overlay').remove()
@@ -209,6 +211,20 @@ export default{
   watch: {
   },
   methods: {
+    deleteFlie(item) {
+      this.loading = true
+      rest.post(this.user, {refId: item.fileId}, '/rccore/SettledAddressFile/delete').then(res => {
+        this.loading = false
+
+        if (!res.success) return Materialize.toast(res.message, 4000)
+
+        if (this.dataValue) {
+          rest.post(this.user, {zxId: this.dataValue.zxId}, '/rccore/Zxzn/list').then(res => {
+            this.cacheFile  = res.datas
+          })
+        }
+      })
+    },
     closeModal() {
       $('#modal1').closeModal()
     },
@@ -312,7 +328,8 @@ export default{
       rest.post(this.user, this.basicData, '/rccore/Zx/entitySave').then(res => {
         me.loading = false
         if (!res.success) return Materialize.toast(res.message, 4000)
-        Materialize.toast('保存成功，正在上传，请等待上传完成', 4000)
+        if (this.files.length) Materialize.toast('保存成功,正在上传', 2000)
+        else Materialize.toast('保存成功', 2000)
         this.files.forEach(file => {
           file.upload()
         })

@@ -8,18 +8,20 @@ div
         a(href="#active") 已申请办理
     #waiting
         v-loading(:show='loading')
-        .card(v-for='item in list', v-if='!item.flowDoStageInfo')
+        .card(v-for='item in list', v-if='!item.flowDoStageInfo', transition='item')
           .card-content
+            .fixed-action-btn.horizontal(style="bottom: 35px; right: 24px; position: absolute", @click='getItemDetail(item)')
+                a.btn-floating.btn-large(v-bind:class='{"red": item.flowEntityUI === "/rccore/Shjt/flowUI", "pink": item.flowEntityUI === "/rccore/SettledAddress/flowUI", "purple": item.flowEntityUI === "/rccore/Rcrd/flowUI", "blue": item.flowEntityUI === "/rccore/Rcpo/flowUI", "green": item.flowEntityUI === "/rccore/Zx/flowUI", "amber": item.flowEntityUI === "/rccore/Poxx/flowUI"}')
+                  i.fa(v-bind:class='{"fa-money": item.flowEntityUI === "/rccore/Shjt/flowUI", "fa-bookmark": item.flowEntityUI === "/rccore/SettledAddress/flowUI", "fa-level-up": item.flowEntityUI === "/rccore/Rcrd/flowUI", "fa-line-chart": item.flowEntityUI === "/rccore/Rcpo/flowUI", "fa-child": item.flowEntityUI === "/rccore/Zx/flowUI", "fa-home": item.flowEntityUI === "/rccore/Poxx/flowUI"}')
             div
                 span.card-title
-                  i.fa(v-bind:class='{"fa-money": item.flowEntityUI === "/rccore/Shjt/flowUI", "fa-bookmark": item.flowEntityUI === "/rccore/SettledAddress/flowUI", "fa-level-up": item.flowEntityUI === "/rccore/Rcrd/flowUI", "fa-home": item.flowEntityUI === "/rccore/Rcpo/flowUI", "fa-child": item.flowEntityUI === "/rccore/Zx/flowUI", "fa-home": item.flowEntityUI === "/rccore/Poxx/flowUI"}')
+                  i.fa(v-bind:class='{"fa-money": item.flowEntityUI === "/rccore/Shjt/flowUI", "fa-bookmark": item.flowEntityUI === "/rccore/SettledAddress/flowUI", "fa-level-up": item.flowEntityUI === "/rccore/Rcrd/flowUI", "fa-line-chart": item.flowEntityUI === "/rccore/Rcpo/flowUI", "fa-child": item.flowEntityUI === "/rccore/Zx/flowUI", "fa-home": item.flowEntityUI === "/rccore/Poxx/flowUI"}')
                 |     {{item.flowEntityInfo}}
                 p {{item.flowEntityTime}}
                 p(v-if='item.flowDoStageInfo') 办理情况：{{item.flowDoStageInfo}}
                 p(v-if='!item.flowDoStageInfo') 当前状态：临时保存
           .card-action
             .btn-list
-              a.waves-effect(@click='getItemDetail(item)') 修改
               a.waves-effect(v-for='i in filter[item.flowEntityUI].tranList', @click='verStart({"i": i, "flowEntityUI": item.flowEntityUI, "flowEntityId": item.flowEntityId, "flowEntityInfo": item.flowEntityInfo})') {{i.tranName}}
 
     #active
@@ -142,6 +144,9 @@ export default {
 
   },
   methods: {
+    deleteItem(item) {
+
+    },
     redirect(item) {
       if (!item.detail) return
       var name = this.filter[item.flowEntityUI]
@@ -287,12 +292,12 @@ export default {
       accordion : false // A setting that changes the collapsible behavior to expandable instead of the default accordion style
     })
     $('#sidenav-overlay').remove()
-    $('.button-collapse').sideNav({
-     menuWidth: 300, // Default is 240
-     edge: 'left', // Choose the horizontal origin
-     closeOnClick: true // Closes side-nav on <a> clicks, useful for Angular/Meteor
-     }
-   )
+  //   $('.button-collapse').sideNav({
+  //    menuWidth: 300, // Default is 240
+  //    edge: 'left', // Choose the horizontal origin
+  //    closeOnClick: true // Closes side-nav on <a> clicks, useful for Angular/Meteor
+  //    }
+  //  )
     $('.dropdown-button').dropdown({
         inDuration: 300,
         outDuration: 225,

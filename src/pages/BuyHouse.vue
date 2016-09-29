@@ -59,6 +59,16 @@
           td {{item.birthday}}
           td {{item.idCard}}
           td {{item.dwInfo}}
+    .card(v-for='item in cacheFile')
+      .card-content
+        img(style='width: 100%;', v-bind:src='getSrc(item.fileId)')
+      .card-action
+        a(@click='deleteFlie(item)') 删除
+    .card(v-for='item in cacheFile')
+      .card-content
+        img(style='width: 100%;', v-bind:src='getSrc(item.fileId)')
+      .card-action
+        a(@click='deleteFlie(item)') 删除
     a(class='btn waves-effect waves-light red', @click='modal')
       i.fa.fa-plus
     div.modal#modal1.bottom-sheet
@@ -90,30 +100,40 @@
             a(class="modal-action modal-close waves-effect waves-green btn-flat") 取消
     br
     br
+    table
+      thead
+        tr
+          th(style='text-align: center') 文件名
+          th(style='text-align: center') 进度
+          th(style='text-align: center') 状态
+          //- th(style='text-align: center') action
+      tbody
+        tr(v-for='file in files', style='text-align: center')
+          td(v-text='file.name', style='text-align: center')
+          td(v-text='file.progress', style='text-align: center')
+          td(v-text='onStatus(file)', style='text-align: center')
+    a.btn.btn-up
+      vue-file-upload(v-bind:url='fileUploadUrl("GFHT")',
+        v-bind:files.sync = 'files',
+        v-bind:filters = "filters",
+        v-bind:events = 'cbEvents',
+        v-bind:request-options = "reqoptsZZCL",
+        name='fileData',
+        label='商品房购房合同（或购房发票和房产证）'
+        )
     br
+    br
+    a.btn.btn-up
+      vue-file-upload(v-bind:url='fileUploadUrl("XXZM")',
+        v-bind:files.sync = 'files',
+        v-bind:filters = "filters",
+        v-bind:events = 'cbEvents',
+        v-bind:request-options = "reqoptsLDHTS",
+        name='fileData',
+        label='房屋信息证明'
+        )
     button.waves-effect.waves-light.btn(@click='submitData') 保存
-    //- br
-    //- br
-    //- a.btn.btn-up
-    //-   vue-file-upload(v-bind:url='fileUploadUrl("ZZCL")',
-    //-     v-bind:files.sync = 'files',
-    //-     v-bind:filters = "filters",
-    //-     v-bind:events = 'cbEvents',
-    //-     v-bind:request-options = "reqoptsZZCL",
-    //-     name='fileData',
-    //-     label='资质材料'
-    //-     )
-    //- br
-    //- br
-    //- a.btn.btn-up
-    //-   vue-file-upload(v-bind:url='fileUploadUrl("LDHTS")',
-    //-     v-bind:files.sync = 'files',
-    //-     v-bind:filters = "filters",
-    //-     v-bind:events = 'cbEvents',
-    //-     v-bind:request-options = "reqoptsLDHTS",
-    //-     name='fileData',
-    //-     label='劳动合同书'
-    //-     )
+
     //- table
     //-   thead
     //-     tr
@@ -155,6 +175,8 @@ export default{
         {value: '1', label: '男'},
         {value: '0', label: '女'}
       ],
+      cacheFile2: [],
+      cacheFile: [],
       dengJi: [],
       myChildren: [],
       rclb: [],
@@ -203,6 +225,34 @@ export default{
         },
         responseType: 'json',
         withCredentials: false
+      },
+      reqoptsZXHKB: {
+        alias: 'fileData',
+        formData: {
+          'Encoding': 'utf-8',
+          'Rpencoding': 'utf-8',
+          '_x-requested-with': true,
+          'ssoOpenId': this.user.ssoOpenId,
+          'rcId': this.user.rcId,
+          // zxId: zxId,
+          'useType': 'GFHT'
+        },
+        responseType: 'json',
+        withCredentials: false
+      },
+      reqoptsZXCSZ: {
+        alias: 'fileData',
+        formData: {
+          'Encoding': 'utf-8',
+          'Rpencoding': 'utf-8',
+          '_x-requested-with': true,
+          'ssoOpenId': this.user.ssoOpenId,
+          'rcId': this.user.rcId,
+          // zxId: zxId,
+          'useType': 'XXZM'
+        },
+        responseType: 'json',
+        withCredentials: false
       }
     }
   },
@@ -221,21 +271,49 @@ export default{
   ready () {
 
     if (this.dataValue) this.basicData = this.dataValue
-    // var me = this
-    // me.loading = true
-    // rest.post(this.user, {}, '/rccore/Rcpo/get').then(res => {
-    //   me.loading = false
-    //   console.log(res)
-    //   me.basicData = res.data
-    // })
-    //
-    // this.getList()
+    if (this.dataValue) {
+      rest.post(this.user, {poId: this.dataValue.poId}, '/rccore/Qtcy/list').then(res => {
+        res.datas.forEach(v => {
+          v.saveInDatebase = 'false'
+        })
+        this.myChildren  = res.datas
+      })
+    }
+    if (this.dataValue) {
+      rest.post(this.user, {useType: 'GFHT', poId: this.dataValue.poId}, '/rccore/RcpoFile/fileList').then(res => {
+        this.cacheFile  = res.datas
+      })
+    }
+    if (this.dataValue) {
+      rest.post(this.user, {useType: 'XXZM', poId: this.dataValue.poId}, '/rccore/RcpoFile/fileList').then(res => {
+        this.cacheFile2  = res.datas
+      })
+    }
   },
   attached () {
     $('#sidenav-overlay').remove()
 
   },
   methods: {
+    deleteFlie(item) {
+      this.loading = true
+      rest.post(this.user, {refId: item.fileId}, '/rccore/RcpoFile/delete').then(res => {
+        this.loading = false
+
+        if (!res.success) return Materialize.toast(res.message, 4000)
+
+        if (this.dataValue) {
+          rest.post(this.user, {useType: 'GFHT'}, '/rccore/RcpoFile/fileList').then(res => {
+            this.cacheFile  = res.datas
+          })
+        }
+        if (this.dataValue) {
+          rest.post(this.user, {useType: 'XXZM'}, '/rccore/RcpoFile/fileList').then(res => {
+            this.cacheFile2  = res.datas
+          })
+        }
+      })
+    },
     closeModal() {
       $('#modal1').closeModal()
     },
@@ -335,7 +413,11 @@ export default{
       rest.post(this.user, this.basicData, '/rccore/Rcpo/entitySave').then(res => {
         me.loading = false
         if (!res.success) return Materialize.toast(res.message, 4000)
-        Materialize.toast('保存成功', 2000)
+        if (this.files.length) Materialize.toast('保存成功,正在上传', 2000)
+        else Materialize.toast('保存成功', 2000)
+        this.files.forEach(file => {
+          file.upload()
+        })
       })
     },
     getSrc (fileId) {
@@ -389,7 +471,7 @@ export default{
   padding-top: 55px;
 }
 .fileupload-button {
-  background-color: #666 !important;
+  /*background-color: #666 !important;*/
   width: 100%;
 }
 .btn-add {
@@ -402,6 +484,8 @@ export default{
 }
 .btn-up {
   width: 100%;
+  padding: 0;
+  height: 100px;
   background-color: transparent;
   box-shadow: none;
 }
