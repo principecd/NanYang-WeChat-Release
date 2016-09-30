@@ -11,9 +11,9 @@
               tbody
                 tr
                   th.col.s4 专业
-                  td.col.s6 {{item.zy}}
+                  td.col.s6 {{item.zyStr}}
                   th.col.s4 等级
-                  td.col.s6 {{item.zydj}}
+                  td.col.s6 {{item.zydjStr}}
                 tr
                   th.col.s4 主管部门
                   td.col.s6 {{item.zgbmStr}}
@@ -27,16 +27,16 @@
           form.col.s12
             .col.s12
               label.active 专业
-              v-select(:options='zy', :value.sync='postData.zyxz')
+              v-select(:options='zy', :value.sync='postData.zy')
             .col.s12
               label.active 等级
-              v-select(:options='zydj', :value.sync='postData.zyxl')
+              v-select(:options='zydj', :value.sync='postData.zydj')
             .col.s12
               label.active 主管部门
               v-select(:options='zgbmId', :value.sync='postData.zgbmId')
       .modal-footer
         a(class="btn waves-effect waves-light" v-on:click='submitData') 保存
-        a(class="modal-action modal-close waves-effect waves-green btn-flat") 取消
+        a(class="modal-action modal-close waves-effect waves-green btn-flat", @click='clear') 取消
 </template>
 <script>
 import rest from '../rest'
@@ -86,6 +86,9 @@ export default{
   attached () {
   },
   methods: {
+    clear() {
+      this.postData = {}
+    },
     edit(item) {
       this.postData = item
       $('#modal1').openModal()

@@ -6,11 +6,11 @@
       li.tab.col.s3
         a(href="#formContent") 专业职称
       li.tab.col.s3
-        a(href="#fileContent") 专业职称附件
+        a(href="#fileContent") 专业职称证书
     #formContent
       .col.s12(v-for='item in list')
-        .card(@click='edit(item)')
-          .card-content
+        .card(v-touch:swipeleft='swipeleft(item)')
+          .card-content(@click='edit(item)')
             table
               thead
               tbody
@@ -24,6 +24,8 @@
                   td.col.s6 {{item.zymc}}
                   th.col.s4 主管部门
                   td.col.s6 {{item.zgbmStr}}
+          //- .card-delete(@click='deleteItem(item)')
+          //-   h6 删除
       a(v-on:click="modal" class='btn-floating btn-large waves-effect waves-light red btn-add')
         span.fa.fa-plus
       .modal#modal1.col.s12.bottom-sheet
@@ -50,7 +52,7 @@
                 v-select(:options='zgbmId', :value.sync='postData.zgbmId')
         .modal-footer
           a(class="btn waves-effect waves-light" v-on:click='submitData') 保存
-          a(class="modal-action modal-close waves-effect waves-green btn-flat") 取消
+          a(class="modal-action modal-close waves-effect waves-green btn-flat", @click='clear') 取消
     #fileContent
         table
           thead
@@ -58,7 +60,7 @@
               th(style='text-align: center') 文件名
               th(style='text-align: center') 进度
               th(style='text-align: center') 状态
-              th(style='text-align: center') action
+              th(style='text-align: center') 操作
           tbody
             tr(v-for='file in files', style='text-align: center')
               td(v-text='file.name', style='text-align: center')
@@ -188,12 +190,20 @@ export default{
     $('ul.tabs').tabs()
   },
   methods:{
+    clear() {
+      this.postData = {}
+    },
+    swipeleft(item) {
+
+    },
     edit(item) {
       this.postData = item
       $('#modal1').openModal()
     },
     deleteItem (id) {
+      this.loading = true
       rest.post(this.user, {zyzcId: id}, '/rccore/Rczyzc/delete').then(res => {
+        this.loading = false
 
         this.getList()
       })

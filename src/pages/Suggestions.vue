@@ -71,7 +71,7 @@
   h6(style='margin-top: 15px; color:#666; margin-left: 30px', v-if='today.length') 今天
   ul.collapsible(data-collapsible="accordion", v-if='today.length')
     li(v-for='(index, item) in today')
-      .collapsible-header
+      .collapsible-header(style='padding: 0')
         .collection
           a.collection-item(style='color:#666') {{item.jyzt}}
             span.badge.new(v-bind:data-badge-caption="item.state_Str", v-bind:class='{blue: item.state_Str === "已回复", yellow: item.state_Str === "已提交", "darken-1": item.state_Str === "已提交"}')
@@ -89,7 +89,7 @@
   h6(style='margin-top: 15px; color:#666; margin-left: 30px', v-if='') 三天内
   ul.collapsible(data-collapsible="accordion", v-if='threeDays.length')
     li(v-for='(index, item) in threeDays')
-      .collapsible-header
+      .collapsible-header(style='padding: 0')
         .collection
           a.collection-item(style='color:#666') {{item.jyzt}}
             span.badge.new(v-bind:data-badge-caption="item.state_Str", v-bind:class='{blue: item.state_Str === "已回复", yellow: item.state_Str === "已提交", "darken-1": item.state_Str === "已提交"}')
@@ -107,7 +107,7 @@
 
   ul.collapsible(data-collapsible="accordion")
     li(v-for='(index, item) in thisMonth')
-      .collapsible-header
+      .collapsible-header(style='padding: 0')
         .collection
           a.collection-item(style='color:#666') {{item.jyzt}}
             span.badge.new(v-bind:data-badge-caption="item.state_Str", v-bind:class='{blue: item.state_Str === "已回复", yellow: item.state_Str === "已提交", "darken-1": item.state_Str === "已提交"}')
@@ -125,7 +125,7 @@
 
   ul.collapsible(data-collapsible="accordion", v-if='older.length')
     li(v-for='(index, item) in older')
-      .collapsible-header
+      .collapsible-header(style='padding: 0')
         .collection
           a.collection-item(style='color:#666') {{item.jyzt}}
             span.badge.new(v-bind:data-badge-caption="item.state_Str", v-bind:class='{blue: item.state_Str === "已回复", yellow: item.state_Str === "已提交", "darken-1": item.state_Str === "已提交"}')
@@ -258,6 +258,28 @@ export default {
     this.user = JSON.parse(localStorage.getItem('baseInfo'))
 
   },
+  watch: {
+    today: (newVal, old) => {
+      $('.collapsible').collapsible({
+        accordion : false
+      })
+    },
+    threeDays(newVal, old) {
+      $('.collapsible').collapsible({
+        accordion : false
+      })
+    },
+    thisMonth(newVal, old) {
+      $('.collapsible').collapsible({
+        accordion : false
+      })
+    },
+    older(newVal, old) {
+      $('.collapsible').collapsible({
+        accordion : false
+      })
+    }
+  },
   methods: {
     isMargin(index) {
       // console.log(index)
@@ -281,9 +303,40 @@ export default {
         this.loading = true
 
         rest.post(this.user, {start: 0, limit: 50}, '/rccore/Yjjy/page').then(res => {
-          me.loading = false
+          this.loading = false
+          this.list = []
           if (!res.success) return Materialize.toast(res.message, 4000)
-          me.list = res.datas
+          var now = new Date().getTime()
+
+          this.list = res.datas
+
+          this.today = []
+          this.threeDays = []
+          this.thisMonth = []
+          this.older = []
+
+          this.list.forEach(i => {
+            var replyTime = new Date(i.replyTime || i.submitTime).getTime()
+            var submitTime = new Date(i.submitTime).getTime()
+            var oneDay = 1000 * 60 * 60* 24
+            var threeDays = 1000 * 60 * 60 * 24 * 3
+            var oneMonth = 1000 * 60 * 60 * 24 * 30
+            var a = Number(now) - Number(replyTime)
+            var b = Number(now) - Number(submitTime)
+            console.log(a / oneDay)
+            if (a < oneDay || b < oneDay) {
+              this.today.push(i)
+            }
+            else if (a < threeDays || b < threeDays ) {
+              this.threeDays.push(i)
+            }
+            else if (a < oneMonth || b < oneMonth ) {
+              this.thisMonth.push(i)
+            }
+            else {
+              this.older.push(i)
+            }
+          })
         })
 
       })

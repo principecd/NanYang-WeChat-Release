@@ -4,9 +4,9 @@
   div
     ul.tabs
       li.tab.col.s3.active
-        a(href="#formContent") 荣誉证书
+        a(href="#formContent") 荣誉称号
       li.tab.col.s3
-        a(href="#fileContent") 荣誉证书附件
+        a(href="#fileContent") 荣誉证书
     #formContent
       .col.s12(v-for='item in list')
         .card(@click='edit(item)')
@@ -37,7 +37,7 @@
 
         .modal-footer
           a(class="btn waves-effect waves-light" v-on:click='submitData') 保存
-          a(class="modal-action modal-close waves-effect waves-green btn-flat") 取消
+          a(class="modal-action modal-close waves-effect waves-green btn-flat", @click='clear') 取消
     #fileContent
       div.col.s12
         table
@@ -46,7 +46,7 @@
               th(style='text-align: center') 文件名
               th(style='text-align: center') 进度
               th(style='text-align: center') 状态
-              th(style='text-align: center') action
+              th(style='text-align: center') 操作
           tbody
             tr(v-for='file in files', style='text-align: center')
               td(v-text='file.name', style='text-align: center')
@@ -197,6 +197,9 @@ export default{
     $('ul.tabs').tabs()
   },
   methods: {
+    clear() {
+      this.postData = {}
+    },
     edit(item) {
       this.postData = item
       $('#modal1').openModal()

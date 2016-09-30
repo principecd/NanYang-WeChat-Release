@@ -18,7 +18,7 @@
                     th 层次
                 tbody
                   tr
-                    td {{item.jycgType_Str}}
+                    td {{item.yjcgType_Str}}
                     td {{item.name_Str}}
                     td {{item.csxzId_Str}}
                     td {{item.fzMan}}
@@ -90,7 +90,7 @@
                   )
         .modal-footer
           a(class="btn waves-effect waves-light" v-on:click='submitData') 保存
-          a(class="modal-action modal-close waves-effect waves-green btn-flat") 取消
+          a(class="modal-action modal-close waves-effect waves-green btn-flat", @click='clear') 取消
     //- #fileContent
     //-   .col.s12(v-for='item in fileList')
     //-     .card
@@ -218,6 +218,9 @@ export default{
     });
   },
   methods: {
+    clear() {
+      this.postData = {}
+    },
     beforeUpload () {
       var now = Date.now()
       var signature = ['NaRcJk4WeChat', now, '123332'].sort().join('')
