@@ -60,6 +60,9 @@
                 input.validate(type="text" v-model='postData.zyly' placeholder='')
                 label.active 业绩领域
               .col.s12
+                label.active 名称
+                v-select(:options='mc', :value.sync='postData.nameCombo')
+              .col.s12
                 label.active 等级
                 v-select(:options='dengji', :value.sync='postData.dengji')
               .col.s12
@@ -129,6 +132,7 @@ export default{
       zgbmId: [],
       dengji: [],
       nameCode: [],
+      mc: [],
       cengci: [],
       yjId: {},
       postData: {
@@ -189,6 +193,10 @@ export default{
     rest.getOptions('rcyj_cengci').then(res => {
       me.cengci = this.rebuildOptions(res)
     })
+    rest.getOptions('rcyj_xyjg').then(res => {
+      me.mc = this.rebuildOptions(res)
+    })
+
     // rest.getOptions('rcyj_nameCode').then(res => {
     //   me.nameCode = this.rebuildOptions(res)
     // })
@@ -296,6 +304,12 @@ export default{
       var me = this
       this.postData.yjId = randomToken(32)
       this.postData.isAdd = true
+      this.postData.nameText = this.mc.filter(v => {
+        return v.value === this.postData.nameCombo
+      })
+      this.postData.nameText = this.postData.nameText[0].label
+      this.postData.nameCombo = this.postData.nameText
+
       // if (!files.length) return Materialize.toast('')
       $('#modal1').closeModal()
       this.loading = true
