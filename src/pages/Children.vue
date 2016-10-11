@@ -121,6 +121,8 @@ export default{
       dataValue: getData
     }
   },
+  props: ['index'],
+
   data () {
     return {
       xb: [
@@ -188,6 +190,8 @@ export default{
 
   },
   ready () {
+    this.$parent.index = false
+
     if (this.dataValue) this.basicData = this.dataValue
     if (this.dataValue) {
       rest.post(this.user, {zxId: this.dataValue.zxId}, '/rccore/Zxzn/list').then(res => {

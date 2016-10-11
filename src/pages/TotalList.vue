@@ -1,14 +1,9 @@
 <template lang="jade">
 div
   div
-    ul.tabs(style='background: transparent; margin-top: -25px')
-      li.tab.col.s3
-        a(href="#waiting") 未申请办理
-      li.tab.col.s3
-        a(href="#active") 已申请办理
     #waiting
         v-loading(:show='loading')
-        .card(v-for='item in list', v-if='!item.flowDoStageInfo', transition='item')
+        .card(v-for='item in list', v-if='!item.flowDoStageInfo')
           .card-content
             .fixed-action-btn.horizontal(style="bottom: 35px; right: 24px; position: absolute", @click='getItemDetail(item)')
                 a.btn-floating.btn-large(v-bind:class='{"red": item.flowEntityUI === "/rccore/Shjt/flowUI", "pink": item.flowEntityUI === "/rccore/SettledAddress/flowUI", "purple": item.flowEntityUI === "/rccore/Rcrd/flowUI", "blue": item.flowEntityUI === "/rccore/Rcpo/flowUI", "green": item.flowEntityUI === "/rccore/Zx/flowUI", "amber": item.flowEntityUI === "/rccore/Poxx/flowUI"}')
@@ -67,6 +62,7 @@ export default {
       increment: incrementCounter
     }
   },
+  props: ['index'],
   data () {
     return {
       distance: 100,
@@ -106,14 +102,18 @@ export default {
           getUrl: '/rccore/Zx/get',
           tranListUrl: '/rccore/Zx/tranList',
           verStartUrl: '/rccore/Zx/verStart',
-          flowId: 'FE195B8E150946A5AB871DA314142C80'
+          flowId: 'FE195B8E150946A5AB871DA314142C80',
+          getMore: '/rccore/Zxzn/list',
+          childrenKey: 'zxznData'
         },
         '/rccore/Rcpo/flowUI': {
           name: 'BuyHouse',
           getUrl: '/rccore/Rcpo/get',
           tranListUrl: '/rccore/Rcpo/tranList',
           verStartUrl: '/rccore/Rcpo/verStart',
-          flowId: '092FBACA67D7442613CC824B7025F953'
+          flowId: '092FBACA67D7442613CC824B7025F953',
+          getMore: '/rccore/Qtcy/list',
+          childrenKey: 'qtcyInfo'
         },
         '/rccore/Poxx/flowUI': {
           name: 'RentHouse',
@@ -127,7 +127,9 @@ export default {
           getUrl: '/rccore/SettledAddress/get',
           tranListUrl: '/rccore/SettledAddress/tranList',
           verStartUrl: '/rccore/SettledAddress/verStart',
-          flowId: '3937D50EF0AA76803976CF9B12EBA618'
+          flowId: '3937D50EF0AA76803976CF9B12EBA618',
+          getMore: '/rccore/SettledAddressFile/fileList',
+          childrenKey: 'transferPersonJson'
         }
       }
     }
@@ -140,6 +142,8 @@ export default {
     'loadmore': Loadmore
   },
   init() {
+    this.list = []
+    this.listCache = []
     this.user = JSON.parse(localStorage.getItem('baseInfo'))
 
   },
@@ -211,7 +215,7 @@ export default {
       })
     },
     verStart(a) {
-
+      var me = this
       var flowEntityUI = a.flowEntityUI
       var i = a.i
       i.flowEntityUI = flowEntityUI
@@ -243,17 +247,41 @@ export default {
         res.data.flowEntityInfo = i.flowEntityInfo
         res.data.flowVerId = i.flowVerId
         res.data.flowEntityUI = i.flowEntityUI
-        var data = res.data
-        this.loading = true
-        rest.post(this.user, data, this.filter[flowEntityUI].verStartUrl).then(cb => {
-          // console.log(cb)
-          this.loading = false
-          if (!cb.success) {
-            return Materialize.toast(cb.message, 4000)
-          }
-          return Materialize.toast('已提交', 4000)
 
-        })
+        var data = res.data
+
+        this.loading = true
+
+        if (this.filter[flowEntityUI].getMore) {
+          rest.post(this.user, i, this.filter[flowEntityUI].getMore).then(myChildren => {
+            myChildren.datas.forEach(v => {
+              v.saveInDatebase = 'false'
+            })
+            data[this.filter[flowEntityUI].childrenKey] = JSON.stringify(myChildren.datas)
+            rest.post(this.user, data, this.filter[flowEntityUI].verStartUrl).then(cb => {
+              // console.log(cb)
+              this.loading = false
+              if (!cb.success) {
+                return Materialize.toast(cb.message, 4000)
+              }
+              Materialize.toast('已申请办理', 4000)
+              me.list = []
+              me.reflash()
+            })
+          })
+        }
+        else {
+          rest.post(this.user, data, this.filter[flowEntityUI].verStartUrl).then(cb => {
+            // console.log(cb)
+            this.loading = false
+            if (!cb.success) {
+              return Materialize.toast(cb.message, 4000)
+            }
+            Materialize.toast('已申请办理', 4000)
+            me.list = []
+            me.reflash()
+          })
+        }
       })
     },
     loadBottom() {
@@ -284,13 +312,55 @@ export default {
         if (!res.success) return Materialize.toast(res.message, 4000)
          this.list = res.datas
       })
+    },
+    reflash() {
+      var me = this
+      this.loading = true
+      rest.post(this.user, {flowOwnerId: this.user.rcId, start: 0,limit: 50}, '/flowengine/run/full/entityPage').then(res => {
+        this.loading = false
+
+        if (!res.success) return Materialize.toast(res.message, 4000)
+         this.listCache = res.datas
+
+         if (me.filter['/rccore/Rcrd/flowUI'].tranList && me.filter['/rccore/Shjt/flowUI'].tranList && me.filter['/rccore/Zx/flowUI'].tranList && me.filter['/rccore/Rcpo/flowUI'].tranList && me.filter['/rccore/Poxx/flowUI'].tranList && me.filter['/rccore/SettledAddress/flowUI'].tranList && me.listCache.length) {
+           me.list = me.listCache
+         }
+      })
+
+      Object.keys(this.filter).forEach(key => {
+        var value = JSON.parse(localStorage.getItem(key))
+        rest.get(this.user, {flowId: this.filter[key].flowId}, this.filter[key].tranListUrl).then(res => {
+          if (!res.success) return Materialize.toast(res.message, 4000)
+          me.filter[key].tranList = res.datas
+          localStorage.setItem(key, JSON.stringify(res.datas))
+          if (me.filter['/rccore/Rcrd/flowUI'].tranList && me.filter['/rccore/Shjt/flowUI'].tranList && me.filter['/rccore/Zx/flowUI'].tranList && me.filter['/rccore/Rcpo/flowUI'].tranList && me.filter['/rccore/Poxx/flowUI'].tranList && me.filter['/rccore/SettledAddress/flowUI'].tranList && me.listCache.length) {
+            this.loading = false
+            me.list = me.listCache
+          }
+        })
+        // if (!value) {
+        //
+        // }
+        // else {
+        //   me.filter[key].tranList = value
+        //
+        //   if (me.filter['/rccore/Rcrd/flowUI'].tranList && me.filter['/rccore/Shjt/flowUI'].tranList && me.filter['/rccore/Zx/flowUI'].tranList && me.filter['/rccore/Rcpo/flowUI'].tranList && me.filter['/rccore/Poxx/flowUI'].tranList && me.filter['/rccore/SettledAddress/flowUI'].tranList && me.listCache.length) {
+        //     this.loading = false
+        //     me.list = me.listCache
+        //   }
+        // }
+      })
     }
   },
   attached () {
-    $('ul.tabs').tabs()
     $('.collapsible').collapsible({
       accordion : false // A setting that changes the collapsible behavior to expandable instead of the default accordion style
     })
+
+    setTimeout(function() {
+      $('ul.tabs').tabs()
+    }, 300)
+
     $('#sidenav-overlay').remove()
   //   $('.button-collapse').sideNav({
   //    menuWidth: 300, // Default is 240
@@ -309,41 +379,9 @@ export default {
     )
   },
   ready() {
-    var me = this
-    this.loading = true
-    rest.post(this.user, {flowOwnerId: this.user.rcId, start: 0,limit: 50}, '/flowengine/run/full/entityPage').then(res => {
-      this.loading = false
+    this.$parent.index = true
+    this.reflash()
 
-      if (!res.success) return Materialize.toast(res.message, 4000)
-       this.listCache = res.datas
-
-       if (me.filter['/rccore/Rcrd/flowUI'].tranList && me.filter['/rccore/Shjt/flowUI'].tranList && me.filter['/rccore/Zx/flowUI'].tranList && me.filter['/rccore/Rcpo/flowUI'].tranList && me.filter['/rccore/Poxx/flowUI'].tranList && me.filter['/rccore/SettledAddress/flowUI'].tranList && me.listCache.length) {
-         me.list = me.listCache
-       }
-    })
-
-    Object.keys(this.filter).forEach(key => {
-      var value = JSON.parse(localStorage.getItem(key))
-      if (!value) {
-        rest.get(this.user, {flowId: this.filter[key].flowId}, this.filter[key].tranListUrl).then(res => {
-          if (!res.success) return Materialize.toast(res.message, 4000)
-          me.filter[key].tranList = res.datas
-          localStorage.setItem(key, JSON.stringify(res.datas))
-          if (me.filter['/rccore/Rcrd/flowUI'].tranList && me.filter['/rccore/Shjt/flowUI'].tranList && me.filter['/rccore/Zx/flowUI'].tranList && me.filter['/rccore/Rcpo/flowUI'].tranList && me.filter['/rccore/Poxx/flowUI'].tranList && me.filter['/rccore/SettledAddress/flowUI'].tranList && me.listCache.length) {
-            this.loading = false
-            me.list = me.listCache
-          }
-        })
-      }
-      else {
-        me.filter[key].tranList = value
-
-        if (me.filter['/rccore/Rcrd/flowUI'].tranList && me.filter['/rccore/Shjt/flowUI'].tranList && me.filter['/rccore/Zx/flowUI'].tranList && me.filter['/rccore/Rcpo/flowUI'].tranList && me.filter['/rccore/Poxx/flowUI'].tranList && me.filter['/rccore/SettledAddress/flowUI'].tranList && me.listCache.length) {
-          this.loading = false
-          me.list = me.listCache
-        }
-      }
-    })
   }
 }
 </script>
@@ -401,7 +439,9 @@ a:active{
 }
 .item-transition {
   animation: fadeInUp 600ms cubic-bezier(.55,0,.1,1) forwards;
+  animation-delay: 300ms;
   -wekbit-animation: fadeInUp 600ms cubic-bezier(.55,0,.1,1) forwards;
+  -wekbit-animation-delay: 300ms;
 }
 
 
@@ -418,7 +458,6 @@ a:active{
   background: #26a69a;
   font-size: 21px;
   z-index: 99999999;
-  box-shadow: none;
 }
 #dropdown1 {
   width: 50% !important;
@@ -444,5 +483,25 @@ a:active{
 }
 .btn-list a{
   color: #666;
+}
+
+.tabs {
+  background: #26a69a !important;
+  position: fixed;
+  /*top: -45px;*/
+  top: 40px;
+  left: 0;
+  z-index: 9999;
+}
+
+.tabs li a {
+  color: white;
+}
+
+.tabs .tab a:hover {
+  color: #f3f3f3 !important;
+}
+.tabs .indicator {
+  background-color: #fff !important;
 }
 </style>

@@ -361,4 +361,26 @@ export default{
 .modal {
   width: 100%;
 }
+
+.tabs {
+  background: #26a69a !important;
+  position: fixed;
+  top: 40px;
+  left: 0;
+  z-index: 9999;
+}
+
+.tabs li a {
+  color: white;
+}
+
+.tabs .tab a:hover {
+  color: #f3f3f3 !important;
+}
+.tabs .indicator {
+  background-color: #fff !important;
+}
+#formContent {
+  margin-top: 40px;
+}
 </style>

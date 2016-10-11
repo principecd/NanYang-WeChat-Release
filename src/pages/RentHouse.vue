@@ -56,6 +56,8 @@ export default{
       dataValue: getData
     }
   },
+  props: ['index'],
+
   data () {
     return {
       loading: false,
@@ -123,6 +125,8 @@ export default{
     })
   },
   ready () {
+    this.$parent.index = false
+
     if (this.dataValue) this.basicData = this.dataValue
   },
   attached () {

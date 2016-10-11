@@ -20,7 +20,7 @@ div
           li
             a.waves-effect(v-link="{ path: '/User/UserHonor' }", @click='closeItemBar')
               i.fa.fa-book(style='margin:0 20px 0 20px; font-size: 20px')
-              | 荣誉证书
+              | 荣誉称号
           li
             a.waves-effect(v-link="{ path: '/User/UserResults' }", @click='closeItemBar')
               i.fa.fa-road(style='margin:0 20px 0 20px; font-size: 20px')
@@ -100,7 +100,7 @@ export default {
   },
   attached () {
     $('.button-collapse').sideNav({
-       menuWidth: 300, // Default is 240
+       menuWidth: 240, // Default is 240
        edge: 'left', // Choose the horizontal origin
        closeOnClick: true // Closes side-nav on <a> clicks, useful for Angular/Meteor
        }
@@ -186,7 +186,6 @@ export default {
   background: #26a69a;
   font-size: 21px;
   z-index: 99999999;
-  box-shadow: 0 1px 2px #999;
 }
 #dropdown2 {
   width: 50% !important;

@@ -68,6 +68,8 @@ export default{
       dataValue: getData
     }
   },
+  props: ['index'],
+
   data () {
     return {
       loading: false,
@@ -130,6 +132,8 @@ export default{
 
   },
   ready () {
+    this.$parent.index = false
+
     if (this.$router._currentRoute.query) this.basicData = this.$router._currentRoute.query
 
     // var me = this

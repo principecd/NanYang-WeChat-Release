@@ -168,6 +168,7 @@ export default{
       dataValue: getData
     }
   },
+  props: ['index'],
   data () {
     return {
       loading: false,
@@ -269,7 +270,7 @@ export default{
 
   },
   ready () {
-
+    this.$parent.index = false
     if (this.dataValue) this.basicData = this.dataValue
     if (this.dataValue) {
       rest.post(this.user, {poId: this.dataValue.poId}, '/rccore/Qtcy/list').then(res => {

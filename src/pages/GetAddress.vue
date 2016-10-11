@@ -111,6 +111,8 @@ export default{
       dataValue: getData
     }
   },
+  props: ['index'],
+
   data () {
     return {
       xb: [
@@ -203,13 +205,15 @@ export default{
 
   },
   ready () {
+    this.$parent.index = false
+
     if (this.dataValue) this.basicData = this.dataValue
     if (this.dataValue) {
       rest.post(this.user, {settledGuid: this.dataValue.settledGuid}, '/rccore/TransferPerson/listBySettledGuid').then(res => {
         res.datas.forEach(v => {
           v.saveInDatebase = 'false'
         })
-        this.basicData.zxznData  = res.datas
+        this.basicData.transferPersonJson  = res.datas
       })
     }
     if (this.dataValue) {
@@ -328,7 +332,7 @@ export default{
 
       this.loading = true
 
-      this.basicData.zxznData = this.myChildren
+      this.basicData.transferPersonJson = this.myChildren
       rest.post(this.user, this.basicData, '/rccore/SettledAddress/entitySave').then(res => {
         me.loading = false
         if (!res.success) return Materialize.toast(res.message, 4000)

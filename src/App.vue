@@ -2,8 +2,15 @@
 #app
   div(style='height: 80px; width: 100%;')
   .menu-content
-    a.menu.button-collapse(data-activates="slide-out", @click='hideSide')
+    a.menu.button-collapse(data-activates="slide-out", @click='hideSide', v-show='index')
       span.fa.fa-bars
+    a.menu(v-show='!index', v-link="{ path: '/' }")
+      span.fa.fa-arrow-left
+  ul.tabs(v-show='index', transition='expand')
+    li.tab.col.s3
+      a(href="#waiting") 未申请办理
+    li.tab.col.s3
+      a(href="#active") 已申请办理
   ul#slide-out.side-nav(style='color: #666')
     li
       a.waves-effect(style='height: 60px')
@@ -25,7 +32,7 @@
         span(style='margin-left: 15px') 生活津贴
     li
       a.waves-effect(v-link="{ path: '/BuyHouse' }")
-        span.fa.fa-home
+        span.fa.fa-line-chart
         span(style='margin-left: 15px') 购房补贴
     li
       a.waves-effect(v-link="{ path: '/Children' }")
@@ -50,7 +57,7 @@
     //- a.menu.dropdown-button(data-activates='dropdown2')
     //-   span.fa.fa-ellipsis-v
 
-  router-view(transition="fade", transition-mode='out-in')
+  router-view(transition="fade", transition-mode="out-in")
 </template>
 
 <script>
@@ -62,6 +69,7 @@ var localStorage = window.localStorage
 export default {
   data () {
     return {
+      index: true,
       allLoaded: false,
       loading: false,
       user: {
@@ -83,8 +91,10 @@ export default {
     }
   },
   attached () {
+    $('ul.tabs').tabs()
+
     $('.button-collapse').sideNav({
-     menuWidth: 300, // Default is 240
+     menuWidth: 240, // Default is 240
      edge: 'left', // Choose the horizontal origin
      closeOnClick: true // Closes side-nav on <a> clicks, useful for Angular/Meteor
      }
@@ -102,7 +112,10 @@ export default {
     )
   },
   ready() {
-
+    var index = window.location.pathname
+    if (index !== '/') {
+      this.index = false
+    }
   }
 }
 </script>
@@ -140,11 +153,19 @@ body {
   z-index: 1000;
   background-color: white;
 }
+
 .fade-transition {
-  transition: opacity .3s ease;
+  transition: opacity 200ms ease, transform .3s cubic-bezier(0.4, 0.0, 0.2, 1);
 }
-.fade-enter, .fade-leave {
-  opacity: 0.8;
+
+.fade-enter {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+.fade-leave {
+  /*transform: translateY(100%);*/
+  opacity: 0;
 }
 .svg {
   bottom: -50px;
@@ -179,7 +200,7 @@ a:active{
   background: #26a69a;
   font-size: 21px;
   z-index: 99999999;
-  box-shadow: 0 1px 2px #999;
+  /*box-shadow: 0 1px 2px #999;*/
 }
 #dropdown1 {
   width: 50% !important;
@@ -195,6 +216,38 @@ a:active{
 }
 .menu {
   color: white;
+}
+
+.tabs {
+  background: #26a69a !important;
+  position: fixed;
+  /*top: -45px;*/
+  top: 40px;
+  left: 0;
+  z-index: 9999;
+}
+
+.tabs li a {
+  color: white;
+}
+
+.tabs .tab a:hover {
+  color: #f3f3f3 !important;
+}
+.tabs .indicator {
+  background-color: #fff !important;
+}
+
+/* 必需 */
+.expand-transition {
+  transition: all .3s ease;
+  transition-delay: 200ms;
+}
+
+/* .expand-enter 定义进入的开始状态 */
+/* .expand-leave 定义离开的结束状态 */
+.expand-enter, .expand-leave {
+  opacity: 0;
 }
 
 </style>
