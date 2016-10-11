@@ -202,7 +202,7 @@ export default{
   ready () {
     this.$parent.index = false
 
-    if (this.dataValue && this.$route.query) this.basicData = this.dataValue
+    if (this.dataValue && this.$route.query.do) this.basicData = this.dataValue
     if (this.dataValue) {
       rest.post(this.user, {zxId: this.dataValue.zxId}, '/rccore/Zxzn/list').then(res => {
         res.datas.forEach(v => {

@@ -134,7 +134,7 @@ export default{
   ready () {
     this.$parent.index = false
 
-    if (this.dataValue && this.$route.query) this.basicData = this.dataValue
+    if (this.dataValue && this.$route.query.do) this.basicData = this.dataValue
 
     // var me = this
     // me.loading = true

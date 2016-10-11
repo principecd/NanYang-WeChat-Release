@@ -7,10 +7,10 @@ div
           .card-content
             .fixed-action-btn.horizontal(style="bottom: 35px; right: 24px; position: absolute", @click='getItemDetail(item)')
                 a.btn-floating.btn-large(v-bind:class='{"red": item.flowEntityUI === "/rccore/Shjt/flowUI", "pink": item.flowEntityUI === "/rccore/SettledAddress/flowUI", "purple": item.flowEntityUI === "/rccore/Rcrd/flowUI", "blue": item.flowEntityUI === "/rccore/Rcpo/flowUI", "green": item.flowEntityUI === "/rccore/Zx/flowUI", "amber": item.flowEntityUI === "/rccore/Poxx/flowUI"}')
-                  i.fa(v-bind:class='{"fa-money": item.flowEntityUI === "/rccore/Shjt/flowUI", "fa-bookmark": item.flowEntityUI === "/rccore/SettledAddress/flowUI", "fa-level-up": item.flowEntityUI === "/rccore/Rcrd/flowUI", "fa-line-chart": item.flowEntityUI === "/rccore/Rcpo/flowUI", "fa-child": item.flowEntityUI === "/rccore/Zx/flowUI", "fa-home": item.flowEntityUI === "/rccore/Poxx/flowUI"}')
+                  i.fa(v-bind:class='{"fa-money": item.flowEntityUI === "/rccore/Shjt/flowUI", "fa-bookmark": item.flowEntityUI === "/rccore/SettledAddress/flowUI", "fa-level-up": item.flowEntityUI === "/rccore/Rcrd/flowUI", "fa-line-chart": item.flowEntityUI === "/rccore/Rcpo/flowUI", "fa-child": item.flowEntityUI === "/rccore/Zx/flowUI", "fa-hotel": item.flowEntityUI === "/rccore/Poxx/flowUI"}')
             div
                 span.card-title
-                  i.fa(v-bind:class='{"fa-money": item.flowEntityUI === "/rccore/Shjt/flowUI", "fa-bookmark": item.flowEntityUI === "/rccore/SettledAddress/flowUI", "fa-level-up": item.flowEntityUI === "/rccore/Rcrd/flowUI", "fa-line-chart": item.flowEntityUI === "/rccore/Rcpo/flowUI", "fa-child": item.flowEntityUI === "/rccore/Zx/flowUI", "fa-home": item.flowEntityUI === "/rccore/Poxx/flowUI"}')
+                  i.fa(v-bind:class='{"fa-money": item.flowEntityUI === "/rccore/Shjt/flowUI", "fa-bookmark": item.flowEntityUI === "/rccore/SettledAddress/flowUI", "fa-level-up": item.flowEntityUI === "/rccore/Rcrd/flowUI", "fa-line-chart": item.flowEntityUI === "/rccore/Rcpo/flowUI", "fa-child": item.flowEntityUI === "/rccore/Zx/flowUI", "fa-hotel": item.flowEntityUI === "/rccore/Poxx/flowUI"}')
                 |     {{item.flowEntityInfo}}
                 p {{item.flowEntityTime}}
                 p(v-if='item.flowDoStageInfo') 办理情况：{{item.flowDoStageInfo}}

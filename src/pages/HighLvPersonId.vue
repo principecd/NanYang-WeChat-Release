@@ -166,7 +166,7 @@ export default{
   ready () {
     this.$parent.index = false
 
-    if (this.dataValue && this.$route.query) this.basicData = this.dataValue
+    if (this.dataValue && this.$route.query.do) this.basicData = this.dataValue
     if (this.dataValue) {
       rest.post(this.user, {useType: 'ZZCL', sqId: this.dataValue.sqId}, '/rccore/RcrdFile/fileList').then(res => {
         this.cacheFile  = res.datas

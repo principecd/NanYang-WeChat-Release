@@ -217,7 +217,7 @@ export default{
   ready () {
     this.$parent.index = false
 
-    if (this.dataValue && this.$route.query) this.basicData = this.dataValue
+    if (this.dataValue && this.$route.query.do) this.basicData = this.dataValue
     if (this.dataValue) {
       rest.post(this.user, {settledGuid: this.dataValue.settledGuid}, '/rccore/TransferPerson/listBySettledGuid').then(res => {
         res.datas.forEach(v => {
@@ -342,7 +342,8 @@ export default{
 
       this.loading = true
 
-      this.basicData.transferPersonJson = this.myChildren
+      this.basicData.transferPersonJson = JSON.stringify(this.myChildren)
+
       rest.post(this.user, this.basicData, '/rccore/SettledAddress/entitySave').then(res => {
         me.loading = false
         if (!res.success) return Materialize.toast(res.message, 4000)
