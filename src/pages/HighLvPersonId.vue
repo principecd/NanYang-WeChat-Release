@@ -9,17 +9,17 @@
       label.active 申请的人才层次
 
       v-select(:value.sync='basicData.sqcc', :options='sqcc')
-    br
-    .card(v-for='item in cacheFile')
-      .card-content
-        img(style='width: 100%;', v-bind:src='getSrc(item.fileId)')
-      .card-action
-        a(@click='deleteFlie(item)') 删除
-    .card(v-for='item in cacheFile')
-      .card-content
-        img(style='width: 100%;', v-bind:src='getSrc(item.fileId)')
-      .card-action
-        a(@click='deleteFlie(item)') 删除
+    //- br
+    //- .card(v-for='item in cacheFile')
+    //-   .card-content
+    //-     img(style='width: 100%;', v-bind:src='getSrc(item.fileId)')
+    //-   .card-action
+    //-     a(@click='deleteFlie(item)') 删除
+    //- .card(v-for='item in cacheFile')
+    //-   .card-content
+    //-     img(style='width: 100%;', v-bind:src='getSrc(item.fileId)')
+    //-   .card-action
+    //-     a(@click='deleteFlie(item)') 删除
     br
     table
       thead
@@ -112,6 +112,16 @@ export default{
           console.log(response)
           console.log(file)
           console.log('finish upload')
+          var done = true
+
+          this.files.forEach(v => {
+            if (v.progress !== 100) {
+              done = false
+            }
+          })
+          if (done) {
+            return this.$router.go('/')
+          }
           // this.getFileList()
         }
       },
@@ -156,7 +166,7 @@ export default{
   ready () {
     this.$parent.index = false
 
-    if (this.dataValue) this.basicData = this.dataValue
+    if (this.dataValue && this.$route.query) this.basicData = this.dataValue
     if (this.dataValue) {
       rest.post(this.user, {useType: 'ZZCL', sqId: this.dataValue.sqId}, '/rccore/RcrdFile/fileList').then(res => {
         this.cacheFile  = res.datas
@@ -239,7 +249,7 @@ export default{
     },
     onStatus (file) {
       if(file.isSuccess){
-        return "上传成功"
+        return '上传成功'
       }else if(file.isError){
         return "上传失败"
       }else if(file.isUploading){

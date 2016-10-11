@@ -175,7 +175,7 @@ export default {
     logout() {
 
       localStorage.clear()
-      return this.$router.go({name: 'Login'})
+      return this.$router.go({name: 'Login', query: {'do': 'edit'}})
     },
     formatFilter() {
 
@@ -209,7 +209,7 @@ export default {
 
         var name = this.filter[item.flowEntityUI].name
         this.increment(res.data)
-        return this.$router.go(`/${name}`)
+        return this.$router.go({name:`${name}`, query: {'do': 'edit'}})
         // window.location.href = `/${name}`
 
       })

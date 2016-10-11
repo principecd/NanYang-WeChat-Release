@@ -19,7 +19,7 @@
         span.fa.fa-home
         span(style='margin-left: 15px') 首页
     li
-      a.waves-effect(v-link="{ path: '/User' }")
+      a.waves-effect(v-link="{ path: '/User'}")
         span.fa.fa-user
         span(style='margin-left: 15px') 人才基本信息
     li
@@ -31,7 +31,7 @@
         span.fa.fa-money
         span(style='margin-left: 15px') 生活津贴
     li
-      a.waves-effect(v-link="{ path: '/BuyHouse' }")
+      a.waves-effect(v-link="{ path: '/BuyHouse'}")
         span.fa.fa-line-chart
         span(style='margin-left: 15px') 购房补贴
     li

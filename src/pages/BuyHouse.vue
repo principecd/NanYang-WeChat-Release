@@ -209,6 +209,16 @@ export default{
           console.log(response)
           console.log(file)
           console.log('finish upload')
+          var done = true
+
+          this.files.forEach(v => {
+            if (v.progress !== 100) {
+              done = false
+            }
+          })
+          if (done) {
+            return this.$router.go('/')
+          }
           // this.getFileList()
         }
       },
@@ -271,7 +281,8 @@ export default{
   },
   ready () {
     this.$parent.index = false
-    if (this.dataValue) this.basicData = this.dataValue
+
+    if (this.dataValue && this.$route.query) this.basicData = this.dataValue
     if (this.dataValue) {
       rest.post(this.user, {poId: this.dataValue.poId}, '/rccore/Qtcy/list').then(res => {
         res.datas.forEach(v => {

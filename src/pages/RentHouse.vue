@@ -127,7 +127,7 @@ export default{
   ready () {
     this.$parent.index = false
 
-    if (this.dataValue) this.basicData = this.dataValue
+    if (this.dataValue && this.$route.query) this.basicData = this.dataValue
   },
   attached () {
     $('#sidenav-overlay').remove()
@@ -220,6 +220,7 @@ export default{
         me.loading = false
         if (!res.success) return Materialize.toast(res.message, 4000)
         Materialize.toast('保存成功', 2000)
+        return this.$router.go('/')
       })
     },
     getSrc (fileId) {
