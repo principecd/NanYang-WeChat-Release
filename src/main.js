@@ -11,7 +11,7 @@ var vueForm = require('vue-form')
 import rest from './rest'
 
 import Vuex from 'vuex'
-
+import FastClick from 'fastclick'
 // 告诉 vue “使用” vuex
 Vue.use(Vuex)
 Vue.use(VueRouter)
@@ -19,7 +19,9 @@ Vue.use(require('vue-animated-list'))
 Vue.use(vueForm)
 
 // Vue.use(VueValidator)
-
+$(function() {
+    FastClick.attach(document.body);
+})
 init()
 
 function getUrlQueryString() {

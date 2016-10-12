@@ -4,7 +4,7 @@ div
   .menu-content
     a.menu.button-collapse(data-activates="slide-out")
       span.fa.fa-bars
-    a.menu.dropdown-button(@click='itemBar')
+    a.menu.dropdown-button(@click='itemBar', style='height: 50px; width: 50px; line-height: 50px; margin-right: -40px')
       span.fa.fa-ellipsis-v
     #itemBar.modal.bottom-sheet(style='max-height: 80%;background: #f3f3f3;')
       .modal-content(style='padding: 0 !important')
