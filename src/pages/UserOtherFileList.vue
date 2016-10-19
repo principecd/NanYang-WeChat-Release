@@ -8,7 +8,7 @@
           th(style='text-align: center') 文件名
           th(style='text-align: center') 进度
           th(style='text-align: center') 状态
-          th(style='text-align: center') action
+          th(style='text-align: center') 操作
       tbody
         tr(v-for='file in files', style='text-align: center')
           td(v-text='file.name', style='text-align: center')
@@ -388,4 +388,5 @@ export default{
 .modal {
   width: 100%;
 }
+
 </style>

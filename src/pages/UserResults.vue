@@ -308,7 +308,7 @@ export default{
         return v.value === this.postData.nameCombo
       })
       this.postData.nameText = this.postData.nameText[0].label
-      this.postData.nameCombo = this.postData.nameText
+      // this.postData.nameCombo = this.postData.nameText
 
       // if (!files.length) return Materialize.toast('')
       $('#modal1').closeModal()

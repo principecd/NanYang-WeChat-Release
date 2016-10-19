@@ -68,7 +68,7 @@ export default{
     rest.getOptions('rczyjn_dj').then(res => {
       me.zydj = this.rebuildOptions(res)
     })
-    rest.getOptions('rczyzc_zgbm').then(res => {
+    rest.getOptions('rczyjn_zgbm').then(res => {
       me.zgbmId = this.rebuildOptions(res)
     })
 
