@@ -59,46 +59,50 @@
           div.modal-footer
             a(class="btn waves-effect waves-green" v-on:click="addChild") 确认
             a(class="modal-action modal-close waves-effect waves-green btn-flat") 取消
-    table
-      thead
-        tr
-          th(style='text-align: center') 文件名
-          th(style='text-align: center') 进度
-          th(style='text-align: center') 状态
-          th(style='text-align: center') action
-      tbody
-        tr(v-for='file in files', style='text-align: center')
-          td(v-text='file.name', style='text-align: center')
-          td(v-text='file.progress', style='text-align: center')
-          td(v-text='onStatus(file)', style='text-align: center')
-          td(style='text-align: center')
-            a(type='button',@click="uploadItem(file)") 上传
+    //- table
+    //-   thead
+    //-     tr
+    //-       th(style='text-align: center') 文件名
+    //-       th(style='text-align: center') 进度
+    //-       th(style='text-align: center') 状态
+    //-       th(style='text-align: center') action
+    //-   tbody
+    //-     tr(v-for='file in files', style='text-align: center')
+    //-       td(v-text='file.name', style='text-align: center')
+    //-       td(v-text='file.progress', style='text-align: center')
+    //-       td(v-text='onStatus(file)', style='text-align: center')
+    //-       td(style='text-align: center')
+    //-         a(type='button',@click="uploadItem(file)") 上传
+    //- br
+    //- br
+    //- a.btn.btn-up
+    //-   vue-file-upload(v-bind:url='fileUploadUrl("ZXHKB")',
+    //-     v-bind:files.sync = 'files',
+    //-     v-bind:filters = "filters",
+    //-     v-bind:events = 'cbEvents',
+    //-     v-bind:request-options = "reqoptsZXHKB",
+    //-     name='fileData',
+    //-     label='户口本'
+    //-     )
+    //- br
+    //- br
+    //- a.btn.btn-up
+    //-   vue-file-upload(v-bind:url='fileUploadUrl("ZXCSZ")',
+    //-     v-bind:files.sync = 'files',
+    //-     v-bind:filters = "filters",
+    //-     v-bind:events = 'cbEvents',
+    //-     v-bind:request-options = "reqoptsZXCSZ",
+    //-     name='fileData',
+    //-     label='出生证'
+    //-     )
+    //-
+    //- br
+    //- br
     br
-    br
-    a.btn.btn-up
-      vue-file-upload(v-bind:url='fileUploadUrl("ZXHKB")',
-        v-bind:files.sync = 'files',
-        v-bind:filters = "filters",
-        v-bind:events = 'cbEvents',
-        v-bind:request-options = "reqoptsZXHKB",
-        name='fileData',
-        label='户口本'
-        )
-    br
-    br
-    a.btn.btn-up
-      vue-file-upload(v-bind:url='fileUploadUrl("ZXCSZ")',
-        v-bind:files.sync = 'files',
-        v-bind:filters = "filters",
-        v-bind:events = 'cbEvents',
-        v-bind:request-options = "reqoptsZXCSZ",
-        name='fileData',
-        label='出生证'
-        )
-
-    br
-    br
-    br
+    a.btn.btn-up(@click='uploadImg("ZXHKB")')
+      .fileupload-button 户口本
+    a.btn.btn-up(@click='uploadImg("ZXCSZ")')
+      .fileupload-button 出生证
     button.waves-effect.waves-light.btn(@click='submitData') 保存
 </template>
 <script>
@@ -111,6 +115,8 @@ import sha1 from 'sha1'
 import _ from 'lodash'
 import VProgress from '../components/VProgress.vue'
 import { getData } from '../vuex/getters'
+import { uploadImage } from '../rest'
+import { chooseImage } from '../rest'
 
 var zxId = randomToken(32)
 var localStorage = window.localStorage
@@ -225,6 +231,27 @@ export default{
   watch: {
   },
   methods: {
+    uploadImg (useType) {
+      let formData = {
+        'Encoding': 'utf-8',
+        'Rpencoding': 'utf-8',
+        '_x-requested-with': true,
+        'zxId': zxId,
+        'useType': useType
+      }
+      let vm = this
+      vm.loading = true
+      chooseImage()
+        .then(localId => {
+          return uploadImage(localId)
+        })
+        .then(serverId => {
+          return rest.get(this.user, formData, '/rccore/ZxFile/insert')
+        })
+        .then(res => {
+          vm.loading = false
+        })
+    },
     deleteFlie(item) {
       this.loading = true
       rest.post(this.user, {refId: item.fileId}, '/rccore/SettledAddressFile/delete').then(res => {

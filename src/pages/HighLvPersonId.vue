@@ -20,41 +20,45 @@
     //-     img(style='width: 100%;', v-bind:src='getSrc(item.fileId)')
     //-   .card-action
     //-     a(@click='deleteFlie(item)') 删除
-    br
-    table
-      thead
-        tr
-          th(style='text-align: center') 文件名
-          th(style='text-align: center') 进度
-          th(style='text-align: center') 状态
-          //- th(style='text-align: center') action
-      tbody
-        tr(v-for='file in files', style='text-align: center')
-          td(v-text='file.name', style='text-align: center')
-          td(v-text='file.progress', style='text-align: center')
-          td(v-text='onStatus(file)', style='text-align: center')
+    //- br
+    //- table
+    //-   thead
+    //-     tr
+    //-       th(style='text-align: center') 文件名
+    //-       th(style='text-align: center') 进度
+    //-       th(style='text-align: center') 状态
+    //-       //- th(style='text-align: center') action
+    //-   tbody
+    //-     tr(v-for='file in files', style='text-align: center')
+    //-       td(v-text='file.name', style='text-align: center')
+    //-       td(v-text='file.progress', style='text-align: center')
+    //-       td(v-text='onStatus(file)', style='text-align: center')
           //- td(style='text-align: center')
           //-   button(type='button',@click="uploadItem(file)") 上传
-    a.btn.btn-up
-      vue-file-upload(v-bind:url='fileUploadUrl("ZZCL")',
-        v-bind:files.sync = 'files',
-        v-bind:filters = "filters",
-        v-bind:events = 'cbEvents',
-        v-bind:request-options = "reqoptsZZCL",
-        name='fileData',
-        label='资质材料'
-        )
-    br
-    br
-    a.btn.btn-up
-      vue-file-upload(v-bind:url='fileUploadUrl("LDHTS")',
-        v-bind:files.sync = 'files',
-        v-bind:filters = "filters",
-        v-bind:events = 'cbEvents',
-        v-bind:request-options = "reqoptsLDHTS",
-        name='fileData',
-        label='劳动合同书'
-        )
+    a.btn.btn-up(@click='uploadImg("ZZCL")')
+      .fileupload-button 资质材料
+    a.btn.btn-up(@click='uploadImg("LDHTS")')
+      .fileupload-button 劳动合同书
+    //- a.btn.btn-up
+    //-   vue-file-upload(v-bind:url='fileUploadUrl("ZZCL")',
+    //-     v-bind:files.sync = 'files',
+    //-     v-bind:filters = "filters",
+    //-     v-bind:events = 'cbEvents',
+    //-     v-bind:request-options = "reqoptsZZCL",
+    //-     name='fileData',
+    //-     label='资质材料'
+    //-     )
+    //- br
+    //- br
+    //- a.btn.btn-up
+    //-   vue-file-upload(v-bind:url='fileUploadUrl("LDHTS")',
+    //-     v-bind:files.sync = 'files',
+    //-     v-bind:filters = "filters",
+    //-     v-bind:events = 'cbEvents',
+    //-     v-bind:request-options = "reqoptsLDHTS",
+    //-     name='fileData',
+    //-     label='劳动合同书'
+    //-     )
 
     button.waves-effect.waves-light.btn(@click='submitData') 保存
 
@@ -68,9 +72,12 @@ import VLoading from './VLoading.vue'
 import sha1 from 'sha1'
 import _ from 'lodash'
 import { getData } from '../vuex/getters'
+import { uploadImage } from '../rest'
+import { chooseImage } from '../rest'
 
 var localStorage = window.localStorage
 var sqId = randomToken(32)
+
 export default{
   vuex: {
     getters: {
@@ -78,7 +85,6 @@ export default{
     }
   },
   props: ['index'],
-
   data () {
     return {
       cacheFile: [],
@@ -192,6 +198,27 @@ export default{
 
   },
   methods: {
+    uploadImg (useType) {
+      let formData = {
+        'Encoding': 'utf-8',
+        'Rpencoding': 'utf-8',
+        '_x-requested-with': true,
+        'sqId': sqId,
+        'useType': useType
+      }
+      let vm = this
+      vm.loading = true
+      chooseImage()
+        .then(localId => {
+          return uploadImage(localId)
+        })
+        .then(serverId => {
+          return rest.get(this.user, formData, '/rccore/RcrdFile/insert')
+        })
+        .then(res => {
+          vm.loading = false
+        })
+    },
     fileUploadUrl (useType) {
       return rest.basicUrl + '/rccore/RcrdFile/insert' + this.beforeUpload(useType)
     },

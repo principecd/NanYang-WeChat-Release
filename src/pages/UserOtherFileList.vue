@@ -21,15 +21,17 @@
         span.fa.fa-plus
       ul
         li(v-for='item in buildDom')
-          a.btn-floating.btn-floating2
-            vue-file-upload(v-bind:url='fileUploadUrl(item.reqopts.formData.useType)',
-              v-bind:files.sync = 'files',
-              v-bind:filters = "filters",
-              v-bind:events = 'cbEvents',
-              v-bind:request-options = "item.reqopts",
-              name='fileData',
-              v-bind:label='item.label'
-              )
+          a.btn-floating.btn-floating2(@click='uploadImg(item.reqopts.formData.useType)')
+            .fileupload-button {{item.label}}
+          //- a.btn-floating.btn-floating2
+          //-   vue-file-upload(v-bind:url='fileUploadUrl(item.reqopts.formData.useType)',
+          //-     v-bind:files.sync = 'files',
+          //-     v-bind:filters = "filters",
+          //-     v-bind:events = 'cbEvents',
+          //-     v-bind:request-options = "item.reqopts",
+          //-     name='fileData',
+          //-     v-bind:label='item.label'
+          //-     )
     hr
     .col.s12(v-for='item in fileList')
       .card
@@ -52,15 +54,18 @@ import vSelect from './VSelect'
 import _ from 'lodash'
 import sha1 from 'sha1'
 import VLoading from './VLoading.vue'
+import { uploadImage } from '../rest'
+import { chooseImage } from '../rest'
 
 var localStorage = window.localStorage
 
 export default{
-  // vuex: {
-  //   getters: {
-  //     count: getCount
-  //   }
-  // },
+  vuex: {
+    getters: {
+      uploadImage: uploadImage,
+      chooseImage: chooseImage
+    }
+  },
   data () {
     return {
       loading: false,
@@ -227,6 +232,27 @@ export default{
   attached () {
   },
   methods: {
+    uploadImg (useType) {
+      let formData = {
+        'Encoding': 'utf-8',
+        'Rpencoding': 'utf-8',
+        '_x-requested-with': true,
+        'rcId': this.user.rcId,
+        'useType': useType
+      }
+      let vm = this
+      vm.loading = true
+      chooseImage()
+        .then(localId => {
+          return uploadImage(localId)
+        })
+        .then(serverId => {
+          return rest.get(this.user, formData, '/rccore/RcxxFile/insert')
+        })
+        .then(res => {
+          vm.loading = false
+        })
+    },
     fileUploadUrl (useType) {
       return rest.basicUrl + '/rccore/RcxxFile/insert' + this.beforeUpload(useType)
     },

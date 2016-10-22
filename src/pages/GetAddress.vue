@@ -55,40 +55,44 @@
           div.modal-footer
             a(class="btn waves-effect waves-green" v-on:click="addChild") 确认
             a(class="modal-action modal-close waves-effect waves-green btn-flat") 取消
-    .card(v-for='item in cacheFile')
-      .card-content
-        img(style='width: 100%;', v-bind:src='getSrc(item.fileId)')
-      .card-action
-        a(@click='deleteFlie(item)') 删除
-    table
-      thead
-        tr
-          th(style='text-align: center') 文件名
-          th(style='text-align: center') 进度
-          th(style='text-align: center') 状态
-          //- th(style='text-align: center') action
-      tbody
-        tr(v-for='file in files', style='text-align: center')
-          td(v-text='file.name', style='text-align: center')
-          td(v-text='file.progress', style='text-align: center')
-          td(v-text='onStatus(file)', style='text-align: center')
-          //- td(style='text-align: center')
-          //-   a(type='button',@click="uploadItem(file)") 上传
+    //- .card(v-for='item in cacheFile')
+    //-   .card-content
+    //-     img(style='width: 100%;', v-bind:src='getSrc(item.fileId)')
+    //-   .card-action
+    //-     a(@click='deleteFlie(item)') 删除
+    //- table
+    //-   thead
+    //-     tr
+    //-       th(style='text-align: center') 文件名
+    //-       th(style='text-align: center') 进度
+    //-       th(style='text-align: center') 状态
+    //-       //- th(style='text-align: center') action
+    //-   tbody
+    //-     tr(v-for='file in files', style='text-align: center')
+    //-       td(v-text='file.name', style='text-align: center')
+    //-       td(v-text='file.progress', style='text-align: center')
+    //-       td(v-text='onStatus(file)', style='text-align: center')
+    //-       //- td(style='text-align: center')
+    //-       //-   a(type='button',@click="uploadItem(file)") 上传
+    //- br
+    //- br
+    //- a.btn.btn-up
+    //-   vue-file-upload(v-bind:url='fileUploadUrl("ZXHKB")',
+    //-     v-bind:files.sync = 'files',
+    //-     v-bind:filters = "filters",
+    //-     v-bind:events = 'cbEvents',
+    //-     v-bind:request-options = "reqoptsZXHKB",
+    //-     name='fileData',
+    //-     label='随迁人员关系证明'
+    //-     )
+    //-
+    //- br
     br
     br
-    a.btn.btn-up
-      vue-file-upload(v-bind:url='fileUploadUrl("ZXHKB")',
-        v-bind:files.sync = 'files',
-        v-bind:filters = "filters",
-        v-bind:events = 'cbEvents',
-        v-bind:request-options = "reqoptsZXHKB",
-        name='fileData',
-        label='随迁人员关系证明'
-        )
-
-    br
-    br
-    br
+    //- a.btn.btn-up(@click='uploadImage("ZXHKB")')
+    //-   .fileupload-button 户口本
+    a.btn.btn-up(@click='uploadImg("ZXHKB")')
+      .fileupload-button 随迁人员关系证明
     button.waves-effect.waves-light.btn(@click='submitData') 保存
 </template>
 <script>
@@ -101,6 +105,8 @@ import sha1 from 'sha1'
 import _ from 'lodash'
 import VProgress from '../components/VProgress.vue'
 import { getData } from '../vuex/getters'
+import { uploadImage } from '../rest'
+import { chooseImage } from '../rest'
 
 var settledGuid = randomToken(32)
 var localStorage = window.localStorage
@@ -108,7 +114,9 @@ var localStorage = window.localStorage
 export default{
   vuex: {
     getters: {
-      dataValue: getData
+      dataValue: getData,
+      uploadImage: uploadImage,
+      chooseImage: chooseImage
     }
   },
   props: ['index'],
@@ -248,6 +256,27 @@ export default{
   watch: {
   },
   methods: {
+    uploadImg (useType) {
+      let formData = {
+        'Encoding': 'utf-8',
+        'Rpencoding': 'utf-8',
+        '_x-requested-with': true,
+        settledGuid: this.basicData.settledGuid || settledGuid,
+        'useType': useType
+      }
+      let vm = this
+      vm.loading = true
+      chooseImage()
+        .then(localId => {
+          return uploadImage(localId)
+        })
+        .then(serverId => {
+          return rest.get(this.user, formData, '/rccore/ZxFile/insert')
+        })
+        .then(res => {
+          vm.loading = false
+        })
+    },
     addChild() {
       this.child.transferGuid = randomToken(32)
       this.child.settledGuid = this.basicData.settledGuid || settledGuid
