@@ -26,7 +26,7 @@ fetch(rest.basicUrl + '/webres/wechat/core/getJsSignature.jsp?urlPath=' + url, {
 .then(response => response.json())
 .then(res => {
   let config = {
-    debug: true,
+    debug: false,
     appId: 'wxe1ec4830f40317a0',
     signature: res.data.signature,
     timestamp: res.data.timestamp,
