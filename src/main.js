@@ -280,8 +280,8 @@ function init () {
   }
 }
 
-
-fetch(rest.basicUrl + '/webres/wechat/core/getJsSignature.jsp', {method: 'GET', mode: 'cors', cache: 'default'})
+$(document).ready(function() {
+  fetch(rest.basicUrl + '/webres/wechat/core/getJsSignature.jsp', {method: 'GET', mode: 'cors', cache: 'default'})
   .then(response => response.json())
   .then(res => {
     let config = {
@@ -297,18 +297,10 @@ fetch(rest.basicUrl + '/webres/wechat/core/getJsSignature.jsp', {method: 'GET', 
         'downloadImage'
       ]
     }
-    // console.log(config)
+
     wx.config(config)
-
-    wx.ready(function(){
-
-    })
-
-    wx.error(function(res){
-      console.log('error', res)
-      window.alert(res)
-    })
   })
+})
 
 // function initConfig () {
 //   var now = Date.now()
