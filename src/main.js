@@ -172,8 +172,9 @@ function init () {
             // return to.redirect('Login')
           }
         })
-
+        
         router.start(App, '#app')
+
       })
   }
   else {

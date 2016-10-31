@@ -105,12 +105,12 @@ import { chooseImage } from '../rest'
 var localStorage = window.localStorage
 
 export default{
-  vuex: {
-    getters: {
-      uploadImage: uploadImage,
-      chooseImage: chooseImage
-    }
-  },
+  // vuex: {
+  //   getters: {
+  //     uploadImage: uploadImage,
+  //     chooseImage: chooseImage
+  //   }
+  // },
   data () {
     return {
       loading: false,
