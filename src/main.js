@@ -21,8 +21,8 @@ Vue.use(vueForm)
 $(function() {
     FastClick.attach(document.body);
 })
-
-fetch(rest.basicUrl + '/webres/wechat/core/getJsSignature.jsp', {method: 'GET', mode: 'cors', cache: 'default'})
+let url = window.location.href
+fetch(rest.basicUrl + '/webres/wechat/core/getJsSignature.jsp?urlPath=' + url, {method: 'GET', mode: 'cors', cache: 'default'})
 .then(response => response.json())
 .then(res => {
   let config = {
