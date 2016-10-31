@@ -21,7 +21,33 @@ Vue.use(vueForm)
 $(function() {
     FastClick.attach(document.body);
 })
-init()
+
+fetch(rest.basicUrl + '/webres/wechat/core/getJsSignature.jsp', {method: 'GET', mode: 'cors', cache: 'default'})
+.then(response => response.json())
+.then(res => {
+  let config = {
+    debug: true,
+    appId: 'wxe1ec4830f40317a0',
+    signature: res.data.signature,
+    timestamp: res.data.timestamp,
+    nonceStr: res.data.nonceStr,
+    jsApiList: [
+      'chooseImage',
+      'previewImage',
+      'uploadImage',
+      'downloadImage'
+    ]
+  }
+
+  wx.config(config)
+  wx.ready(() => {
+    init()
+  })
+
+  wx.error(function(res){
+    console.log(res)
+  })
+})
 
 function getUrlQueryString() {
   var splitUrl = window.location.href.split('?')
@@ -280,31 +306,6 @@ function init () {
     router.start(App, '#app')
   }
 }
-
-$(document).ready(function() {
-  fetch(rest.basicUrl + '/webres/wechat/core/getJsSignature.jsp', {method: 'GET', mode: 'cors', cache: 'default'})
-  .then(response => response.json())
-  .then(res => {
-    let config = {
-      debug: true,
-      appId: 'wxe1ec4830f40317a0',
-      signature: res.data.signature,
-      timestamp: res.data.timestamp,
-      nonceStr: res.data.nonceStr,
-      jsApiList: [
-        'chooseImage',
-        'previewImage',
-        'uploadImage',
-        'downloadImage'
-      ]
-    }
-
-    wx.config(config)
-    wx.error(function(res){
-      console.log(res)
-    })
-  })
-})
 
 // function initConfig () {
 //   var now = Date.now()
