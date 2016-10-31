@@ -167,12 +167,12 @@ function init () {
             return to.next()
           }
           else {
-            window.location.href = '/Login'
+            return to.redirect('/Login')
             // return router.go({name: 'Login'})
             // return to.redirect('Login')
           }
         })
-        
+
         router.start(App, '#app')
 
       })
@@ -271,9 +271,9 @@ function init () {
         return to.next()
       }
       else {
-        window.location.href = '/Login'
+        // window.location.href = '/Login'
         // return router.go({name: 'Login'})
-        // return to.redirect('Login')
+        return to.redirect('/Login')
       }
     })
 
@@ -300,6 +300,9 @@ $(document).ready(function() {
     }
 
     wx.config(config)
+    wx.error(function(res){
+      console.log(res)
+    })
   })
 })
 
