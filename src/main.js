@@ -42,9 +42,10 @@ fetch(rest.basicUrl + '/webres/wechat/core/getJsSignature.jsp?urlPath=' + url, {
   }
 
   wx.config(config)
-  wx.ready(() => {
-    init()
-  })
+  // wx.ready(() => {
+  //   init()
+  // })
+  init()
 
   wx.error(function(res){
     console.log(res)
