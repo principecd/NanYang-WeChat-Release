@@ -6,6 +6,7 @@ import sha1 from 'sha1'
 import rest from './rest'
 import Vuex from 'vuex'
 import FastClick from 'fastclick'
+import 'materialize-css/dist/js/materialize.js'
 
 var Vue = require('vue')
 // var VueValidator = require('vue-validator')
@@ -20,36 +21,6 @@ Vue.use(vueForm)
 // Vue.use(VueValidator)
 $(function() {
     FastClick.attach(document.body);
-})
-
-let url = window.location.href
-
-fetch(rest.basicUrl + '/webres/wechat/core/getJsSignature.jsp?urlPath=' + url, {method: 'GET', mode: 'cors', cache: 'default'})
-.then(response => response.json())
-.then(res => {
-  let config = {
-    debug: false,
-    appId: 'wxe1ec4830f40317a0',
-    signature: res.data.signature,
-    timestamp: res.data.timestamp,
-    nonceStr: res.data.nonceStr,
-    jsApiList: [
-      'chooseImage',
-      'previewImage',
-      'uploadImage',
-      'downloadImage'
-    ]
-  }
-
-  wx.config(config)
-  // wx.ready(() => {
-  //   init()
-  // })
-  init()
-
-  wx.error(function(res){
-    console.log(res)
-  })
 })
 
 function getUrlQueryString() {
@@ -310,25 +281,32 @@ function init () {
   }
 }
 
-// function initConfig () {
-//   var now = Date.now()
-//   var signature = ['NaRcJk4WeChat', now, '123332'].sort().join('')
-//   var timestamp = now
-//   var nonce = '123332'
-//
-//   return {
-//     debug: true,
-//     appId: 'wxe1ec4830f40317a0',
-//     signature: sha1(signature),
-//     timestamp: timestamp,
-//     nonceStr: nonce,
-//     jsApiList: [
-//       'chooseImage',
-//       'previewImage',
-//       'uploadImage',
-//       'downloadImage'
-//     ]
-//   }
-// }
-//
-// var config = initConfig()
+function wechatInit() {
+  let url = window.location.href
+
+  $.get(rest.basicUrl + '/webres/wechat/core/getJsSignature.jsp?urlPath=' + url)
+  .then(res => {
+    let config = {
+      debug: false,
+      appId: 'wxe1ec4830f40317a0',
+      signature: res.data.signature,
+      timestamp: res.data.timestamp,
+      nonceStr: res.data.nonceStr,
+      jsApiList: [
+        'chooseImage',
+        'previewImage',
+        'uploadImage',
+        'downloadImage'
+      ]
+    }
+
+    wx.config(config)
+    wx.ready(function() {
+      init()
+    })
+    wx.error(function(res){
+    })
+  })
+}
+
+wechatInit()
