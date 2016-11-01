@@ -24,26 +24,94 @@ module.exports = {
   basicUrl: basicUrl,
   chooseImage() {
     return new Promise((resolve, reject) => {
-      wx.chooseImage({
-          count: 1, // 默认9
-          sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
-          sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
-          success: function (res) {
+      let url = window.location.href
+
+      $.ajax({
+        type: 'post',
+        url: rest.basicUrl + '/webres/wechat/core/getJsSignature.jsp',
+        data: {urlPath: url},
+        dataType: 'json'
+      })
+      .then(res => {
+        if (typeof res === 'string') res = JSON.parse(res)
+
+        let config = {
+          debug: true,
+          appId: 'wxe1ec4830f40317a0',
+          signature: res.data.signature,
+          timestamp: res.data.timestamp,
+          nonceStr: res.data.nonceStr,
+          jsApiList: [
+            'chooseImage',
+            'previewImage',
+            'uploadImage',
+            'downloadImage'
+          ]
+        }
+
+        wx.config(config)
+        wx.ready(() => {
+          console.log('ready')
+          wx.chooseImage({
+            count: 1, // 默认9
+            sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+            sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+            success: function (res) {
               let localIds = res.localIds; // 返回选定照片的本地ID列表，localId可以作为img标签的src属性显示图片
               resolve(localId)
-          }
+            }
+          })
+          // init()
+        })
+        wx.error(function(res){
+          console.log(res)
+        })
       })
     })
   },
   uploadImage (localId) {
     return new Promise((resolve, reject) => {
-      wx.uploadImage({
-        localId: localId, // 需要上传的图片的本地ID，由chooseImage接口获得
-        isShowProgressTips: 1, // 默认为1，显示进度提示
-        success: function (res) {
-          let serverId = res.serverId; // 返回图片的服务器端ID
-          resolve(serverId)
+      let url = window.location.href
+
+      $.ajax({
+        type: 'post',
+        url: rest.basicUrl + '/webres/wechat/core/getJsSignature.jsp',
+        data: {urlPath: url},
+        dataType: 'json'
+      })
+      .then(res => {
+        if (typeof res === 'string') res = JSON.parse(res)
+
+        let config = {
+          debug: true,
+          appId: 'wxe1ec4830f40317a0',
+          signature: res.data.signature,
+          timestamp: res.data.timestamp,
+          nonceStr: res.data.nonceStr,
+          jsApiList: [
+            'chooseImage',
+            'previewImage',
+            'uploadImage',
+            'downloadImage'
+          ]
         }
+
+        wx.config(config)
+        wx.ready(() => {
+          console.log('ready')
+          wx.uploadImage({
+            localId: localId, // 需要上传的图片的本地ID，由chooseImage接口获得
+            isShowProgressTips: 1, // 默认为1，显示进度提示
+            success: function (res) {
+              let serverId = res.serverId; // 返回图片的服务器端ID
+              resolve(serverId)
+            }
+          })
+          // init()
+        })
+        wx.error(function(res){
+          console.log(res)
+        })
       })
     })
   },
