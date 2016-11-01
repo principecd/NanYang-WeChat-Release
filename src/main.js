@@ -284,8 +284,15 @@ function init () {
 function wechatInit() {
   let url = window.location.href
 
-  $.get(rest.basicUrl + '/webres/wechat/core/getJsSignature.jsp?urlPath=' + url)
+  $.ajax({
+    type: 'post',
+    url: rest.basicUrl + '/webres/wechat/core/getJsSignature.jsp',
+    data: {urlPath: url},
+    dataType: 'json'
+  })
   .then(res => {
+    if (typeof res === 'string') res = JSON.parse(res)
+
     let config = {
       debug: false,
       appId: 'wxe1ec4830f40317a0',
@@ -301,10 +308,11 @@ function wechatInit() {
     }
 
     wx.config(config)
-    wx.ready(function() {
+    wx.ready(() => {
       init()
     })
     wx.error(function(res){
+      console.log(res)
     })
   })
 }
