@@ -28,7 +28,7 @@ module.exports = {
 
       $.ajax({
         type: 'post',
-        url: rest.basicUrl + '/webres/wechat/core/getJsSignature.jsp',
+        url: basicUrl + '/webres/wechat/core/getJsSignature.jsp',
         data: {urlPath: url},
         dataType: 'json'
       })
@@ -75,7 +75,7 @@ module.exports = {
 
       $.ajax({
         type: 'post',
-        url: rest.basicUrl + '/webres/wechat/core/getJsSignature.jsp',
+        url: basicUrl + '/webres/wechat/core/getJsSignature.jsp',
         data: {urlPath: url},
         dataType: 'json'
       })

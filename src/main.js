@@ -6,7 +6,7 @@ import sha1 from 'sha1'
 import rest from './rest'
 import Vuex from 'vuex'
 import FastClick from 'fastclick'
-// require('materialize-css/js/materialize')
+require('materialize-css/js/leanModal')
 
 var Vue = require('vue')
 // var VueValidator = require('vue-validator')

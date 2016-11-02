@@ -117,7 +117,6 @@ export default {
   },
   methods: {
     logout() {
-
       localStorage.clear()
       return this.$router.go({name: 'Login'})
     },
