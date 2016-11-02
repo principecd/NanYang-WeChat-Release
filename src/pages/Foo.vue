@@ -1,7 +1,6 @@
 <template lang="jade">
-ul
-  li(v-for='item in i')
-    h1 item
+div
+  h1 404
 </template>
 
 <script>

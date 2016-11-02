@@ -167,7 +167,8 @@ function init () {
             return to.next()
           }
           else {
-            return to.redirect('/Login')
+            to.abort()
+            router.go({name:"Login"})
             // return router.go({name: 'Login'})
             // return to.redirect('Login')
           }
@@ -217,6 +218,9 @@ function init () {
           }
         },
         '/Foo': {
+          component: require('./pages/Foo.vue')
+        },
+        '/*': {
           component: require('./pages/Foo.vue')
         },
         '/Login': {
@@ -271,9 +275,10 @@ function init () {
         return to.next()
       }
       else {
+        console.log(to)
         // window.location.href = '/Login'
-        // return router.go({name: 'Login'})
-        return to.redirect('/Login')
+        to.abort()
+        router.go({name:"Login"})
       }
     })
 
