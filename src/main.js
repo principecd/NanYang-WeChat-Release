@@ -301,7 +301,7 @@ $.ajax({
   if (typeof res === 'string') res = JSON.parse(res)
 
   let config = {
-    debug: true,
+    debug: false,
     appId: 'wxe1ec4830f40317a0',
     signature: res.data.signature,
     timestamp: res.data.timestamp,
