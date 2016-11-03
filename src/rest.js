@@ -24,34 +24,7 @@ module.exports = {
   basicUrl: basicUrl,
   chooseImage() {
     return new Promise((resolve, reject) => {
-      let url = window.location.href
 
-      $.ajax({
-        type: 'post',
-        url: basicUrl + '/webres/wechat/core/getJsSignature.jsp',
-        data: {urlPath: url},
-        dataType: 'json'
-      })
-      .then(res => {
-        if (typeof res === 'string') res = JSON.parse(res)
-
-        let config = {
-          debug: true,
-          appId: 'wxe1ec4830f40317a0',
-          signature: res.data.signature,
-          timestamp: res.data.timestamp,
-          nonceStr: res.data.nonceStr,
-          jsApiList: [
-            'chooseImage',
-            'previewImage',
-            'uploadImage',
-            'downloadImage'
-          ]
-        }
-
-        wx.config(config)
-        wx.ready(() => {
-          console.log('ready')
           wx.chooseImage({
             count: 1, // 默认9
             sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
@@ -61,43 +34,12 @@ module.exports = {
               resolve(localId)
             }
           })
-          // init()
-        })
-        wx.error(function(res){
-          console.log(res)
-        })
-      })
+
     })
   },
   uploadImage (localId) {
     return new Promise((resolve, reject) => {
-      let url = window.location.href
 
-      $.ajax({
-        type: 'post',
-        url: basicUrl + '/webres/wechat/core/getJsSignature.jsp',
-        data: {urlPath: url},
-        dataType: 'json'
-      })
-      .then(res => {
-        if (typeof res === 'string') res = JSON.parse(res)
-
-        let config = {
-          debug: true,
-          appId: 'wxe1ec4830f40317a0',
-          signature: res.data.signature,
-          timestamp: res.data.timestamp,
-          nonceStr: res.data.nonceStr,
-          jsApiList: [
-            'chooseImage',
-            'previewImage',
-            'uploadImage',
-            'downloadImage'
-          ]
-        }
-
-        wx.config(config)
-        wx.ready(() => {
           console.log('ready')
           wx.uploadImage({
             localId: localId, // 需要上传的图片的本地ID，由chooseImage接口获得
@@ -108,11 +50,7 @@ module.exports = {
             }
           })
           // init()
-        })
-        wx.error(function(res){
-          console.log(res)
-        })
-      })
+
     })
   },
   delete () {

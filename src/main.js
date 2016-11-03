@@ -285,4 +285,34 @@ function init () {
     router.start(App, '#app')
   }
 }
+
 init()
+
+let url = window.location.href
+
+
+$.ajax({
+  type: 'post',
+  url: rest.basicUrl + '/webres/wechat/core/getJsSignature.jsp',
+  data: {urlPath: url},
+  dataType: 'json'
+})
+.then(res => {
+  if (typeof res === 'string') res = JSON.parse(res)
+
+  let config = {
+    debug: true,
+    appId: 'wxe1ec4830f40317a0',
+    signature: res.data.signature,
+    timestamp: res.data.timestamp,
+    nonceStr: res.data.nonceStr,
+    jsApiList: [
+      'chooseImage',
+      'previewImage',
+      'uploadImage',
+      'downloadImage'
+    ]
+  }
+
+  wx.config(config)
+})
