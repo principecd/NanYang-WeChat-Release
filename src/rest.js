@@ -30,7 +30,7 @@ module.exports = {
         sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
         success: function (res) {
           let localIds = res.localIds; // 返回选定照片的本地ID列表，localId可以作为img标签的src属性显示图片
-
+          console.log('localIds:', res)
           resolve(localIds[0])
         }
       })
@@ -43,7 +43,7 @@ module.exports = {
         isShowProgressTips: 1, // 默认为1，显示进度提示
         success: function (res) {
           let serverId = res.serverId; // 返回图片的服务器端ID
-
+          console.log('serverId:', res)
           resolve(serverId)
         }
       })
