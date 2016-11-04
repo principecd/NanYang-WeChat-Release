@@ -148,12 +148,12 @@ module.exports = {
       // }, errorCallback)
     })
   },
-  postFile(user, query, wxMediaId, url) {
+  postFile(user, query, wcMediaId, url) {
     return new Promise((resolve, reject) => {
       var data = init()
 
       data = _.extend(data, query, user)
-      data.wxMediaId = wxMediaId
+      data.wcMediaId = wcMediaId
       url = basicUrl + url + '?'
 
       Object.keys(data).forEach(key => {
