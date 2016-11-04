@@ -93,6 +93,10 @@
               //-     )
               a.btn.btn-up(@click='uploadImg')
                 .fileupload-button 添加业绩成果附件
+              .col.s12(v-for='src in media')
+                .card
+                  .card-image
+                    img(v-bind:src='src', style='width: 100%')
         .modal-footer
           a(class="btn waves-effect waves-light" v-on:click='submitData') 保存
           a(class="modal-action modal-close waves-effect waves-green btn-flat", @click='clear') 取消
@@ -130,6 +134,7 @@ export default{
   // },
   data () {
     return {
+      media: [],
       loading: false,
       fileUploadUrl: rest.basicUrl + '/rccore/RcxxFile/insert' + this.beforeUpload(),
       yjcgType: [],
@@ -242,10 +247,11 @@ export default{
       vm.loading = true
       chooseImage()
         .then(localId => {
+          this.media.push(localId)
           return uploadImage(localId)
         })
         .then(serverId => {
-          return rest.get(this.user, formData, '/rccore/RcxxFile/insert')
+          return rest.postFile(this.user, formData, serverId, '/rccore/RcxxFile/insert')
         })
         .then(res => {
           vm.loading = false

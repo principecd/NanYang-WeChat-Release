@@ -67,6 +67,10 @@
           //-     name='fileData',
           //-     label='添加荣誉证书'
           //-     )
+          .col.s12(v-for='src in media')
+            .card
+              .card-image
+                img(v-bind:src='src', style='width: 100%')
       .col.s12(v-for='item in fileList')
         .card
           .card-image
@@ -95,6 +99,7 @@ var localStorage = window.localStorage
 export default{
   data () {
     return {
+      media: [],
       loading: false,
       fileUploadUrl: rest.basicUrl + '/rccore/RcxxFile/insert' + this.beforeUpload(),
       dengJi: [],
@@ -209,10 +214,11 @@ export default{
       vm.loading = true
       chooseImage()
         .then(localId => {
+          this.media.push(localId)
           return uploadImage(localId)
         })
         .then(serverId => {
-          return rest.get(this.user, formData, '/rccore/RcxxFile/insert')
+          return rest.postFile(this.user, formData, serverId, '/rccore/RcxxFile/insert')
         })
         .then(res => {
           vm.loading = false

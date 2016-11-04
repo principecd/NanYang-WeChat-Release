@@ -43,7 +43,7 @@ module.exports = {
         isShowProgressTips: 1, // 默认为1，显示进度提示
         success: function (res) {
           let serverId = res.serverId; // 返回图片的服务器端ID
-          
+
           resolve(serverId)
         }
       })
@@ -146,6 +146,32 @@ module.exports = {
       //   // console.log(res)
       //   resolve(res.body)
       // }, errorCallback)
+    })
+  },
+  filePost(user, query, wxMediaId, url) {
+    return new Promise((resolve, reject) => {
+      var data = init()
+
+      data = _.extend(data, query, user)
+      data.wxMediaId = wxMediaId
+      url = basicUrl + url + '?'
+
+      Object.keys(data).forEach(key => {
+        url = url + key + '=' + data[key] + '&'
+      })
+
+      $.ajax({
+        type: 'post',
+        url: url,
+        data: data,
+        dataType: 'json',
+        beforeSend: function (xhr) {
+          xhr.overrideMimeType('text/html;charset=GBK')
+        }
+      })
+      .done(res => {
+        resolve(res)
+      })
     })
   },
   getOptions (dictCode) {

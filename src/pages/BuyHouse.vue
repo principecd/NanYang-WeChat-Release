@@ -136,6 +136,10 @@
       .fileupload-button 商品房购房合同（或购房发票和房产证）
     a.btn.btn-up(@click='uploadImg("XXZM")')
       .fileupload-button 房屋信息证明
+    .col.s12(v-for='src in media')
+      .card
+        .card-image
+          img(v-bind:src='src', style='width: 100%')
     button.waves-effect.waves-light.btn(@click='submitData') 保存
 
     //- table
@@ -177,6 +181,7 @@ export default{
   props: ['index'],
   data () {
     return {
+      media: [],
       loading: false,
       xb: [
         {value: '1', label: '男'},
@@ -325,10 +330,11 @@ export default{
       vm.loading = true
       chooseImage()
         .then(localId => {
+          this.media.push(localId)
           return uploadImage(localId)
         })
         .then(serverId => {
-          return rest.get(this.user, formData, '/rccore/RcpoFile/insert')
+          return rest.postFile(this.user, formData, serverId, '/rccore/RcpoFile/insert')
         })
         .then(res => {
           vm.loading = false

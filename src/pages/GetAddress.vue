@@ -93,6 +93,10 @@
     //-   .fileupload-button 户口本
     a.btn.btn-up(@click='uploadImg("ZXHKB")')
       .fileupload-button 随迁人员关系证明
+    .col.s12(v-for='src in media')
+      .card
+        .card-image
+          img(v-bind:src='src', style='width: 100%')
     button.waves-effect.waves-light.btn(@click='submitData') 保存
 </template>
 <script>
@@ -123,6 +127,7 @@ export default{
 
   data () {
     return {
+      media: [],
       xb: [
         {value: '1', label: '男'},
         {value: '0', label: '女'}
@@ -268,10 +273,11 @@ export default{
       vm.loading = true
       chooseImage()
         .then(localId => {
+          this.media.push(localId)
           return uploadImage(localId)
         })
         .then(serverId => {
-          return rest.get(this.user, formData, '/rccore/ZxFile/insert')
+          return rest.postFile(this.user, formData, serverId, '/rccore/ZxFile/insert')
         })
         .then(res => {
           vm.loading = false

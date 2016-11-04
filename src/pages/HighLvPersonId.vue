@@ -39,6 +39,10 @@
       .fileupload-button 资质材料
     a.btn.btn-up(@click='uploadImg("LDHTS")')
       .fileupload-button 劳动合同书
+    .col.s12(v-for='src in media')
+      .card
+        .card-image
+          img(v-bind:src='src', style='width: 100%')
     //- a.btn.btn-up
     //-   vue-file-upload(v-bind:url='fileUploadUrl("ZZCL")',
     //-     v-bind:files.sync = 'files',
@@ -87,6 +91,7 @@ export default{
   props: ['index'],
   data () {
     return {
+      media: [],
       cacheFile: [],
       cacheFile2: [],
       loading: false,
@@ -210,10 +215,11 @@ export default{
       vm.loading = true
       chooseImage()
         .then(localId => {
+          this.media.push(localId)
           return uploadImage(localId)
         })
         .then(serverId => {
-          return rest.get(this.user, formData, '/rccore/RcrdFile/insert')
+          return rest.postFile(this.user, formData, serverId, '/rccore/RcrdFile/insert')
         })
         .then(res => {
           vm.loading = false

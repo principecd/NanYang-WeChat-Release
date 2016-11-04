@@ -33,6 +33,10 @@
           //-     v-bind:label='item.label'
           //-     )
     hr
+    .col.s12(v-for='src in media')
+      .card
+        .card-image
+          img(v-bind:src='src', style='width: 100%')
     .col.s12(v-for='item in fileList')
       .card
         .card-image
@@ -68,6 +72,7 @@ export default{
   // },
   data () {
     return {
+      media: [],
       loading: false,
       zyxz: [],
       zyxl: [],
@@ -244,10 +249,11 @@ export default{
       vm.loading = true
       chooseImage()
         .then(localId => {
+          this.media.push(localId)
           return uploadImage(localId)
         })
         .then(serverId => {
-          return rest.get(this.user, formData, '/rccore/RcxxFile/insert')
+          return rest.postFile(this.user, formData, serverId, '/rccore/RcxxFile/insert')
         })
         .then(res => {
           vm.loading = false
