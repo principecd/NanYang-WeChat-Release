@@ -148,7 +148,7 @@ module.exports = {
       // }, errorCallback)
     })
   },
-  filePost(user, query, wxMediaId, url) {
+  postFile(user, query, wxMediaId, url) {
     return new Promise((resolve, reject) => {
       var data = init()
 
