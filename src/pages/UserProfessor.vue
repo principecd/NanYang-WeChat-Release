@@ -8,9 +8,6 @@
       li.tab.col.s3
         a(href="#fileContent") 专业职称证书
     #formContent
-      br
-      br
-      br
       .col.s12(v-for='item in list')
         .card(v-touch:swipeleft='swipeleft(item)')
           .card-content(@click='edit(item)')
@@ -57,6 +54,8 @@
           a(class="btn waves-effect waves-light" v-on:click='submitData') 保存
           a(class="modal-action modal-close waves-effect waves-green btn-flat", @click='clear') 取消
     #fileContent
+      br
+      br
         //- table
         //-   thead
         //-     tr

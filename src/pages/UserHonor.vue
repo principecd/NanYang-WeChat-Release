@@ -39,6 +39,7 @@
           a(class="btn waves-effect waves-light" v-on:click='submitData') 保存
           a(class="modal-action modal-close waves-effect waves-green btn-flat", @click='clear') 取消
     #fileContent
+      br
       div.col.s12
         //- table
         //-   thead
