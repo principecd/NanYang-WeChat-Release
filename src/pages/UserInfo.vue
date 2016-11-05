@@ -85,7 +85,9 @@
       label.active 邮编
     .col.s12
       label.active 人才类别
-      v-select(:value.sync='basic.rclbs', :options='rclbs')
+      .selectValue {{rclbsShow}}
+      select(v-model='rclbsCache', style='color: transparent')
+        option(v-for='item in rclbs', :value='item.value + "|" + item.label') {{item.label}}
     .col.s12
       br
       button(class="btn waves-effect waves-light" name="action" v-on:click='submitData') 保存
@@ -106,6 +108,7 @@ export default {
   // },
   data () {
     return {
+      rclbsCache: '',
       meida: false,
       loading: false,
       xb: [
@@ -120,6 +123,25 @@ export default {
     };
   },
   computed: {
+    rclbsShow: function() {
+      let report = '';
+      if (this.basic.rclbs) {
+        let arr = this.basic.rclbs.split(',')
+
+        arr.forEach(i => {
+          let a = this.rclbs.filter(k => {
+            return k.value === i
+          })
+
+          if (report.length) {
+            report = report + ',' + a[0].label
+          } else {
+            report = a[0].label
+          }
+        })
+      }
+      return report
+    }
   },
   init () {
     var me = this
@@ -137,12 +159,24 @@ export default {
   },
   detached () {
   },
+  watch: {
+    'rclbsCache': function(newVal, val) {
+      let i = newVal.split('|')
+
+      if (this.basic.rclbs && this.basic.rclbs.length) {
+        this.basic.rclbs = this.basic.rclbs + ',' + i[0]
+      } else {
+        this.basic.rclbs = i[0]
+      }
+    }
+  },
   ready () {
     var me = this
     this.loading = true
     rest.post(this.user, {}, '/rccore/Rcxx/get').then(res => {
       me.loading = false
       me.basic = res.data
+      me.rclbsShow = this.formatVal()
     })
   },
   attached () {
@@ -150,6 +184,25 @@ export default {
 
   },
   methods: {
+    formatVal() {
+        let report = '';
+        if (this.basic.rclbs) {
+          let arr = this.basic.rclbs.split(',')
+
+          arr.forEach(i => {
+            let a = this.rclbs.filter(k => {
+              return k.value === i
+            })
+
+            if (report.length) {
+              report = report + ',' + a[0].label
+            } else {
+              report = a[0].label
+            }
+          })
+        }
+        return report
+    },
     uploadImg () {
       let formData = {
         'Encoding': 'utf-8',
@@ -230,5 +283,25 @@ export default {
 select {
   width: 100%;
   overflow: hidden;
+}
+select {
+  background-color: transparent;
+  border: none;
+  border-bottom: 1px solid #9e9e9e;
+  border-radius: 0;
+  outline: none;
+  height: 3rem;
+  width: 100%;
+  font-size: 1rem;
+  margin: 0 0 20px 0;
+  padding: 0;
+  box-shadow: none;
+  box-sizing: content-box;
+  transition: all 0.3s;
+  display: block;
+}
+.selectValue {
+  margin-bottom: -40px;
+  margin-top: 25px;
 }
 </style>
