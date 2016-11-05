@@ -24,6 +24,9 @@
                   td.col.s6 {{item.zymc}}
                   th.col.s4 主管部门
                   td.col.s6 {{item.zgbmStr}}
+                tr
+                  th.col.s4 等级
+                  td.col.s6 {{item.zydjStr}}
           //- .card-delete(@click='deleteItem(item)')
           //-   h6 删除
       a(v-on:click="modal" class='btn-floating btn-large waves-effect waves-light red btn-add')
@@ -212,9 +215,9 @@ export default{
         'useType': 'ZCZS'
       }
       let vm = this
-      vm.loading = true
       chooseImage()
         .then(localId => {
+          vm.loading = true
           this.media.push(localId)
           return uploadImage(localId)
         })

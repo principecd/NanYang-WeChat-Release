@@ -83,6 +83,26 @@ module.exports = {
       // }, errorCallback)
     })
   },
+  getEnum(user, query, url) {
+    return new Promise((resolve, reject) => {
+      var data = init()
+
+      data = _.extend(data, query, user)
+      url = basicUrl + url
+      $.ajax({
+        type: 'get',
+        url: url,
+        data: data,
+        dataType: 'json',
+        beforeSend: function (xhr) {
+          xhr.overrideMimeType('text/html;charset=GBK')
+        }
+      })
+      .done(res => {
+        resolve(res)
+      })
+    })
+  },
   post (user, query, url) {
     return new Promise((resolve, reject) => {
       var data = init()

@@ -7,6 +7,12 @@
       input.validate(type="text" v-model='basic.xm' placeholder='', v-bind:disabled.once='basic.xm')
       label.active 用户名
     .col.s12
+      label.active(v-if='!meida')
+        span(style='font-size: 30px', @click='uploadImg').fa.fa-cloud-upload
+        span(style='margin-left: 10px') 头像
+      img(:src='media', v-if='meida', style='width: 50%')
+      hr
+    .col.s12
       label.active 性别
       v-select(:value.sync='basic.xb', :options='xb')
     .input-field.col.s12
@@ -14,7 +20,7 @@
       label.active 出生年月
     .input-field.col.s12
       input(type="text" v-model='basic.sfz' placeholder='', v-bind:disabled.once='basic.sfz')
-      label.active 身份证（护照）
+      label.active {{basic.zjlx === 'sfz' ? '身份证' : '护照'}}
     .input-field.col.s12
       input(type="text" v-model='basic.zym' placeholder='')
       label.active 曾用命
@@ -100,6 +106,7 @@ export default {
   // },
   data () {
     return {
+      meida: false,
       loading: false,
       xb: [
         {value: '1', label: '男'},
@@ -143,6 +150,28 @@ export default {
 
   },
   methods: {
+    uploadImg () {
+      let formData = {
+        'Encoding': 'utf-8',
+        'Rpencoding': 'utf-8',
+        '_x-requested-with': true,
+        'rcId': this.user.rcId,
+        'useType': 'RCXXZP'
+      }
+      let vm = this
+      chooseImage()
+        .then(localId => {
+          vm.loading = true
+          this.media = localId
+          return uploadImage(localId)
+        })
+        .then(serverId => {
+          return rest.postFile(this.user, formData, serverId, '/rccore/RcxxFile/insert')
+        })
+        .then(res => {
+          vm.loading = false
+        })
+    },
     rebuildOptions(options) {
       var report = []
       options.forEach(option => {

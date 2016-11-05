@@ -2,20 +2,20 @@
 .col.s12
   v-loading(:show='loading')
   div.col.s12
-    table
-      thead
-        tr
-          th(style='text-align: center') 文件名
-          th(style='text-align: center') 进度
-          th(style='text-align: center') 状态
-          th(style='text-align: center') 操作
-      tbody
-        tr(v-for='file in files', style='text-align: center')
-          td(v-text='file.name', style='text-align: center')
-          td(v-text='file.progress', style='text-align: center')
-          td(v-text='onStatus(file)', style='text-align: center')
-          td(style='text-align: center')
-            button(type='button',@click="uploadItem(file)") 上传
+    //- table
+    //-   thead
+    //-     tr
+    //-       th(style='text-align: center') 文件名
+    //-       th(style='text-align: center') 进度
+    //-       th(style='text-align: center') 状态
+    //-       th(style='text-align: center') 操作
+    //-   tbody
+    //-     tr(v-for='file in files', style='text-align: center')
+    //-       td(v-text='file.name', style='text-align: center')
+    //-       td(v-text='file.progress', style='text-align: center')
+    //-       td(v-text='onStatus(file)', style='text-align: center')
+    //-       td(style='text-align: center')
+    //-         button(type='button',@click="uploadItem(file)") 上传
     .fixed-action-btn(style="bottom: 45px; right: 54px;")
       a.btn-floating.btn-large.red
         span.fa.fa-plus
@@ -246,9 +246,9 @@ export default{
         'useType': useType
       }
       let vm = this
-      vm.loading = true
       chooseImage()
         .then(localId => {
+          vm.loading = true
           this.media.push(localId)
           return uploadImage(localId)
         })

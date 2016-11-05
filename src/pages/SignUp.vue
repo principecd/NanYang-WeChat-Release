@@ -50,6 +50,14 @@ export default {
   computed: {},
   init() {
     if (this.$router._currentRoute.query) this.user = this.$router._currentRoute.query
+
+    let q = {
+      p: 'tsinnet/mbmodel/rccore/cnst/Zjlx'
+    }
+
+    rest.getEnum(this.user, q, '/enum/enumjs').then(res => {
+      console.log(res)
+    })
   },
   ready() {
     console.log(this.$router)

@@ -212,9 +212,9 @@ export default{
         'useType': 'RYZS'
       }
       let vm = this
-      vm.loading = true
       chooseImage()
         .then(localId => {
+          vm.loading = true
           this.media.push(localId)
           return uploadImage(localId)
         })
