@@ -97,7 +97,8 @@
 import rest from '../rest'
 import vSelect from './VSelect.vue'
 import VLoading from './VLoading.vue'
-
+import { uploadImage } from '../rest'
+import { chooseImage } from '../rest'
 var localStorage = window.localStorage
 
 export default {
