@@ -9,7 +9,7 @@
         a(href="#fileContent") 专业职称证书
     #formContent
       .col.s12(v-for='item in list')
-        .card(v-touch:swipeleft='swipeleft(item)')
+        .card
           .card-content(@click='edit(item)')
             table
               thead
@@ -27,8 +27,8 @@
                 tr
                   th.col.s4 等级
                   td.col.s6 {{item.zydjStr}}
-          //- .card-delete(@click='deleteItem(item)')
-          //-   h6 删除
+          .card-action
+            a(@click='deleteItem(item.zyzcId)') 删除
       a(v-on:click="modal" class='btn-floating btn-large waves-effect waves-light red btn-add')
         span.fa.fa-plus
       .modal#modal1.col.s12.bottom-sheet
@@ -240,7 +240,7 @@ export default{
     },
     deleteItem (id) {
       this.loading = true
-      rest.post(this.user, {zyzcId: id}, '/rccore/Rczyzc/delete').then(res => {
+      rest.delete(this.user, {zyzcId: id}, '/rccore/Rczyzc/delete').then(res => {
         this.loading = false
 
         this.getList()

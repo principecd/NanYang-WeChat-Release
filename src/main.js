@@ -6,6 +6,7 @@ import sha1 from 'sha1'
 import rest from './rest'
 import Vuex from 'vuex'
 import FastClick from 'fastclick'
+import VueTouch from 'vue-touch'
 require('materialize-css/js/leanModal')
 
 var Vue = require('vue')
@@ -17,6 +18,7 @@ Vue.use(Vuex)
 Vue.use(VueRouter)
 Vue.use(require('vue-animated-list'))
 Vue.use(vueForm)
+Vue.use(VueTouch)
 
 // Vue.use(VueValidator)
 $(function() {

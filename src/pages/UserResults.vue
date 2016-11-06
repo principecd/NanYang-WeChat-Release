@@ -3,32 +3,30 @@
   v-loading(:show='loading')
   div
     #formContent
-      .col.s12
-        ul.collapsible(data-collapsible="accordion")
-          li(v-for='item in list')
-            div.collapsible-header
-              table.responsive-table
-                thead
-                  tr
-                    th 业绩成果类型
-                    th 名称
-                    th 所属乡镇
-                    th 负责人
-                    th 等级
-                    th 层次
-                tbody
-                  tr
-                    td {{item.yjcgType_Str}}
-                    td {{item.name_Str}}
-                    td {{item.csxzId_Str}}
-                    td {{item.fzMan}}
-                    td {{item.dengji_Str}}
-                    td {{item.cengci_Str}}
-            div.collapsible-body(style='text-align: center')
-              //- a.waves-effect.waves-green.btn-flat(@click='edit') 修改
-              div(v-for='foo in fileList')
-                i.fa.fa-spinner.fa-spin(style='font-size: 40px; color: #666;', v-if='foo.yjId !== item.yjId')
-                img(style='width: 100%', v-bind:src='getSrc(foo.fileId)', v-if='foo.yjId === item.yjId')
+      .col.s12(v-for='item in list')
+        .card
+          .card-img
+            img(v-for='foo in fileList', style='width: 100%', v-bind:src='getSrc(foo.fileId)', v-if='foo.yjId === item.yjId')
+          .card-content(@click='edit(item)')
+            table.responsive-table
+              thead
+                tr
+                  th 业绩成果类型
+                  th 名称
+                  th 所属乡镇
+                  th 负责人
+                  th 等级
+                  th 层次
+              tbody
+                tr
+                  td {{item.yjcgType_Str}}
+                  td {{item.name_Str}}
+                  td {{item.csxzId_Str}}
+                  td {{item.fzMan}}
+                  td {{item.dengji_Str}}
+                  td {{item.cengci_Str}}
+          .card-action
+            a(@click='deleteItem(item.yjId)') 删除
       a(v-on:click="modal" class='btn-floating btn-large waves-effect waves-light red btn-add')
         span.fa.fa-plus
       .modal#modal1.col.s12.bottom-sheet
@@ -236,6 +234,10 @@ export default{
     });
   },
   methods: {
+    edit(item) {
+      this.postData = item
+      $('#modal1').openModal()
+    },
     uploadImg () {
       let formData = {
         'Encoding': 'utf-8',

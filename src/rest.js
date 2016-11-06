@@ -49,12 +49,13 @@ module.exports = {
       })
     })
   },
-  delete () {
+  delete (user, query, url) {
     return new Promise((resolve, reject) => {
       var data = init()
 
       data = _.assignIn(data, query, user)
       url = basicUrl + url
+      console.log(data)
       $.ajax({
         type: 'post',
         url: url,

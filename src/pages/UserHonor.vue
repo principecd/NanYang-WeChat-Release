@@ -9,8 +9,8 @@
         a(href="#fileContent") 荣誉证书
     #formContent
       .col.s12(v-for='item in list')
-        .card(@click='edit(item)')
-          .card-content
+        .card
+          .card-content(@click='edit(item)')
             table
               thead
               tbody
@@ -19,6 +19,8 @@
                   td.col.s6 {{item.dengJi_Str}}
                   th.col.s4 荣誉称号
                   td.col.s6 {{item.rych_Str}}
+          .card-action
+            a(@click='deleteItem(item.ryId)') 删除
       a(v-on:click="modal" class='btn-floating btn-large waves-effect waves-light red btn-add')
         span.fa.fa-plus
       .modal#modal1.col.s12.bottom-sheet
@@ -41,33 +43,10 @@
     #fileContent
       br
       div.col.s12
-        //- table
-        //-   thead
-        //-     tr
-        //-       th(style='text-align: center') 文件名
-        //-       th(style='text-align: center') 进度
-        //-       th(style='text-align: center') 状态
-        //-       th(style='text-align: center') 操作
-        //-   tbody
-        //-     tr(v-for='file in files', style='text-align: center')
-        //-       td(v-text='file.name', style='text-align: center')
-        //-       td(v-text='file.progress', style='text-align: center')
-        //-       td(v-text='onStatus(file)', style='text-align: center')
-        //-       td(style='text-align: center')
-        //-         button(type='button',@click="uploadItem(file)") 上传
         .col.s12
           br
           a.btn.btn-up(@click='uploadImg')
             .fileupload-button 添加荣誉证书
-          //- a.btn.btn-up
-          //-   vue-file-upload(v-bind:url='fileUploadUrl',
-          //-     v-bind:files.sync = 'files',
-          //-     v-bind:filters = "filters",
-          //-     v-bind:events = 'cbEvents',
-          //-     v-bind:request-options = "reqopts"
-          //-     name='fileData',
-          //-     label='添加荣誉证书'
-          //-     )
           .col.s12(v-for='src in media')
             .card
               .card-image

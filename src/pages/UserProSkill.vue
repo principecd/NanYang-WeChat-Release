@@ -4,8 +4,8 @@
     .row
       v-loading(:show='loading')
       .col.s12(v-for='item in list')
-        .card(@click='edit(item)')
-          .card-content
+        .card
+          .card-content(@click='edit(item)')
             table
               thead
               tbody
@@ -17,8 +17,8 @@
                 tr
                   th.col.s4 主管部门
                   td.col.s6 {{item.zgbmStr}}
-          //- .card-action
-          //-   a(@click='deleteItem(item.zyzcId)') 删除
+          .card-action
+            a(@click='deleteItem(item.zyjnId)') 删除
     a(v-on:click="modal" class='btn-floating btn-large waves-effect waves-light red btn-add')
       span.fa.fa-plus
     .modal#modal1.col.s12.bottom-sheet
@@ -94,7 +94,7 @@ export default{
       $('#modal1').openModal()
     },
     deleteItem(id) {
-      rest.post(this.user, {zyjnId: id}, '/rccore/Rczyjn/delete').then(res => {
+      rest.delete(this.user, {zyjnId: id}, '/rccore/Rczyjn/delete').then(res => {
 
         this.getList()
       })
