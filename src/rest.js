@@ -184,7 +184,7 @@ module.exports = {
       $.ajax({
         type: 'post',
         url: url,
-        data: data,
+        data: {},
         dataType: 'json',
         beforeSend: function (xhr) {
           xhr.overrideMimeType('text/html;charset=GBK')

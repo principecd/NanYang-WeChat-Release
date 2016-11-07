@@ -255,6 +255,8 @@ export default{
           return rest.postFile(this.user, formData, serverId, '/rccore/ZxFile/insert')
         })
         .then(res => {
+          if (!res.success) return Materialize.toast(res.message, 4000)
+
           vm.loading = false
         })
     },
