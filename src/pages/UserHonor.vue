@@ -14,9 +14,11 @@
             table
               thead
               tbody
-                tr
+                tr(v-if='item.dengJi_Str')
                   th.col.s4 等级
                   td.col.s6 {{item.dengJi_Str}}
+                tr(v-if='item.rych_Str')
+
                   th.col.s4 荣誉称号
                   td.col.s6 {{item.rych_Str}}
           .card-action

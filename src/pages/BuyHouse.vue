@@ -19,7 +19,7 @@
       label.active 国籍籍贯
     .input-field.col.s12
       input.validate(type="text" v-model='basicData.idCard' placeholder='')
-      label.active 身份证号
+      label.active 身份证号(护照)
     .col.s12
       label.active 人才类别
       v-select(:value.sync='basicData.rclb', :options='rclb')
@@ -44,18 +44,18 @@
     .input-field.col.s12
       input.validate(type="text" v-model='basicData.remark' placeholder='')
       label.active 说明
-    h6 其他成员信息
+    h6 其他成员信息(直系)
     table
       thead
         th 姓名
         th 性别
         th 出生年月
-        th 身份证
+        th 身份证(护照)
         th 单位信息
       tbody
         tr(v-for='item in myChildren')
           td {{item.name}}
-          td {{item.sex}}
+          td {{item.sex === "1" ? "男" : "女" }}
           td {{item.birthday}}
           td {{item.idCard}}
           td {{item.dwInfo}}

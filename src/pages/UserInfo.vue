@@ -23,7 +23,7 @@
       label.active {{basic.zjlx === 'sfz' ? '身份证' : '护照'}}
     .input-field.col.s12
       input(type="text" v-model='basic.zym' placeholder='')
-      label.active 曾用命
+      label.active 曾用名
     .input-field.col.s12
       input(type="text" v-model='basic.mz' placeholder='')
       label.active 民族
@@ -57,7 +57,7 @@
         input(type="text" v-model='basic.zgxlyx' placeholder='')
         label.active 毕业学院
       .input-field.col.s12
-        input(type="text" v-model='basic.zgxlxl' placeholder='')
+        input(type="text" v-model='basic.zgxlzy' placeholder='')
         label.active 专业
       .col.s12(style='position: relative; margin: 7px 0; ')
         input#zgxl985(type="checkbox" v-model='basic.zgxl985' v-bind:true-value='"Y"' v-bind:false-value='"N"')
@@ -85,6 +85,7 @@
       label.active 邮编
     .col.s12
       label.active 人才类别
+      //- h1 {{basic.rclbs}}
       .selectValue {{rclbsShow}}
       select(v-model='rclbsCache', style='color: transparent')
         option(v-for='item in rclbs', :value='item.value + "|" + item.label') {{item.label}}
@@ -109,7 +110,7 @@ export default {
   // },
   data () {
     return {
-      rclbsCache: '',
+      rclbsCache: [],
       meida: false,
       loading: false,
       xb: [
@@ -125,10 +126,11 @@ export default {
   },
   computed: {
     rclbsShow: function() {
-      let report = '';
-      if (this.basic.rclbs) {
-        let arr = this.basic.rclbs.split(',')
-
+      let report = ''
+      if (this.basic.rclbs && typeof this.basic.rclbs !== 'undefined') {
+        if (typeof this.basic.rclbs === 'string') this.basic.rclbs = this.basic.rclbs.split(',')
+        let arr = this.basic.rclbs
+        console.log(arr)
         arr.forEach(i => {
           let a = this.rclbs.filter(k => {
             return k.value === i
@@ -163,11 +165,17 @@ export default {
   watch: {
     'rclbsCache': function(newVal, val) {
       let i = newVal.split('|')
-
       if (this.basic.rclbs && this.basic.rclbs.length) {
-        this.basic.rclbs = this.basic.rclbs + ',' + i[0]
+        if (typeof this.basic.rclbs === 'string') this.basic.rclbs = this.basic.rclbs.split(',')
+        let e = this.basic.rclbs.indexOf(i[0])
+        if (e > -1) {
+          this.basic.rclbs.splice(e, 1)
+        } else {
+          this.basic.rclbs.push(i[0])
+        }
       } else {
-        this.basic.rclbs = i[0]
+        this.basic.rclbs = []
+        this.basic.rclbs.push(i[0])
       }
     }
   },
@@ -177,7 +185,7 @@ export default {
     rest.post(this.user, {}, '/rccore/Rcxx/get').then(res => {
       me.loading = false
       me.basic = res.data
-      me.rclbsShow = this.formatVal()
+      // me.rclbsShow = this.formatVal()
     })
   },
   attached () {
@@ -245,7 +253,7 @@ export default {
       var me = this
       this.basic.isAdd = false
       this.loading = true
-
+      this.basic.rclbs = this.basic.rclbs.toString()
       rest.post(this.user, this.basic, '/rccore/Rcxx/save').then(res => {
         if (!res.success) return Materialize.toast(res.message, 4000)
 

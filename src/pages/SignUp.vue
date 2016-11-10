@@ -8,12 +8,17 @@
       label(v-bind:class='{active: user.mobilePhone}') 手机号码
     .input-field.col.s10
       i.fa.fa-credit-card.prefix
-      input.validate(type="text", name='lxrZj' v-model='user.lxrZj', v-form-ctrl, required, number)
-      label(v-bind:class='{active: user.lxrZj}') 身份证号码
+      v-select.validate(:options='zjlx', :value.sync='user.zjlx', style='width: calc(100% - 42px); margin-left: 42px; z-index: 2; position: relative') 证件类型
+      input.validate(type="text", name='lxrZj' v-model='user.lxrZj', v-form-ctrl, required, v-if='user.zjlx', placeholder='填入号码')
+      label(v-if='!user.zjlx', style='z-index: 1;') 身份证（护照）
+    //- .input-field.col.s10
+    //-   i.fa.fa-credit-card.prefix
+    //-   input.validate(type="text", name='lxrZj' v-model='user.lxrZj', v-form-ctrl, required)
+    //-   label(v-bind:class='{active: user.lxrZj}') 号码
     .input-field.col.s10
       i.fa.fa-user.prefix
       input.validate(type="text", name='rcName' v-model='user.rcName', v-form-ctrl, required, autocomplete="off")
-      label(v-bind:class='{active: user.rcName}') 用户名
+      label(v-bind:class='{active: user.rcName}') 姓名
     //- .input-field.col.s10
     //-   i.fa.fa-wechat.prefix
     //-   input.validate(type="text" v-model='user.wcOpenId' placeholder='')
@@ -36,11 +41,16 @@ import rest from '../rest'
 import VLoading from './VLoading.vue'
 var sha1 = require('sha1')
 import md5 from 'md5'
+import vSelect from './VSelect.vue'
 
 var localStorage = window.localStorage
 export default {
   data() {
     return {
+      zjlx: [
+        {value: 'sfz', label: '身份证'},
+        {value: 'hz', label: '护照'}
+      ],
       loading: false,
       user: {
       },
@@ -78,8 +88,9 @@ export default {
         }
 
         localStorage.setItem('baseInfo', JSON.stringify(baseInfo))
-        // return this.$router.go({name: 'Home'})
-        window.history.back()
+
+        return this.$router.go({name: 'Home'})
+        // window.history.back()
 
       })
     },
@@ -98,7 +109,8 @@ export default {
     },
   },
   components: {
-    VLoading
+    VLoading,
+    vSelect
   }
 };
 </script>

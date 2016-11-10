@@ -7,13 +7,13 @@
       label.active 补贴层次
       v-select(:value.sync='basicData.btcc', :options='sqcc')
     .col.s12
-      label.active 补贴标准（元）
+      label.active 补贴标准（元/月）
       v-select0(:value.sync='basicData.btje', :options='sqcc')
     .input-field.col.s12
       input.validate(type="text" v-model='basicData.btMonth' placeholder='如：3')
       label.active 补贴月份
     .input-field.col.s12
-      input.validate(type="text" v-model='basicData.sqnd' placeholder='')
+      input.validate(type="text" v-model='basicData.sqnd' placeholder='如：2016')
       label.active 申请年度
     button.waves-effect.waves-light.btn(@click='submitData') 保存
     //- br

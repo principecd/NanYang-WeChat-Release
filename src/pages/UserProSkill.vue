@@ -9,12 +9,13 @@
             table
               thead
               tbody
-                tr
+                tr(v-if='item.zyStr')
                   th.col.s4 专业
                   td.col.s6 {{item.zyStr}}
+                tr(v-if='item.zydjStr')
                   th.col.s4 等级
                   td.col.s6 {{item.zydjStr}}
-                tr
+                tr(v-if='item.zgbmStr')
                   th.col.s4 主管部门
                   td.col.s6 {{item.zgbmStr}}
           .card-action

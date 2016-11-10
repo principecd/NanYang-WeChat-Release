@@ -14,17 +14,22 @@
             table
               thead
               tbody
-                tr
+                tr(v-if='item.zshm')
+                  th.col.s4 证书号码
+                  td.col.s6 {{item.zshm}}
+                tr(v-if='item.zyxzStr')
                   th.col.s4 性质
                   td.col.s6 {{item.zyxzStr}}
+                tr(v-if='item.zyxlStr')
                   th.col.s4 系列
                   td.col.s6 {{item.zyxlStr}}
-                tr
+                tr(v-if='item.zymc')
                   th.col.s4 专业名称
                   td.col.s6 {{item.zymc}}
+                tr(v-if='item.zgbmStr')
                   th.col.s4 主管部门
                   td.col.s6 {{item.zgbmStr}}
-                tr
+                tr(v-if='item.zydjStr')
                   th.col.s4 等级
                   td.col.s6 {{item.zydjStr}}
           .card-action

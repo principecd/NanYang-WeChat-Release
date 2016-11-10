@@ -8,22 +8,33 @@
           .card-img
             img(v-for='foo in fileList', style='width: 100%', v-bind:src='getSrc(foo.fileId)', v-if='foo.yjId === item.yjId')
           .card-content(@click='edit(item)')
-            table.responsive-table
+            table
               thead
-                tr
-                  th 业绩成果类型
-                  th 名称
-                  th 所属乡镇
-                  th 负责人
-                  th 等级
-                  th 层次
+
               tbody
-                tr
+                tr(v-if='item.yjcgType_Str')
+                  th 业绩成果类型
+
                   td {{item.yjcgType_Str}}
+                tr(v-if='item.yjcgType_Str')
+                  th 名称
+
                   td {{item.name_Str}}
+                tr(v-if='item.yjcgType_Str')
+                  th 所属乡镇
+
                   td {{item.csxzId_Str}}
+                tr(v-if='item.yjcgType_Str')
+                  th 负责人
+
                   td {{item.fzMan}}
+                tr(v-if='item.yjcgType_Str')
+                  th 等级
+
                   td {{item.dengji_Str}}
+                tr(v-if='item.yjcgType_Str')
+                  th 层次
+
                   td {{item.cengci_Str}}
           .card-action
             a(@click='deleteItem(item.yjId)') 删除
@@ -250,14 +261,6 @@ export default{
         .then(localId => {
           vm.loading = true
           this.media.push(localId)
-          return uploadImage(localId)
-        })
-        .then(serverId => {
-          return rest.postFile(this.user, formData, serverId, '/rccore/RcxxFile/insert')
-        })
-        .then(res => {
-          if (!res.success) return Materialize.toast(res.message, 4000)
-          vm.loading = false
         })
     },
     clear() {
@@ -350,15 +353,22 @@ export default{
       rest.post(this.user, this.postData, '/rccore/Rcyj/save').then(res => {
         this.loading = false
         if (!res.success) return Materialize.toast(res.message, 4000)
-        if (files.length) {
-          files[0].upload()
+        if (media.length) {
           this.loading = true
-
           Materialize.toast('数据已保存，正在上传附件', 4000)
+
+          uploadImage(media[0])
+            .then(serverId => {
+              return rest.postFile(this.user, formData, serverId, '/rccore/RcxxFile/insert')
+            })
+            .then(res => {
+              if (!res.success) return Materialize.toast(res.message, 4000)
+              vm.loading = false
+            })
         }
+        Materialize.toast('保存成功', 2000)
         this.postData = {}
         me.getList()
-        // Materialize.toast('保存成功', 2000)
       })
     },
     getSrc (fileId) {

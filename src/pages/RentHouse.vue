@@ -19,7 +19,7 @@
       label.active 国籍籍贯
     .input-field.col.s12
       input.validate(type="text" v-model='basicData.sfz' placeholder='')
-      label.active 身份证号
+      label.active 身份证号(护照)
     .col.s12
       label.active 人才类别
       v-select(:value.sync='basicData.sqcc', :options='rclb')
