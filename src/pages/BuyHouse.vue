@@ -88,7 +88,7 @@
                 input(type="month" class="form-control" placeholder="出生年月" v-model="child.birthday")
             div.form-group
               div.col-lg-10
-                input(type="text" class="form-control" placeholder="身份证" v-model="child.idCard")
+                input(type="text" class="form-control" placeholder="身份证(护照)" v-model="child.idCard")
             div.form-group
               div.col-lg-10
                 input(type="text" class="form-control" placeholder="单位信息" v-model="child.dwInfo")
