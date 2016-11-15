@@ -46,7 +46,10 @@
             form.col.s12
               .col.s12
                 label.active 业绩成果类型
-                v-select(:options='yjcgType', :value.sync='postData.yjcgType')
+                v-select(:options='yjcgType', :value.sync='yjcgTypeChoose')
+              .col.s12
+                label.active 名称
+                v-select(:options='mc', :value.sync='postData.nameCombo')
               //- .col.s12
               //-   label.active 名称
               //-   v-select(:options='nameCode', :value.sync='postData.nameCode')
@@ -69,37 +72,11 @@
                 input.validate(type="text" v-model='postData.zyly' placeholder='')
                 label.active 业绩领域
               .col.s12
-                label.active 名称
-                v-select(:options='mc', :value.sync='postData.nameCombo')
-              .col.s12
                 label.active 等级
                 v-select(:options='dengji', :value.sync='postData.dengji')
               .col.s12
                 label.active 层次
                 v-select(:options='cengci', :value.sync='postData.cengci')
-              //- table
-              //-   thead
-              //-     tr
-              //-       th(style='text-align: center') 文件名
-              //-       th(style='text-align: center') 进度
-              //-       th(style='text-align: center') 状态
-              //-       //- th(style='text-align: center') action
-              //-   tbody
-              //-     tr(v-for='file in files', style='text-align: center')
-              //-       td(v-text='file.name', style='text-align: center')
-              //-       td(v-text='file.progress', style='text-align: center')
-              //-       td(v-text='onStatus(file)', style='text-align: center')
-              //-       //- td(style='text-align: center')
-              //-       //-   button(type='button',@click="uploadItem(file)") 上传
-              //- a.btn.btn-up
-              //-   vue-file-upload(v-bind:url='fileUploadUrl',
-              //-     v-bind:files.sync = 'files',
-              //-     v-bind:filters = "filters",
-              //-     v-bind:events = 'cbEvents',
-              //-     v-bind:request-options = "reqopts"
-              //-     name='fileData',
-              //-     label='添加业绩成果附件'
-              //-     )
               a.btn.btn-up(@click='uploadImg')
                 .fileupload-button 添加业绩成果附件
               .col.s12(v-for='src in media')
@@ -143,10 +120,12 @@ export default{
   // },
   data () {
     return {
+      yjcgTypeChoose: '',
       media: [],
       loading: false,
       fileUploadUrl: rest.basicUrl + '/rccore/RcxxFile/insert' + this.beforeUpload(),
       yjcgType: [],
+      yjcgTypeSelected: {},
       csxzId: [],
       zgbmId: [],
       dengji: [],
@@ -197,6 +176,38 @@ export default{
     var me = this
 
     this.user = JSON.parse(localStorage.getItem('baseInfo'))
+
+    // Rcyj_xsjlcg
+    // 参与(主导)学术交流成果
+    rest.getOptions('Rcyj_xsjlcg').then(res => {
+      me.yjcgTypeSelected['rcyj_xsjlcg'] = this.rebuildOptions(res)
+    })
+    // rcyj_kjjx
+    // 获得科技奖项
+    rest.getOptions('rcyj_kjjx').then(res => {
+      me.yjcgTypeSelected['rcyj_kjjx'] = this.rebuildOptions(res)
+    })
+    // rcyj_ggpx
+    // 参与(主导)公共培训
+    rest.getOptions('rcyj_ggpx').then(res => {
+      me.yjcgTypeSelected['rcyj_ggpx'] = this.rebuildOptions(res)
+    })
+    // Rcyj_qyjspt
+    // 从事(参与)企业技术平台
+    rest.getOptions('Rcyj_qyjspt').then(res => {
+      me.yjcgTypeSelected['rcyj_qyjspt'] = this.rebuildOptions(res)
+    })
+    // Rcyj_cycxpt
+    // 参与(主导)创业创新平台
+    rest.getOptions('Rcyj_cycxpt').then(res => {
+      me.yjcgTypeSelected['rcyj_cycxpt'] = this.rebuildOptions(res)
+    })
+    // rcyj_xyjg
+    // 从事(参与)产学研机构
+    rest.getOptions('rcyj_xyjg').then(res => {
+      me.yjcgTypeSelected['rcyj_xyjg'] = this.rebuildOptions(res)
+    })
+
     rest.getOptions('rcyj_yjType').then(res => {
       me.yjcgType = this.rebuildOptions(res)
     })
@@ -212,13 +223,20 @@ export default{
     rest.getOptions('rcyj_cengci').then(res => {
       me.cengci = this.rebuildOptions(res)
     })
-    rest.getOptions('rcyj_xyjg').then(res => {
-      me.mc = this.rebuildOptions(res)
-    })
+
 
     // rest.getOptions('rcyj_nameCode').then(res => {
     //   me.nameCode = this.rebuildOptions(res)
     // })
+  },
+  watch: {
+    'yjcgTypeChoose': function (newVal, oldVal) {
+      this.postData.yjcgType = newVal
+      console.log(newVal)
+      console.log(this.yjcgTypeSelected)
+      this.mc = this.yjcgTypeSelected[newVal]
+      console.log(this.mc)
+    }
   },
   ready () {
     var me = this
@@ -339,12 +357,12 @@ export default{
     submitData (e) {
       e.preventDefault()
       var me = this
-      this.postData.yjId = randomToken(32)
-      this.postData.isAdd = true
-      this.postData.nameText = this.mc.filter(v => {
-        return v.value === this.postData.nameCombo
-      })
-      this.postData.nameText = this.postData.nameText[0].label
+      this.postData.isAdd = this.postData.yjId ? 'false' : 'true'
+      this.postData.yjId = this.postData.yjId || randomToken(32)
+      // this.postData.nameText = this.mc.filter(v => {
+      //   return v.value === this.postData.nameCombo
+      // })
+      // this.postData.nameText = this.postData.nameText[0].label
       // this.postData.nameCombo = this.postData.nameText
 
       // if (!files.length) return Materialize.toast('')
@@ -352,6 +370,7 @@ export default{
       this.loading = true
       rest.post(this.user, this.postData, '/rccore/Rcyj/save').then(res => {
         this.loading = false
+        this.postData = {}
         if (!res.success) return Materialize.toast(res.message, 4000)
         if (media.length) {
           this.loading = true
@@ -367,7 +386,6 @@ export default{
             })
         }
         Materialize.toast('保存成功', 2000)
-        this.postData = {}
         me.getList()
       })
     },

@@ -13,11 +13,13 @@
     "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs"
   },
   "dependencies": {
+    "babel-polyfill": "^6.16.0",
     "fastclick": "^1.0.6",
     "jade": "1.11.0",
     "koa-sass-middleware": "^1.0.0",
     "materialize-css": "0.97.7",
     "md5": "^2.2.1",
+    "polyfill": "^0.1.0",
     "vue": "1.0.21",
     "vue-animated-list": "1.0.2",
     "vue-file-upload": "0.0.7",

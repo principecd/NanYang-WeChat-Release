@@ -320,11 +320,11 @@ export default{
       $('#modal1').closeModal()
       rest.post(this.user, this.postData, '/rccore/Rczyzc/save').then(res => {
         this.loading = false
+        this.postData = {}
         if (!res.success) return Materialize.toast(res.message, 4000)
 
         me.getList()
         Materialize.toast('保存成功', 2000)
-        this.postData = {}
       })
     },
     getSrc (fileId) {
