@@ -32,23 +32,19 @@
           //-     name='fileData',
           //-     v-bind:label='item.label'
           //-     )
-    hr
     .col.s12(v-for='src in media')
       .card
         .card-image
           img(v-bind:src='src', style='width: 100%')
-    .col.s12(v-for='item in fileList')
-      .card
+    hr
+    .col.s12(v-for='files in fileList')
+      .card(v-if='files.data.length')
+        .card-content
+          .card-title {{files.label}}
         .card-image
-          .preloader-wrapper.active(v-show='')
-            .spinner-layer.spinner-green-only
-              .circle-clipper.left
-                .circle
-              .gap-patch
-                .circle
-              .circle-clipper.right
-                .circle
-          img(v-bind:src='getSrc(item.fileId)')
+          div(v-for='item in files.data')
+            img(v-bind:src='getSrc(item.fileId)')
+            hr
 </template>
 <script>
 import rest from '../rest'
@@ -166,7 +162,33 @@ export default{
       list: [],
       files:[],
       //文件过滤器，只能上传图片
-      fileList: [],
+      fileList: {
+        // 身份证
+        SFZ: {
+          label: '身份证',
+          data: []
+        },
+        // 毕业证书
+        BYZS: {
+          label: '毕业证书',
+          data: []
+        },
+        // 学位证书
+        XWZS: {
+          label: '学位证书',
+          data: []
+        },
+        // 劳动合同书
+        LDHTS: {
+          label: '劳动合同书',
+          data: []
+        },
+        // 个人简历
+        GRJL: {
+          label: '个人简历',
+          data: []
+        }
+      },
       filters:[
         {
           name:"imageFilter",
@@ -229,8 +251,7 @@ export default{
       this.loading = true
       rest.get(this.user, {useType: req.reqopts.formData.useType}, '/rccore/RcxxFile/fileList').then(res => {
         this.loading = false
-
-        me.fileList = _.union(me.fileList, res.datas)
+        me.fileList[req.reqopts.formData.useType].data = res.datas
       })
     })
   },
@@ -256,6 +277,7 @@ export default{
           return rest.postFile(this.user, formData, serverId, '/rccore/RcxxFile/insert')
         })
         .then(res => {
+          this.media = []
           if (!res.success) return Materialize.toast(res.message, 4000)
 
           vm.loading = false
