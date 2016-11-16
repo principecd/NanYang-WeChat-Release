@@ -1,4 +1,4 @@
-// require("babel-polyfill")
+import 'es6-promise/auto'
 require('../static/css/materialize.min.css')
 require('../static/css/font-awesome.min.css')
 require('../static/css/animate.css')
