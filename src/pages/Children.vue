@@ -26,9 +26,9 @@
           td {{item.csny}}
           td {{item.xjdxxnj}}
           td {{item.sqxxnj}}
-    .card(v-for='item in cacheFile')
-      .card-content
-        img(style='width: 100%;', v-bind:src='getSrc(item.fileId)')
+    //- .card(v-for='item in cacheFile')
+    //-  .card-content
+    //-   img(style='width: 100%;', v-bind:src='getSrc(item.fileId)')
       //- .card-action
       //-   a(@click='deleteFlie(item)') 删除
     a(class='btn waves-effect waves-light red', @click='modal')
@@ -99,14 +99,33 @@
     //- br
     //- br
     br
-    a.btn.btn-up(@click='uploadImg("ZXHKB")')
-      .fileupload-button 户口本
-    a.btn.btn-up(@click='uploadImg("ZXCSZ")')
-      .fileupload-button 出生证
+
     .col.s12(v-for='src in media')
       .card
         .card-image
           img(v-bind:src='src', style='width: 100%')
+    .col.sl2
+    .card
+        .card-title 户口本
+        .card-content(v-show='!cacheFile||!cacheFile.length||cacheFile.length==0') 暂无数据
+        div(v-for='item in cacheFile')
+          .card-content
+            img(style='width: 100%;'  v-bind:src='getSrc(item.fileId)')
+          a(@click='deleteFile(item.fileId)') 删除
+          .card-action
+
+    .card
+        .card-title 出生证
+        .card-content(v-show='!cacheFile2||!cacheFile2.length||cacheFile2.length==0') 暂无数据
+        div(v-for='item in cacheFile2')
+           .card-content
+              img(style='width: 100%;'  v-bind:src='getSrc(item.fileId)')
+           a(@click='deleteFile(item.fileId)') 删除
+           .card-action
+    a.btn.btn-up(@click='uploadImg("ZXHKB")')
+      .fileupload-button 户口本
+    a.btn.btn-up(@click='uploadImg("ZXCSZ")')
+      .fileupload-button 出生证
     button.waves-effect.waves-light.btn(@click='submitData') 保存
 </template>
 <script>
@@ -141,6 +160,7 @@ export default{
         {value: '0', label: '女'}
       ],
       cacheFile: [],
+      cacheFile2:[],
       uploading: false,
       progress: 0,
       loading: false,
@@ -184,7 +204,7 @@ export default{
           if (done) {
             return this.$router.go('/')
           }
-          // this.getFileList()
+           this.getFileList()
         }
       },
       //xhr请求附带参数
@@ -203,7 +223,7 @@ export default{
   },
   init () {
     this.user = JSON.parse(localStorage.getItem('baseInfo'))
-
+    zxId = randomToken(32)
     var me = this
     rest.getOptions('rcrd_cengci').then(res => {
       me.sqcc = this.rebuildOptions(res)
@@ -219,15 +239,13 @@ export default{
         res.datas.forEach(v => {
           v.saveInDatebase = 'false'
         })
-
         this.myChildren  = res.datas
       })
     }
-    // if (this.dataValue) {
-    //   rest.post(this.user, {settledGuid: this.dataValue.settledGuid}, '/rccore/SettledAddressFile/fileList').then(res => {
-    //     this.cacheFile  = res.datas
-    //   })
-    // }
+     if (this.dataValue&&this.dataValue.zxId && this.$route.query.do) {
+      this.getFileList();
+     }
+
   },
   attached () {
     $('#sidenav-overlay').remove()
@@ -237,50 +255,69 @@ export default{
   },
   methods: {
     uploadImg (useType) {
+
+      let vm = this
       let formData = {
         'Encoding': 'utf-8',
         'Rpencoding': 'utf-8',
         '_x-requested-with': true,
-        'zxId': zxId,
+        'zxId': vm.basicData.zxId||zxId,
         'useType': useType
       }
-      let vm = this
-      chooseImage()
+
+      rest.resetConfig(window.location.href,function(){
+       chooseImage()
         .then(localId => {
           vm.loading = true
-          this.media.push(localId)
+          vm.media.push(localId)
           return uploadImage(localId)
         })
         .then(serverId => {
-          return rest.postFile(this.user, formData, serverId, '/rccore/ZxFile/insert')
+          return rest.postFile(vm.user, formData, serverId, '/rccore/ZxFile/insert')
         })
         .then(res => {
           if (!res.success) return Materialize.toast(res.message, 4000)
-
+          vm.media=[];
+          vm.getFileList();
           vm.loading = false
         })
+      });
+
     },
-    deleteFlie(item) {
+    deleteFile(fileId){
+      var vm = this;
+      vm.loading = true
+      rest.delete(vm.user, {refId: fileId}, '/rccore/ZxFile/delete').then(res => {
+      //alert(JSON.stringify(res))
+      if (!res.success) return Materialize.toast(res.message, 4000)
+        vm.loading = false
+        vm.getFileList();
+      })
+    },
+    /*
+    deleteFlie(fileId) {
+      var me = this
       this.loading = true
-      rest.post(this.user, {refId: item.fileId}, '/rccore/SettledAddressFile/delete').then(res => {
-        this.loading = false
+      rest.post(me.user, {refId: item.fileId}, '/rccore/SettledAddressFile/delete').then(res => {
+        me.loading = false
 
         if (!res.success) return Materialize.toast(res.message, 4000)
 
-        if (this.dataValue) {
-          rest.post(this.user, {zxId: this.dataValue.zxId}, '/rccore/Zxzn/list').then(res => {
-            this.cacheFile  = res.datas
+        if (me.dataValue) {
+          rest.post(me.user, {zxId: me.dataValue.zxId}, '/rccore/Zxzn/list').then(res => {
+            me.cacheFile  = res.datas
           })
         }
       })
     },
+    */
     closeModal() {
       $('#modal1').closeModal()
     },
     addChild() {
       this.child.znId = randomToken(32)
       this.child.rcId = this.user.rcId
-      this.child.zxId = this.basicData.zxId || zxId
+      this.child.zxId = this.basicData.zxId || this.zxId
       this.myChildren.push(this.child)
       $('#modal1').closeModal()
 
@@ -311,7 +348,7 @@ export default{
         'encoding' : 'utf-8',
         'rpencoding' : 'utf-8',
         '_x-requested-with' : true,
-        zxId: zxId,
+        zxId: this.basicData.zxId||zxId,
         useType: useType
       }
       var k = '?'
@@ -325,7 +362,7 @@ export default{
       var me = this
 
       rest.post(this.user, {}, '/rccore/Zx/page').then(res => {
-        this.list = res.datas
+        me.list = res.datas
       })
     },
     rebuildOptions (options) {
@@ -359,6 +396,7 @@ export default{
       file.upload()
     },
     submitData (e) {
+
       e.preventDefault()
       var me = this
 
@@ -377,9 +415,9 @@ export default{
       rest.post(this.user, this.basicData, '/rccore/Zx/entitySave').then(res => {
         me.loading = false
         if (!res.success) return Materialize.toast(res.message, 4000)
-        if (this.files.length) Materialize.toast('保存成功,正在上传', 2000)
+        if (me.files.length) Materialize.toast('保存成功,正在上传', 2000)
         else Materialize.toast('保存成功', 2000)
-        this.files.forEach(file => {
+        me.files.forEach(file => {
           file.upload()
         })
       })
@@ -397,25 +435,38 @@ export default{
         'rcId': this.user.rcId,
         refId: fileId
       }
-      var r = '/rccore/RcxxFile/download?'
+      var r =  rest.basicUrl +'/rccore/RcxxFile/download?'
 
       Object.keys(query).forEach(key => {
 
         r = r + key + '=' + query[key] + '&'
       })
-
       return r
     },
     modal () {
       $('#modal1').openModal()
     },
     getFileList () {
+
       var me = this
+       me.cacheFile  =[]
+       me.cacheFile2 = []
+      //rest.post(this.user, {useType: 'RYZS'}, '/rccore/RcxxFile/fileList').then(res => {
+      //  me.fileList = res.datas
+      //})
 
-      rest.post(this.user, {useType: 'RYZS'}, '/rccore/RcxxFile/fileList').then(res => {
+        rest.post(me.user, {useType: 'ZXHKB', zxId: me.basicData.zxId||zxId}, '/rccore/ZxFile/fileList').then(res => {
+          //alert('1');
+          //alert(JSON.stringify(res));
+          me.cacheFile  = res.datas
+        })
 
-        me.fileList = res.datas
-      })
+        rest.post(me.user, {useType: 'ZXCSZ', zxId: me.basicData.zxId||zxId}, '/rccore/ZxFile/fileList').then(res => {
+        //alert('2')
+        //alert(JSON.stringify(res));
+          me.cacheFile2  = res.datas
+        })
+
     }
   },
   components: {

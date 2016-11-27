@@ -59,16 +59,16 @@
           td {{item.birthday}}
           td {{item.idCard}}
           td {{item.dwInfo}}
-    .card(v-for='item in cacheFile')
-      .card-content
-        img(style='width: 100%;', v-bind:src='getSrc(item.fileId)')
-      .card-action
-        a(@click='deleteFlie(item)') 删除
-    .card(v-for='item in cacheFile')
-      .card-content
-        img(style='width: 100%;', v-bind:src='getSrc(item.fileId)')
-      .card-action
-        a(@click='deleteFlie(item)') 删除
+    //- .card(v-for='item in cacheFile')
+    //-   .card-content
+    //-     img(style='width: 100%;', v-bind:src='getSrc(item.fileId)')
+    //-   .card-action
+    //-     a(@click='deleteFlie(item)') 删除
+    //- .card(v-for='item in cacheFile2')
+    //-   .card-content
+    //-     img(style='width: 100%;', v-bind:src='getSrc(item.fileId)')
+    //-   .card-action
+    //-     a(@click='deleteFlie(item)') 删除
     a(class='btn waves-effect waves-light red', @click='modal')
       i.fa.fa-plus
     div.modal#modal1.bottom-sheet
@@ -132,6 +132,26 @@
     //-     name='fileData',
     //-     label='房屋信息证明'
     //-     )
+
+    .col.sl2
+    .card
+      .card-title 商品房购房合同（或购房发票和房产证）
+      .card-content(v-show='!cacheFile||!cacheFile.length||cacheFile.length==0') 暂无数据
+      div(v-for='item in cacheFile')
+        .card-content
+          img(style='width: 100%;'  v-bind:src='getSrc(item.fileId)')
+        a(@click='deleteFile(item)') 删除
+        .card-action
+
+    .card
+      .card-title 房屋信息证明
+      .card-content(v-show='!cacheFile2||!cacheFile2.length||cacheFile2.length==0') 暂无数据
+      div(v-for='item in cacheFile2')
+        .card-content
+          img(style='width: 100%;'  v-bind:src='getSrc(item.fileId)')
+        a(@click='deleteFile(item)') 删除
+        .card-action
+
     a.btn.btn-up(@click='uploadImg("GFHT")')
       .fileupload-button 商品房购房合同（或购房发票和房产证）
     a.btn.btn-up(@click='uploadImg("XXZM")')
@@ -281,7 +301,7 @@ export default{
   init () {
     this.user = JSON.parse(localStorage.getItem('baseInfo'))
     var me = this
-
+    poId = randomToken(32)
     rest.getOptions('rcrd_cengci').then(res => {
       me.rclb = this.rebuildOptions(res)
     })
@@ -302,15 +322,8 @@ export default{
         this.myChildren  = res.datas
       })
     }
-    if (this.dataValue) {
-      rest.post(this.user, {useType: 'GFHT', poId: this.dataValue.poId}, '/rccore/RcpoFile/fileList').then(res => {
-        this.cacheFile  = res.datas
-      })
-    }
-    if (this.dataValue) {
-      rest.post(this.user, {useType: 'XXZM', poId: this.dataValue.poId}, '/rccore/RcpoFile/fileList').then(res => {
-        this.cacheFile2  = res.datas
-      })
+    if (this.dataValue) {// &&this.dataValue.poId&& this.$route.query.do
+        this.getFileList();
     }
   },
   attached () {
@@ -323,42 +336,48 @@ export default{
         'Encoding': 'utf-8',
         'Rpencoding': 'utf-8',
         '_x-requested-with': true,
-        'rcId': rcId,
+        'poId': this.basicData.poId || poId,
+        'rcId' : this.user.rcId,
         'useType': useType
       }
       let vm = this
-      chooseImage()
+      rest.resetConfig(window.location.href,function(){
+        chooseImage()
         .then(localId => {
           vm.loading = true
-          this.media.push(localId)
+          vm.media.push(localId)
           return uploadImage(localId)
         })
         .then(serverId => {
-          return rest.postFile(this.user, formData, serverId, '/rccore/RcpoFile/insert')
+          return rest.postFile(vm.user, formData, serverId, '/rccore/RcpoFile/insert')
         })
         .then(res => {
           if (!res.success) return Materialize.toast(res.message, 4000)
-
+          vm.media=[];
+          vm.getFileList();
           vm.loading = false
         })
+      });
+
     },
-    deleteFlie(item) {
+    deleteFile(item) {
       this.loading = true
       rest.post(this.user, {refId: item.fileId}, '/rccore/RcpoFile/delete').then(res => {
         this.loading = false
 
         if (!res.success) return Materialize.toast(res.message, 4000)
-
-        if (this.dataValue) {
-          rest.post(this.user, {useType: 'GFHT'}, '/rccore/RcpoFile/fileList').then(res => {
-            this.cacheFile  = res.datas
-          })
-        }
-        if (this.dataValue) {
-          rest.post(this.user, {useType: 'XXZM'}, '/rccore/RcpoFile/fileList').then(res => {
-            this.cacheFile2  = res.datas
-          })
-        }
+        this.getFileList();
+         /*         if (this.dataValue) {
+                    rest.post(this.user, {useType: 'GFHT'}, '/rccore/RcpoFile/fileList').then(res => {
+                      this.cacheFile  = res.datas
+                    })
+                  }
+                  if (this.dataValue) {
+                    rest.post(this.user, {useType: 'XXZM'}, '/rccore/RcpoFile/fileList').then(res => {
+                      this.cacheFile2  = res.datas
+                    })
+                  }
+          */
       })
     },
     closeModal() {
@@ -456,10 +475,16 @@ export default{
       this.basicData.rcName = this.user.username
 
       this.loading = true
-
+      //alert(JSON.stringify(this.basicData));
       rest.post(this.user, this.basicData, '/rccore/Rcpo/entitySave').then(res => {
         me.loading = false
-        if (!res.success) return Materialize.toast(res.message, 4000)
+        //alert(JSON.stringify(res))
+        if (!res.success)
+        {
+                Materialize.toast('数据不能为空', 4000)
+          return Materialize.toast(res.message, 4000)
+
+        }
         if (this.files.length) Materialize.toast('保存成功,正在上传', 2000)
         else Materialize.toast('保存成功', 2000)
         this.files.forEach(file => {
@@ -493,12 +518,20 @@ export default{
       $('#modal1').openModal()
     },
     getFileList () {
+       rest.post(this.user, {useType: 'GFHT', poId: this.basicData.poId || poId}, '/rccore/RcpoFile/fileList').then(res => {
+        this.cacheFile  = res.datas
+      })
+       rest.post(this.user, {useType: 'XXZM', poId: this.basicData.poId || poId}, '/rccore/RcpoFile/fileList').then(res => {
+        this.cacheFile2  = res.datas
+      })
+      /*
       var me = this
 
       rest.post(this.user, {useType: 'RYZS'}, '/rccore/RcxxFile/fileList').then(res => {
 
         me.fileList = res.datas
       })
+      */
     }
   },
   components: {

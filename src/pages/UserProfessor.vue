@@ -106,6 +106,9 @@
                   .circle-clipper.right
                     .circle
               img(v-bind:src='getSrc(item.fileId)', style='width: 100%')
+            .card-action
+              a(@click='deleteFile(item.fileId)') 删除
+
 </template>
 <script>
 import rest from '../rest'
@@ -212,7 +215,8 @@ export default{
   },
   methods:{
     uploadImg () {
-      let formData = {
+    //alert('添加专业职业证书')
+    let formData = {
         'Encoding': 'utf-8',
         'Rpencoding': 'utf-8',
         '_x-requested-with': true,
@@ -220,20 +224,24 @@ export default{
         'useType': 'ZCZS'
       }
       let vm = this
+    rest.resetConfig(window.location.href,function(){
       chooseImage()
         .then(localId => {
           vm.loading = true
-          this.media.push(localId)
+          vm.media.push(localId)
           return uploadImage(localId)
         })
         .then(serverId => {
-          return rest.postFile(this.user, formData, serverId, '/rccore/RcxxFile/insert')
+          return rest.postFile(vm.user, formData, serverId, '/rccore/RcxxFile/insert')
         })
         .then(res => {
           if (!res.success) return Materialize.toast(res.message, 4000)
-
+          vm.media=[];
+          vm.getFileList()
           vm.loading = false
         })
+    });
+
     },
     clear() {
       this.postData = {}
@@ -251,6 +259,13 @@ export default{
         this.loading = false
 
         this.getList()
+      })
+    },
+    deleteFile(fileId){
+      this.loading = true
+      rest.delete(this.user, {refId: fileId}, '/rccore/RcxxFile/delete').then(res => {
+        this.loading = false
+        this.getFileList()
       })
     },
     beforeUpload () {
@@ -356,6 +371,7 @@ export default{
       var me = this
 
       rest.post(this.user, {useType: 'ZCZS'}, '/rccore/RcxxFile/fileList').then(res => {
+        //alert(JSON.stringify(res));
         me.fileList = res.datas
       })
     }

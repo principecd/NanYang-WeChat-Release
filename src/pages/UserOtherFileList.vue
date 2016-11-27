@@ -38,13 +38,18 @@
           img(v-bind:src='src', style='width: 100%')
     hr
     .col.s12(v-for='files in fileList')
-      .card(v-if='files.data.length')
-        .card-content
-          .card-title {{files.label}}
-        .card-image
+      .card
+        .card-title {{files.label}}
+        .card-content(v-if='files.data.length')
           div(v-for='item in files.data')
-            img(v-bind:src='getSrc(item.fileId)')
-            hr
+            .card-image
+              img(v-bind:src='getSrc(item.fileId)')
+            .card-action
+              a(@click='deleteItem(item.fileId)') 删除
+        .card-content(v-if='!files.data.length')
+            div
+              .card-image 暂无数据
+
 </template>
 <script>
 import rest from '../rest'
@@ -229,8 +234,14 @@ export default{
     this.user = JSON.parse(localStorage.getItem('baseInfo'))
   },
   ready () {
-    var me = this
-    this.buildDom.forEach(req => {
+    this.initAll();
+  },
+  attached () {
+  },
+  methods: {
+    initAll(){
+      var vm = this
+      vm.buildDom.forEach(req => {
       var now = Date.now()
       var signature = ['NaRcJk4WeChat', now, '123332'].sort().join('')
       var timestamp = now
@@ -239,8 +250,8 @@ export default{
         signature : sha1(signature),
         timestamp : timestamp,
         nonce : '123332',
-        'ssoOpenId': this.user.ssoOpenId,
-        'rcId': this.user.rcId,
+        'ssoOpenId': vm.user.ssoOpenId,
+        'rcId': vm.user.rcId,
         useType: req.reqopts.formData.useType
       }
       var url = '/rccore/RcxxFile/fileList?'
@@ -248,16 +259,14 @@ export default{
       Object.keys(r).forEach(v => {
         url = url + v + '=' + r[v] + '&'
       })
-      this.loading = true
-      rest.get(this.user, {useType: req.reqopts.formData.useType}, '/rccore/RcxxFile/fileList').then(res => {
-        this.loading = false
-        me.fileList[req.reqopts.formData.useType].data = res.datas
+      vm.loading = true
+      rest.get(vm.user, {useType: req.reqopts.formData.useType}, '/rccore/RcxxFile/fileList').then(res => {
+        vm.loading = false
+        vm.fileList[req.reqopts.formData.useType].data = res.datas
+        //alert(JSON.stringify(res.datas));
       })
     })
-  },
-  attached () {
-  },
-  methods: {
+    },
     uploadImg (useType) {
       let formData = {
         'Encoding': 'utf-8',
@@ -267,21 +276,32 @@ export default{
         'useType': useType
       }
       let vm = this
-      chooseImage()
+      rest.resetConfig(window.location.href,function(){
+        chooseImage()
         .then(localId => {
           vm.loading = true
-          this.media.push(localId)
+          vm.media.push(localId)
           return uploadImage(localId)
         })
         .then(serverId => {
-          return rest.postFile(this.user, formData, serverId, '/rccore/RcxxFile/insert')
+          return rest.postFile(vm.user, formData, serverId, '/rccore/RcxxFile/insert')
         })
         .then(res => {
-          this.media = []
           if (!res.success) return Materialize.toast(res.message, 4000)
-
+          vm.media = [];
+          vm.initAll();
           vm.loading = false
         })
+      });
+    },
+    deleteItem(fileId){
+      //alert(fileId);
+      var vm = this;
+      vm.loading = true
+      rest.delete(vm.user, {refId: fileId}, '/rccore/RcxxFile/delete').then(res => {
+        vm.loading = false
+        vm.initAll()
+      })
     },
     fileUploadUrl (useType) {
       return rest.basicUrl + '/rccore/RcxxFile/insert' + this.beforeUpload(useType)
@@ -323,6 +343,7 @@ export default{
           me.fileList = _.union(me.fileList, res.datas)
         })
       })
+      //alert(JSON.stringify(me.fileList));
     },
     rebuildOptions (options) {
       var report = []
@@ -390,10 +411,10 @@ export default{
     getFileList () {
       var me = this
 
-      // rest.post(this.user, {useType: 'ZCZS'}, '/rccore/RcxxFile/fileList').then(res => {
-      //
-      //   me.fileList = res.datas
-      // })
+       rest.post(this.user, {useType: 'ZCZS'}, '/rccore/RcxxFile/fileList').then(res => {
+
+        me.fileList = res.datas
+       })
     }
   },
   components: {

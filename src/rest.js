@@ -4,7 +4,8 @@ var _ = require('lodash')
 // var enGbk = require('liveinjs-gbk')
 
 // var basicUrl = 'http://wechatordering.ngrok.cc'
-var basicUrl = 'http://www.hzts.com.cn:8088/rcjk'
+var basicUrl = 'http://www.nananzk.com/rcjk'
+// var basicUrl = 'http://www.hzts.com.cn:8088/rcjk'
 
 
 function init () {
@@ -22,6 +23,36 @@ function init () {
 
 module.exports = {
   basicUrl: basicUrl,
+  resetConfig(url,readycallback){
+    //alert(url);
+    var basicUrl = this.basicUrl;
+    $.ajax({
+      type: 'post',
+      url:basicUrl + '/webres/wechat/core/getJsSignature.jsp',
+      data: {urlPath: url},
+      dataType: 'json'
+    })
+      .then(res => {
+        if (typeof res === 'string') res = JSON.parse(res)
+
+        let config = {
+          debug: false,
+          appId: 'wxe1ec4830f40317a0',
+          signature: res.data.signature,
+          timestamp: res.data.timestamp,
+          nonceStr: res.data.nonceStr,
+          jsApiList: [
+            'chooseImage',
+            'previewImage',
+            'uploadImage',
+            'downloadImage'
+          ]
+        }
+        //alert(JSON.stringify(config));
+        wx.config(config)
+        wx.ready(readycallback)
+      })
+  },
   chooseImage() {
     return new Promise((resolve, reject) => {
       wx.chooseImage({
@@ -30,8 +61,11 @@ module.exports = {
         sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
         success: function (res) {
           let localIds = res.localIds; // 返回选定照片的本地ID列表，localId可以作为img标签的src属性显示图片
-          console.log('localIds:', res)
+          //alert(JSON.stringify(res));
           resolve(localIds[0])
+        },
+        fail:function(res){
+          //alert(JSON.stringify((res)));
         }
       })
     })
@@ -43,8 +77,12 @@ module.exports = {
         isShowProgressTips: 1, // 默认为1，显示进度提示
         success: function (res) {
           let serverId = res.serverId; // 返回图片的服务器端ID
-          console.log('serverId:', res)
+          console.log('serverId:', serverId)
+          //alert(JSON.stringify(res));
           resolve(serverId)
+        },
+        fail:function(res){
+          //alert(JSON.stringify(res));
         }
       })
     })
@@ -191,6 +229,7 @@ module.exports = {
         }
       })
       .done(res => {
+        //alert(JSON.stringify(res));
         resolve(res)
       })
     })

@@ -9,32 +9,39 @@
       label.active 申请的人才层次
 
       v-select(:value.sync='basicData.sqcc', :options='sqcc')
-    //- br
-    //- .card(v-for='item in cacheFile')
-    //-   .card-content
-    //-     img(style='width: 100%;', v-bind:src='getSrc(item.fileId)')
-    //-   .card-action
-    //-     a(@click='deleteFlie(item)') 删除
-    //- .card(v-for='item in cacheFile')
-    //-   .card-content
-    //-     img(style='width: 100%;', v-bind:src='getSrc(item.fileId)')
-    //-   .card-action
-    //-     a(@click='deleteFlie(item)') 删除
-    //- br
-    //- table
-    //-   thead
-    //-     tr
-    //-       th(style='text-align: center') 文件名
-    //-       th(style='text-align: center') 进度
-    //-       th(style='text-align: center') 状态
-    //-       //- th(style='text-align: center') action
-    //-   tbody
-    //-     tr(v-for='file in files', style='text-align: center')
-    //-       td(v-text='file.name', style='text-align: center')
-    //-       td(v-text='file.progress', style='text-align: center')
-    //-       td(v-text='onStatus(file)', style='text-align: center')
-          //- td(style='text-align: center')
-          //-   button(type='button',@click="uploadItem(file)") 上传
+    .col.s12
+      .card
+          .card-title 资质材料
+          .card-content(v-show='!cacheFile||!cacheFile.length||cacheFile.length==0') 暂无数据
+          div(v-for='item in cacheFile')
+             .card-content
+               img(style='width: 100%;'  v-bind:src='getSrc(item.fileId)')
+             a(@click='deleteItem(item.fileId)') 删除
+             .card-action
+
+
+      .card
+         .card-title 劳动合同书
+         .card-content(v-show='!cacheFile2||!cacheFile2.length||cacheFile2.length==0') 暂无数据
+         div(v-for='item in cacheFile2')
+           .card-content
+             img(style='width: 100%;'  v-bind:src='getSrc(item.fileId)')
+           a(@click='deleteItem(item.fileId)') 删除
+           .card-action
+            //- table
+            //-   thead
+            //-     tr
+            //-       th(style='text-align: center') 文件名
+            //-       th(style='text-align: center') 进度
+            //-       th(style='text-align: center') 状态
+            //-       //- th(style='text-align: center') action
+            //-   tbody
+            //-     tr(v-for='file in files', style='text-align: center')
+            //-       td(v-text='file.name', style='text-align: center')
+            //-       td(v-text='file.progress', style='text-align: center')
+            //-       td(v-text='onStatus(file)', style='text-align: center')
+                  //- td(style='text-align: center')
+                  //-   button(type='button',@click="uploadItem(file)") 上传
     a.btn.btn-up(@click='uploadImg("ZZCL")')
       .fileupload-button 资质材料
     a.btn.btn-up(@click='uploadImg("LDHTS")')
@@ -169,63 +176,84 @@ export default{
   init () {
     this.user = JSON.parse(localStorage.getItem('baseInfo'))
     var me = this
+    sqId = randomToken(32)
     rest.getOptions('rcrd_cengci').then(res => {
       me.sqcc = this.rebuildOptions(res)
     })
 
   },
   ready () {
+     var me = this
     this.$parent.index = false
-
     if (this.dataValue && this.$route.query.do) this.basicData = this.dataValue
     if (this.dataValue) {
-      rest.post(this.user, {useType: 'ZZCL', sqId: this.dataValue.sqId}, '/rccore/RcrdFile/fileList').then(res => {
-        this.cacheFile  = res.datas
+      me.loading = true
+      rest.post(this.user, {sqId:this.dataValue.sqId}, '/rccore/Rcrd/get').then(res => {
+        me.loading = false
+        //(JSON.stringify(res));
+        me.basicData = res.data
       })
     }
     if (this.dataValue) {
-      rest.post(this.user, {useType: 'LDHTS', sqId: this.dataValue.sqId}, '/rccore/RcrdFile/fileList').then(res => {
-        this.cacheFile2  = res.datas
-      })
+          this.getFileList();
     }
-    // var me = this
-    // me.loading = true
-    // rest.post(this.user, {}, '/rccore/Rcpo/get').then(res => {
-    //   me.loading = false
-    //   console.log(res)
-    //   me.basicData = res.data
-    // })
-    //
-    // this.getList()
+    //this.initAll()
+
+    //this.getList()
   },
   attached () {
     $('#sidenav-overlay').remove()
 
   },
   methods: {
+    getFileList(){
+      rest.post(this.user, {useType: 'ZZCL', sqId: this.basicData.sqId||sqId}, '/rccore/RcrdFile/fileList').then(res => {
+        //alert(JSON.stringify(res.datas));
+        this.cacheFile  = res.datas
+      })
+      rest.post(this.user, {useType: 'LDHTS', sqId: this.basicData.sqId||sqId}, '/rccore/RcrdFile/fileList').then(res => {
+        this.cacheFile2  = res.datas
+      })
+    },
     uploadImg (useType) {
       let formData = {
         'Encoding': 'utf-8',
         'Rpencoding': 'utf-8',
         '_x-requested-with': true,
-        'sqId': sqId,
+        'sqId': this.basicData.sqId||sqId,
         'useType': useType
       }
       let vm = this
-      chooseImage()
+      rest.resetConfig(window.location.href,function(){
+        chooseImage()
         .then(localId => {
           vm.loading = true
-          this.media.push(localId)
+          vm.media.push(localId)
           return uploadImage(localId)
         })
         .then(serverId => {
-          return rest.postFile(this.user, formData, serverId, '/rccore/RcrdFile/insert')
+          return rest.postFile(vm.user, formData, serverId, '/rccore/RcrdFile/insert')
         })
         .then(res => {
           if (!res.success) return Materialize.toast(res.message, 4000)
-
+          vm.media=[];
+          vm.getFileList();
           vm.loading = false
         })
+      });
+
+    },
+    deleteItem(fileId){
+      //alert(fileId);
+      var vm = this;
+      vm.loading = true
+      rest.delete(vm.user, {refId: fileId}, '/rccore/RcrdFile/delete').then(res => {
+      //alert(JSON.stringify(res))
+        vm.loading = false
+        vm.cacheFile=[];
+        vm.cacheFile2=[];
+        vm.getFileList()
+      })
     },
     fileUploadUrl (useType) {
       return rest.basicUrl + '/rccore/RcrdFile/insert' + this.beforeUpload(useType)
@@ -252,7 +280,7 @@ export default{
         'encoding' : 'utf-8',
         'rpencoding' : 'gbk',
         '_x-requested-with' : true,
-        'sqId': sqId,
+        'sqId': this.basicData.sqId||sqId,
         useType: useType
       }
       var k = '?'
@@ -319,6 +347,7 @@ export default{
       })
     },
     getSrc (fileId) {
+      //alert(fileId);
       var now = Date.now()
       var signature = ['NaRcJk4WeChat', now, '123332'].sort().join('')
       var timestamp = now
@@ -331,18 +360,19 @@ export default{
         'rcId': this.user.rcId,
         refId: fileId
       }
-      var r = '/rccore/RcxxFile/download?'
+      var r =  rest.basicUrl +'/rccore/RcxxFile/download?'
 
       Object.keys(query).forEach(key => {
 
         r = r + key + '=' + query[key] + '&'
       })
-
+      //alert(r);
       return r
     },
     modal () {
       $('#modal1').openModal()
-    },
+    }
+    /*
     getFileList () {
       var me = this
 
@@ -350,7 +380,7 @@ export default{
 
         me.fileList = res.datas
       })
-    }
+    }*/
   },
   components: {
     VueFileUpload,

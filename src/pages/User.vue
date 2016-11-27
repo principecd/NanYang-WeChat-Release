@@ -75,6 +75,9 @@ div
     //- br
     //- li
     //-   a.waves-effect(@click='logout') 注销
+    li
+      a.waves-effect(@click='logout')
+        span(style='margin-left: 15px') 注销
   router-view
 </template>
 
@@ -117,7 +120,9 @@ export default {
   },
   methods: {
     logout() {
+      var bind = localStorage.getItem('bind')
       localStorage.clear()
+      localStorage.setItem('bind',bind)
       return this.$router.go({name: 'Login'})
     },
     itemBar() {

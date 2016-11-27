@@ -6,11 +6,11 @@
     .input-field.col.s12
       input.validate(type="text" v-model='basic.xm' placeholder='', v-bind:disabled.once='basic.xm')
       label.active 用户名
-    .col.s12
-      label.active(v-if='!meida')
-        span(style='font-size: 30px', @click='uploadImg').fa.fa-cloud-upload
+    .col.s12( @click='uploadImg')
+      label.active(v-if='!meida' )
+        span(style='font-size: 30px' ).fa.fa-cloud-upload
         span(style='margin-left: 10px') 头像
-      img(:src='media', v-if='meida', style='width: 50%')
+      img(v-bind:src='media', v-if='meida', style='width: 50%')
       hr
     .col.s12
       label.active 性别
@@ -100,6 +100,7 @@ import vSelect from './VSelect.vue'
 import VLoading from './VLoading.vue'
 import { uploadImage } from '../rest'
 import { chooseImage } from '../rest'
+import sha1 from 'sha1'
 var localStorage = window.localStorage
 
 export default {
@@ -112,6 +113,7 @@ export default {
     return {
       rclbsCache: [],
       meida: false,
+      media:'',
       loading: false,
       xb: [
         {value: '1', label: '男'},
@@ -187,12 +189,38 @@ export default {
       me.basic = res.data
       // me.rclbsShow = this.formatVal()
     })
+    rest.post(this.user, {useType: 'RCXXZP'}, '/rccore/RcxxFile/fileList').then(res => {
+        if(res.datas&&res.datas[0])
+        {
+          me.meida = true;
+          me.media=this.getSrc(res.datas[0].fileId);
+        }
+      })
   },
   attached () {
     $('#sidenav-overlay').remove()
-
   },
   methods: {
+  getSrc (fileId) {
+        var now = Date.now()
+        var signature = ['NaRcJk4WeChat', now, '123332'].sort().join('')
+        var timestamp = now
+        var nonce = '123332'
+        var query = {
+          signature : sha1(signature),
+          timestamp : timestamp,
+          nonce : '123332',
+          'ssoOpenId': this.user.ssoOpenId,
+          'rcId': this.user.rcId,
+          refId: fileId
+        }
+        var r = rest.basicUrl + '/rccore/RcxxFile/download?'
+        Object.keys(query).forEach(key => {
+
+          r = r + key + '=' + query[key] + '&'
+        })
+        return r
+    },
     formatVal() {
         let report = '';
         if (this.basic.rclbs) {
@@ -213,28 +241,32 @@ export default {
         return report
     },
     uploadImg () {
-      let formData = {
-        'Encoding': 'utf-8',
-        'Rpencoding': 'utf-8',
-        '_x-requested-with': true,
-        'rcId': this.user.rcId,
-        'useType': 'RCXXZP'
-      }
-      let vm = this
-      chooseImage()
-        .then(localId => {
-          vm.loading = true
-          this.media = localId
-          return uploadImage(localId)
-        })
-        .then(serverId => {
-          return rest.postFile(this.user, formData, serverId, '/rccore/RcxxFile/insert')
-        })
-        .then(res => {
-          if (!res.success) return Materialize.toast(res.message, 4000)
-
-          vm.loading = false
-        })
+          let formData = {
+            'Encoding': 'utf-8',
+            'Rpencoding': 'utf-8',
+            '_x-requested-with': true,
+            'rcId': this.user.rcId,
+            'useType': 'RCXXZP'
+          }
+          let vm = this
+          rest.resetConfig(window.location.href,function(){
+                //alert('ready')
+                chooseImage()
+                  .then(localId => {
+                    vm.loading = true
+                    //alert(localId);
+                    vm.media=localId;
+                    vm.meida=true;
+                    return uploadImage(localId)
+                  })
+                  .then(serverId => {
+                    return rest.postFile(vm.user, formData, serverId, '/rccore/RcxxFile/insert')
+                  })
+                  .then(res => {
+                    if (!res.success) return Materialize.toast(res.message, 4000)
+                    vm.loading = false
+                  })
+          });
     },
     rebuildOptions(options) {
       var report = []

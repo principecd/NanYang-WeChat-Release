@@ -9,7 +9,8 @@
     .input-field.col.s10
       i.fa.fa-credit-card.prefix
       v-select.validate(:options='zjlx', :value.sync='user.zjlx', style='width: calc(100% - 42px); margin-left: 42px; z-index: 2; position: relative') 证件类型
-      input.validate(type="text", name='lxrZj' v-model='user.lxrZj', v-form-ctrl, required, v-if='user.zjlx', placeholder='填入号码')
+      input.validate(type="text", name='lxrZj' v-model='user.lxrZj', v-form-ctrl, required, v-if='user.zjlx==="sfz"', placeholder='填入号码')
+      input.validate(type="text", name='lxrZj' v-model='user.lxrZj', v-form-ctrl, required, v-if='user.zjlx==="hz"', placeholder='填入号码')
       label(v-if='!user.zjlx', style='z-index: 1;') 身份证（护照）
     //- .input-field.col.s10
     //-   i.fa.fa-credit-card.prefix
@@ -75,11 +76,14 @@ export default {
   attached() {},
   methods: {
     signUp() {
-
+      if(!this.isCardNo(this.user.lxrZj)){
+        return Materialize.toast('身份证格式验证失败', 4000)
+      }
       this.user.password = md5(this.user.pwd)
       this.user.wcOpenId = JSON.parse(localStorage.getItem('bind')).wcOpenId
-
-      rest.post({}, this.user, '/rccore/WeChatUser/noneToInsert').then(res => {
+ //alert(JSON.stringify(this.user));
+      rest.post( this.user,{}, '/rccore/WeChatUser/noneToInsert').then(res => {
+      //alert(JSON.stringify(res));
         if (!res.success) return Materialize.toast(res.message, 4000)
         var baseInfo = {
           ssoOpenId: res.data.rcId,
@@ -88,12 +92,21 @@ export default {
         }
 
         localStorage.setItem('baseInfo', JSON.stringify(baseInfo))
-
+        this.loading=false;
         return this.$router.go({name: 'Home'})
         // window.history.back()
 
       })
     },
+   isCardNo(card)
+    {
+       // 身份证号码为15位或者18位，15位时全为数字，18位前17位为数字，最后一位是校验位，可能为数字或字符X
+       var reg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
+       if(reg.test(card) === false)
+       {
+           return  false;
+       }  else return true
+    } ,
     getCode() {
       if (!this.user.mobilePhone || !this.user.lxrZj) {
         return Materialize.toast('请输入完整信息', 4000)

@@ -31,13 +31,13 @@
             form.col.s12
               .col.s12
                 label.active 等级
-                v-select(:options='dengJi', :value.sync='postData.dengJi')
+                v-select(:options='dengJi', :value.sync='postData.dengJi' v-on:change='clearRych')
               .col.s12
                 label.active 荣誉称号
-                v-select(v-if='postData.dengJi ==="rych_guoJia"', :options='guoJia', :value.sync='postData.rych')
-                v-select(v-if='postData.dengJi ==="rych_shengJi"', :options='shengJi', :value.sync='postData.rych')
-                v-select(v-if='postData.dengJi ==="rych_quanZhou"', :options='quanZhou', :value.sync='postData.rych')
-                v-select(v-if='postData.dengJi ==="rych_nanAn"', :options='nanAn', :value.sync='postData.rych')
+                v-select(v-if='postData.dengJi ==="rych01_guoJia"', :options='guoJia', :value.sync='postData.rych')
+                v-select(v-if='postData.dengJi ==="rych02_shengJi"', :options='shengJi', :value.sync='postData.rych')
+                v-select(v-if='postData.dengJi ==="rych03_quanZhou"', :options='quanZhou', :value.sync='postData.rych')
+                v-select(v-if='postData.dengJi ==="rych04_nanAn"', :options='nanAn', :value.sync='postData.rych')
 
         .modal-footer
           a(class="btn waves-effect waves-light" v-on:click='submitData') 保存
@@ -65,6 +65,8 @@
                 .circle-clipper.right
                   .circle
             img(v-bind:src='getSrc(item.fileId)', style='width: 100%')
+          .card-action
+            a(@click='deleteFile(item.fileId)') 删除
 </template>
 <script>
 import rest from '../rest'
@@ -86,10 +88,10 @@ export default{
       fileUploadUrl: rest.basicUrl + '/rccore/RcxxFile/insert' + this.beforeUpload(),
       dengJi: [],
       rych: {
-        'rych_guoJia': this.guoJia,
-        'rych_nanAn': this.nanAn,
-        'rych_shengJi': this.shengJi,
-        'rych_quanZhou': this.quanZhou
+        'rych01_guoJia': this.guoJia,
+        'rych04_nanAn': this.nanAn,
+        'rych02_shengJi': this.shengJi,
+        'rych03_quanZhou': this.quanZhou
       },
       zydj: [],
       zgbmId: [],
@@ -153,16 +155,16 @@ export default{
     rest.getOptions('rych_dengJi').then(res => {
       me.dengJi = this.rebuildOptions(res)
     })
-    rest.getOptions('rych_guoJia').then(res => {
+    rest.getOptions('rych01_guoJia').then(res => {
       me.guoJia = this.rebuildOptions(res)
     })
-    rest.getOptions('rych_nanAn').then(res => {
+    rest.getOptions('rych04_nanAn').then(res => {
       me.nanAn = this.rebuildOptions(res)
     })
-    rest.getOptions('rych_quanZhou').then(res => {
+    rest.getOptions('rych03_quanZhou').then(res => {
       me.quanZhou = this.rebuildOptions(res)
     })
-    rest.getOptions('rych_shengJi').then(res => {
+    rest.getOptions('rych02_shengJi').then(res => {
       me.shengJi = this.rebuildOptions(res)
     })
 
@@ -193,23 +195,30 @@ export default{
         'useType': 'RYZS'
       }
       let vm = this
-      chooseImage()
+      rest.resetConfig(window.location.href,function(){
+        chooseImage()
         .then(localId => {
           vm.loading = true
-          this.media.push(localId)
+          vm.media.push(localId)
           return uploadImage(localId)
         })
         .then(serverId => {
-          return rest.postFile(this.user, formData, serverId, '/rccore/RcxxFile/insert')
+          return rest.postFile(vm.user, formData, serverId, '/rccore/RcxxFile/insert')
         })
         .then(res => {
           if (!res.success) return Materialize.toast(res.message, 4000)
-
+          vm.media=[];
+          vm.getFileList();
           vm.loading = false
         })
+      });
+
     },
     clear() {
       this.postData = {}
+    },
+    clearRych(){
+      this.postData.rych=null;
     },
     edit(item) {
       this.postData = item
@@ -222,6 +231,13 @@ export default{
       rest.post(this.user, {ryId: id}, '/rccore/Rych/delete').then(res => {
 
         this.getList()
+      })
+    },
+    deleteFile(fileId){
+      this.loading = true
+      rest.delete(this.user, {refId: fileId}, '/rccore/RcxxFile/delete').then(res => {
+        this.loading = false
+        this.getFileList()
       })
     },
     beforeUpload () {
@@ -283,6 +299,11 @@ export default{
     },
     submitData (e) {
       e.preventDefault()
+      if(!this.postData.rych||this.postData.rych==null){
+        //alert('荣誉称号或等级不能为空')
+        $('#modal1').closeModal()
+        return Materialize.toast('荣誉称号不能为空', 2000) ;
+      }
       var me = this
 
       this.postData.isAdd = this.postData.ryId ? 'false' : 'true'

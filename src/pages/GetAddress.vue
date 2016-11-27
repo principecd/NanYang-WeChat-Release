@@ -91,6 +91,17 @@
     br
     //- a.btn.btn-up(@click='uploadImage("ZXHKB")')
     //-   .fileupload-button 户口本
+    .col.s12(v-for='item in fileList')
+      .card
+        .card-title 随迁人员关系证明
+        .card-image
+          img(v-bind:src='getSrc(item.fileId)', style='width: 100%')
+        .card-action
+        a(@click='deleteFile(item)') 删除
+    .col.s12(v-if='!fileList.length||fileList.length==0')
+      .card
+        .card-title 随迁人员关系证明
+        .card-content 暂无数据
     a.btn.btn-up(@click='uploadImg("ZXHKB")')
       .fileupload-button 随迁人员关系证明
     .col.s12(v-for='src in media')
@@ -239,10 +250,13 @@ export default{
         this.basicData.transferPersonJson  = res.datas
       })
     }
-    if (this.dataValue) {
-      rest.post(this.user, {settledGuid: this.dataValue.settledGuid}, '/rccore/SettledAddressFile/fileList').then(res => {
-        this.cacheFile  = res.datas
-      })
+    if (this.dataValue&&this.dataValue.settledGuid && this.$route.query.do) {
+      /* rest.post(this.user, {settledGuid: this.dataValue.settledGuid}, '/rccore/SettledAddressFile/fileList').then(res => {
+        alert(JSON.stringify(res))
+        //this.cacheFile  = res.datas
+        this.fileList = res.datas
+      }) */
+      this.getFileList();
     }
     // var me = this
     // me.loading = true
@@ -269,21 +283,27 @@ export default{
         settledGuid: this.basicData.settledGuid || settledGuid,
         'useType': useType
       }
+      //alert(JSON.stringify(formData));
+      if(formData.settledGuid==='')formData.settledGuid=settledGuid
       let vm = this
-      chooseImage()
+      rest.resetConfig(window.location.href,function(){
+       chooseImage()
         .then(localId => {
           vm.loading = true
-          this.media.push(localId)
+          vm.media.push(localId)
           return uploadImage(localId)
         })
         .then(serverId => {
-          return rest.postFile(this.user, formData, serverId, '/rccore/ZxFile/insert')
+          return rest.postFile(vm.user, formData, serverId, '/rccore/SettledAddressFile/insert')
         })
         .then(res => {
           if (!res.success) return Materialize.toast(res.message, 4000)
-
+          vm.getFileList();
+          vm.media=[];
           vm.loading = false
         })
+      });
+
     },
     addChild() {
       this.child.transferGuid = randomToken(32)
@@ -391,18 +411,19 @@ export default{
         })
       })
     },
-    deleteFlie(item) {
+    deleteFile(item) {
       this.loading = true
       rest.post(this.user, {refId: item.fileId}, '/rccore/SettledAddressFile/delete').then(res => {
         this.loading = false
 
         if (!res.success) return Materialize.toast(res.message, 4000)
-
+        /*
         if (this.dataValue) {
           rest.post(this.user, {settledGuid: this.dataValue.settledGuid}, '/rccore/SettledAddressFile/fileList').then(res => {
             this.cacheFile  = res.datas
           })
-        }
+        }*/
+        this.getFileList();
       })
     },
     getSrc (fileId) {
@@ -418,7 +439,7 @@ export default{
         'rcId': this.user.rcId,
         refId: fileId
       }
-      var r = '/rccore/RcxxFile/download?'
+      var r = rest.basicUrl + '/rccore/RcxxFile/download?'
 
       Object.keys(query).forEach(key => {
 
@@ -432,9 +453,8 @@ export default{
     },
     getFileList () {
       var me = this
-
-      rest.post(this.user, {useType: 'RYZS'}, '/rccore/RcxxFile/fileList').then(res => {
-
+      rest.post(this.user, {useType: 'RYZS',settledGuid:this.basicData.settledGuid || settledGuid}, '/rccore/SettledAddressFile/fileList').then(res => {
+        //alert(JSON.stringify(res));
         me.fileList = res.datas
       })
     }

@@ -28,7 +28,16 @@ div
                 |     {{item.flowEntityInfo}}
                 p {{item.flowEntityTime}}
                 p(v-if='item.flowDoStageInfo') 办理情况：{{item.flowDoStageInfo}}
-                p(v-if='!item.flowDoStageInfo') 当前状态：临时保存
+                p(id='ysq{{item.flowEntityId}}')
+
+             //- .card(v-for='stageItems in stageList')
+             //-   .card-content
+             //-     span.card-title
+             //-       i.fa(v-bind:class='{"fa-money": stageItems.flowEntityUI === "/rccore/Shjt/flowUI", "fa-bookmark": stageItems.flowEntityUI === "/rccore/SettledAddress/flowUI", "fa-level-up": stageItems.flowEntityUI === "/rccore/Rcrd/flowUI", "fa-home": stageItems.flowEntityUI === "/rccore/Rcpo/flowUI", "fa-child": stageItems.flowEntityUI === "/rccore/Zx/flowUI", "fa-home": stageItems.flowEntityUI === "/rccore/Poxx/flowUI"}')
+             //-     |     {{stageItems.flowEntityInfo}}
+             //-     p {{stageItems.flowEntityTime}}
+             //-     p(id='ysq{{stageItems.flowEntityId}}')
+
   infinite-loading#infinite-loading(:on-infinite="onInfinite", :distance="distance", v-if='list.length < 300 &&  list.length')
 </template>
 
@@ -79,8 +88,10 @@ export default {
       topStatus: '',
       allLoaded: false,
       loading: false,
-      list: [],
+      list: [],//list[0].stageItems[0].flowStageName
       listCache: [],
+      stageList:[],
+      stagedatas:[],
       busy: false,
       filter: {
         '/rccore/Rcrd/flowUI': {
@@ -144,8 +155,8 @@ export default {
   init() {
     this.list = []
     this.listCache = []
+    this.stageList = []
     this.user = JSON.parse(localStorage.getItem('baseInfo'))
-
   },
   methods: {
     deleteItem(item) {
@@ -167,6 +178,7 @@ export default {
         res.datas.forEach(i => {
           this.list.push(i)
         })
+        this.getStageList()
         this.$broadcast('$InfiniteLoading:loaded')
         // var offset = $('#cardList').height() - 300
         // $('body, html').animate({'scrollTop': offset}, '1000')
@@ -297,6 +309,7 @@ export default {
         res.datas.forEach(i => {
           this.list.push(i)
         })
+        this.getStageList();
         var offset = $('#cardList').height() - 300
         $('body, html').animate({'scrollTop': offset}, '1000')
       })
@@ -311,11 +324,52 @@ export default {
 
         if (!res.success) return Materialize.toast(res.message, 4000)
          this.list = res.datas
+         this.getStageList();
       })
+    },
+    getStageList(){
+      //alert('getStageList')
+      var me = this
+      //alert(JSON.stringify(me.list))
+         me.list.forEach(item => {
+            //var listItem = this
+            if(item.flowDoStageInfo){
+                  rest.post(me.user, {flowEntityId: item.flowEntityId}, '/flowengine/run/full/stagePage').then(res => {
+                    //alert(JSON.stringify(res))
+                    if (!res.success) return Materialize.toast(res.message, 4000)
+                    /*
+                     me.stageList.push({
+                        flowEntityUI:item.flowEntityUI,
+                        flowEntityInfo:item.flowEntityInfo,
+                        flowEntityTime:item.flowEntityTime,
+                        flowDoStageInfo:item.flowDoStageInfo,
+                        flowEntityId:item.flowEntityId
+                     })
+                     */
+                     var str = '';
+                     res.datas.forEach(aaaa=>{
+                          if(aaaa.flowStageName)      str+='<p>环节名称:'+aaaa.flowStageName        +'</p>';
+                          if(aaaa.flowEntityTime)     str+='<p>提交时间:'+aaaa.flowEntityTime       +'</p>';
+                          if(aaaa.flowDoTime)         str+='<p>办理时间:'+aaaa.flowDoTime           +'</p>';
+                          if(aaaa.flowStageDoStateStr)str+='<p>办理状态:'+aaaa.flowStageDoStateStr  +'</p>';
+                          if(aaaa.flowTranName)       str+='<p>办理结果:'+aaaa.flowTranName         +'</p>';
+                          str+='<br>'
+                     })
+
+                    //alert(str);
+                    $('#ysq'+item.flowEntityId).html(str);
+
+                  })
+            }
+            //alert(JSON.stringify(item));
+        })
+
+
     },
     reflash() {
       var me = this
       this.loading = true
+
       rest.post(this.user, {flowOwnerId: this.user.rcId, start: 0,limit: 50}, '/flowengine/run/full/entityPage').then(res => {
         this.loading = false
 
@@ -325,7 +379,12 @@ export default {
          if (me.filter['/rccore/Rcrd/flowUI'].tranList && me.filter['/rccore/Shjt/flowUI'].tranList && me.filter['/rccore/Zx/flowUI'].tranList && me.filter['/rccore/Rcpo/flowUI'].tranList && me.filter['/rccore/Poxx/flowUI'].tranList && me.filter['/rccore/SettledAddress/flowUI'].tranList && me.listCache.length) {
            me.list = me.listCache
          }
+         setTimeout(function() {
+           me.getStageList();
+        }, 300)
+
       })
+
 
       Object.keys(this.filter).forEach(key => {
         var value = JSON.parse(localStorage.getItem(key))
@@ -381,7 +440,10 @@ export default {
   ready() {
     this.$parent.index = true
     this.reflash()
-
+    this.getStageList()
+  },
+  mounted(){
+    this.getStageList()
   }
 }
 </script>
