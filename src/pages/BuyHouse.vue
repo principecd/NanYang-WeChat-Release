@@ -6,43 +6,43 @@
     //-   input.validate(type="text" v-model='basicData.rcName' placeholder='', v-bind:disabled='user.username')
     //-   label.active 人才姓名
     .input-field.col.s12
-      input.validate(type="text" v-model='basicData.name' placeholder='')
+      input.validate(type="text" v-model='basicData.name' placeholder='' v-bind:disabled="disabled_edit")
       label.active 配偶姓名
     .col.s12
       label.active 性别
-      v-select(:value.sync='basicData.sex', :options='xb')
+      v-select(:value.sync='basicData.sex', :options='xb' v-bind:disabled="disabled_edit")
     .input-field.col.s12
-      input.validate(type="month" v-model='basicData.birthday' placeholder='')
+      input.validate(type="month" v-model='basicData.birthday' placeholder='' v-bind:disabled="disabled_edit")
       label.active 出生年月
     .input-field.col.s12
-      input.validate(type="text" v-model='basicData.gjjg' placeholder='')
+      input.validate(type="text" v-model='basicData.gjjg' placeholder='' v-bind:disabled="disabled_edit")
       label.active 国籍籍贯
     .input-field.col.s12
-      input.validate(type="text" v-model='basicData.idCard' placeholder='')
+      input.validate(type="text" v-model='basicData.idCard' placeholder='' v-bind:disabled="disabled_edit")
       label.active 身份证号(护照)
     .col.s12
       label.active 人才类别
-      v-select(:value.sync='basicData.rclb', :options='rclb')
+      v-select(:value.sync='basicData.rclb', :options='rclb' v-bind:disabled="disabled_edit")
     .input-field.col.s12
-      input.validate(type="text" v-model='basicData.dwInfo' placeholder='')
+      input.validate(type="text" v-model='basicData.dwInfo' placeholder='' v-bind:disabled="disabled_edit")
       label.active 单位信息
     .input-field.col.s12
-      input.validate(type="text" v-model='basicData.job' placeholder='')
+      input.validate(type="text" v-model='basicData.job' placeholder='' v-bind:disabled="disabled_edit")
       label.active 职务
     .input-field.col.s12
-      input.validate(type="text" v-model='basicData.telephone' placeholder='')
+      input.validate(type="text" v-model='basicData.telephone' placeholder='' v-bind:disabled="disabled_edit")
       label.active 联系电话
     .input-field.col.s12
-      input.validate(type="text" v-model='basicData.email' placeholder='')
+      input.validate(type="text" v-model='basicData.email' placeholder='' v-bind:disabled="disabled_edit")
       label.active 邮箱
     .col.s12
       label.active 申请住房保障类别
-      v-select(:value.sync='basicData.sqlb', :options='sqlb')
+      v-select(:value.sync='basicData.sqlb', :options='sqlb' v-bind:disabled="disabled_edit")
     .input-field.col.s12
-      input.validate(type="text" v-model='basicData.yhzh' placeholder='')
+      input.validate(type="text" v-model='basicData.yhzh' placeholder='' v-bind:disabled="disabled_edit")
       label.active 开发商银行账号或申请人银行账号
     .input-field.col.s12
-      input.validate(type="text" v-model='basicData.remark' placeholder='')
+      input.validate(type="text" v-model='basicData.remark' placeholder='' v-bind:disabled="disabled_edit")
       label.active 说明
     h6 其他成员信息(直系)
     table
@@ -52,13 +52,15 @@
         th 出生年月
         th 身份证(护照)
         th 单位信息
+        th 删除
       tbody
-        tr(v-for='item in myChildren')
-          td {{item.name}}
-          td {{item.sex === "1" ? "男" : "女" }}
-          td {{item.birthday}}
-          td {{item.idCard}}
-          td {{item.dwInfo}}
+        tr(v-for='item in myChildren' )
+          td(@click='modal($index)') {{item.name}}
+          td(@click='modal($index)') {{item.sex === "1" ? "男" : "女" }}
+          td(@click='modal($index)') {{item.birthday}}
+          td(@click='modal($index)') {{item.idCard}}
+          td(@click='modal($index)') {{item.dwInfo}}
+          td(@click='deletechild($index)' class='btn waves-effect waves-light red') 删除
     //- .card(v-for='item in cacheFile')
     //-   .card-content
     //-     img(style='width: 100%;', v-bind:src='getSrc(item.fileId)')
@@ -75,28 +77,28 @@
       div.modal-dialog(style='padding: 20px')
         div.modal-content
           div.modal-header
-          div.modal-body
+          div.modal-body()
             div.form-group
               div.col-lg-10
-                input(type="text" class="form-control" placeholder="姓名" v-model="child.name")
-            .col.s12
+                input(type="text" class="form-control" placeholder="姓名" v-model="child.name" ,v-bind:class="{ 'vf-invalid-required': startvl&&!child.name }")
+            .col.s12(style="padding:0;")
               label.active 性别
-              v-select(:value.sync='child.sex', :options='xb')
-
+              v-select(:value.sync='child.sex', :options='xb'  ,v-bind:class="{ 'vf-invalid-required': startvl&&!child.sex }")
+            div.form-group
+              div.col-lg-10(style="padding:0;")
+                label.active 出生年月
+                input(type="month" class="form-control" placeholder="出生年月" v-model="child.birthday" ,v-bind:class="{ 'vf-invalid-required': startvl&&!child.birthday }")
             div.form-group
               div.col-lg-10
-                input(type="month" class="form-control" placeholder="出生年月" v-model="child.birthday")
+                input(type="text" class="form-control" placeholder="身份证(护照)" v-model="child.idCard" ,v-bind:class="{ 'vf-invalid-required': sfzValidator(child.idCard) }")
             div.form-group
               div.col-lg-10
-                input(type="text" class="form-control" placeholder="身份证(护照)" v-model="child.idCard")
+                input(type="text" class="form-control" placeholder="单位信息" v-model="child.dwInfo" ,v-bind:class="{ 'vf-invalid-required': startvl&&!child.dwInfo }")
             div.form-group
               div.col-lg-10
-                input(type="text" class="form-control" placeholder="单位信息" v-model="child.dwInfo")
-            div.form-group
-              div.col-lg-10
-                input(type="text" class="form-control" placeholder="与申请人关系" v-model="child.cygx")
+                input(type="text" class="form-control" placeholder="与申请人关系" v-model="child.cygx" ,v-bind:class="{ 'vf-invalid-required': startvl&&!child.cygx }")
           div.modal-footer
-            a(class="btn waves-effect waves-green" v-on:click="addChild") 确认
+            a(class="btn waves-effect waves-green" v-on:click="addChild" ) 确认
             a(class="modal-action modal-close waves-effect waves-green btn-flat") 取消
     br
     br
@@ -138,8 +140,11 @@
       .card-title 商品房购房合同（或购房发票和房产证）
       .card-content(v-show='!cacheFile||!cacheFile.length||cacheFile.length==0') 暂无数据
       div(v-for='item in cacheFile')
-        .card-content
+        .card-content(v-if='item.fileType==".jpg"||item.fileType==".png"||item.fileType==".jpeg"||item.fileType==".bmp"||item.fileType==".gif"')
           img(style='width: 100%;'  v-bind:src='getSrc(item.fileId)')
+        .card-content(v-if='!(item.fileType==".jpg"||item.fileType==".png"||item.fileType==".jpeg"||item.fileType==".bmp"||item.fileType==".gif")')
+          span {{item.fileName}}{{item.fileType}}下载连接（请复制到浏览器中打开）
+            a(style='word-wrap:break-word;') {{getSrc(item.fileId)}}
         a(@click='deleteFile(item)') 删除
         .card-action
 
@@ -147,20 +152,35 @@
       .card-title 房屋信息证明
       .card-content(v-show='!cacheFile2||!cacheFile2.length||cacheFile2.length==0') 暂无数据
       div(v-for='item in cacheFile2')
-        .card-content
+        .card-content(v-if='item.fileType==".jpg"||item.fileType==".png"||item.fileType==".jpeg"||item.fileType==".bmp"||item.fileType==".gif"')
           img(style='width: 100%;'  v-bind:src='getSrc(item.fileId)')
+        .card-content(v-if='!(item.fileType==".jpg"||item.fileType==".png"||item.fileType==".jpeg"||item.fileType==".bmp"||item.fileType==".gif")')
+            span {{item.fileName}}{{item.fileType}}下载连接（请复制到浏览器中打开）
+              a(style='word-wrap:break-word;') {{getSrc(item.fileId)}}
         a(@click='deleteFile(item)') 删除
         .card-action
 
-    a.btn.btn-up(@click='uploadImg("GFHT")')
-      .fileupload-button 商品房购房合同（或购房发票和房产证）
-    a.btn.btn-up(@click='uploadImg("XXZM")')
-      .fileupload-button 房屋信息证明
-    .col.s12(v-for='src in media')
+  .btn.btn-up(v-if='!disabled_edit')
+      .card-title(style='color:black;text-align:left;') 商品房购房合同（或购房发票和房产证）
+      .fileupload-button(@click='uploadImg("GFHT")') 图片文件
+      .fileupload-button(style="line-height: 0 !important;")
+        div(style="margin-top: 15px;") 其他类型文件
+          form(id="uploadForm" enctype="multipart/form-data")
+            input(style="margin-top: 10px;" id="GFHTuploadInput" type="file")
+            .waves-effect.waves-light.btn(style="width: 100%;margin-top: 10px;" @click='uploadFile("GFHT")')上传
+  .btn.btn-up(style='margin-top: 140px;' v-if='!disabled_edit')
+      .card-title(style='color:black;text-align:left;') 房屋信息证明
+      .fileupload-button(@click='uploadImg("XXZM")') 图片文件
+      .fileupload-button(style="line-height: 0 !important;")
+        div(style="margin-top: 15px;") 其他类型文件
+          form(id="uploadForm" enctype="multipart/form-data")
+            input(style="margin-top: 10px;" id="XXZMuploadInput" type="file")
+            .waves-effect.waves-light.btn(style="width: 100%;margin-top: 10px;" @click='uploadFile("XXZM")')上传
+  .col.s12(v-for='src in media' v-if='!disabled_edit')
       .card
         .card-image
           img(v-bind:src='src', style='width: 100%')
-    button.waves-effect.waves-light.btn(@click='submitData') 保存
+  button.waves-effect.waves-light.btn(style="width: 100%;margin-top: 140px;" @click='submitData' v-if='!disabled_edit') 保存
 
     //- table
     //-   thead
@@ -201,6 +221,8 @@ export default{
   props: ['index'],
   data () {
     return {
+      disabled_edit:false,
+      startvl:false,
       media: [],
       loading: false,
       xb: [
@@ -212,7 +234,14 @@ export default{
       dengJi: [],
       myChildren: [],
       rclb: [],
-      child: {},
+      child: {
+        name:'',
+        sex:'',
+        birthday:'',
+        idCard:'',
+        dwInfo:'',
+        cygx:'',
+      },
       sqlb: [],
       rych: [],
       zydj: [],
@@ -314,24 +343,60 @@ export default{
     this.$parent.index = false
 
     if (this.dataValue && this.$route.query.do) this.basicData = this.dataValue
-    if (this.dataValue) {
+    if (this.dataValue&& this.$route.query.do) {
       rest.post(this.user, {poId: this.dataValue.poId}, '/rccore/Qtcy/list').then(res => {
         res.datas.forEach(v => {
           v.saveInDatebase = 'false'
         })
         this.myChildren  = res.datas
       })
+      if(this.$route.query.do=='edit'){
+          this.disabled_edit=false;
+      }else{ this.disabled_edit=true;
+      }
+       this.getFileList();
     }
-    if (this.dataValue) {// &&this.dataValue.poId&& this.$route.query.do
-        this.getFileList();
-    }
+
   },
   attached () {
     $('#sidenav-overlay').remove()
 
   },
   methods: {
+    sfzValidator(value){
+            //!(符合身份证或护照的格式则返回true)
+            return !(/^(\d{15}$|^\d{18}$|^\d{17}(\d|X|x))$/.test(value)||/^1[45][0-9]{7}|G[0-9]{8}|P[0-9]{7}|S[0-9]{7,8}|D[0-9]+$/.test(value))
+    },
+    startvlfn(){
+      this.startvl=true;
+    },
+    uploadFile(useType){
+     let vm = this
+        if(this.disabled_edit)return;
+        let query = {
+        'Encoding': 'utf-8',
+        'Rpencoding': 'utf-8',
+        '_x-requested-with': true,
+        'poId': this.basicData.poId || poId,
+        'rcId' : this.user.rcId,
+        'useType': useType
+      }
+
+        var file = $('#'+useType+'uploadInput')[0].files[0];
+        var formData = new FormData();
+        formData.append(file.name,file);
+        vm.loading = true;
+        rest.postFile2(vm.user, query, formData,'/rccore/RcpoFile/insert')
+        .then(res => {
+            //alert(JSON.stringify(res));
+            if (!res.success) return Materialize.toast(res.message, 4000)
+            vm.getFileList();
+            vm.media=[];
+            vm.loading = false
+        });
+    },
     uploadImg (useType) {
+      if(this.disabled_edit)return;
       let formData = {
         'Encoding': 'utf-8',
         'Rpencoding': 'utf-8',
@@ -393,13 +458,48 @@ export default{
     //   })
     // },
     addChild() {
-      this.child.cyId = randomToken(32)
-      this.child.poId = this.basicData.poId || poId
-      this.child.saveInDatebase = true
-      this.myChildren.push(this.child)
-      $('#modal1').closeModal()
+    if(!this.startvl){
+      this.startvl=true;
+    }
+    if(!this.child.name||!this.child.sex||!this.child.birthday||!this.child.idCard||!this.child.dwInfo||!this.child.cygx||this.sfzValidator(this.child.idCard)){
+      return;
+    }
+      if(!this.child.cyId||this.child.cyId==''){
+        this.child.cyId = randomToken(32)
+        this.child.poId = this.basicData.poId || poId
+        this.child.saveInDatebase = true
+        this.myChildren.push(this.child)
 
-      this.child = {}
+      }else{
+        for(var i =0;i<this.myChildren.length;i++){
+          if(this.child.cyId==this.myChildren[i].cyId){
+            this.myChildren[i]=this.child;
+            break;
+          }
+        }
+      }
+      this.startvl=false;
+      $('#modal1').closeModal()
+      this.child={};/*
+      this.child.cyId='';
+      this.child.name='';
+      this.child.sex='';
+      this.child.birthday='';
+      this.child.idCard='';
+      this.child.dwInfo='';
+      this.child.cygx='';*/
+      /* {
+            name:'',
+            sex:'',
+            birthday:'',
+            idCard:'',
+            dwInfo:'',
+            cygx:'',
+          };*/
+    },
+    deletechild(index){
+
+     this.myChildren.splice(index, 1);
     },
     beforeUpload (useType) {
       var now = Date.now()
@@ -468,7 +568,7 @@ export default{
       this.basicData.poId = this.basicData.poId || poId
       this.basicData.flowEntityId = this.basicData.poId
       this.basicData.flowEntityInfo = this.user.username + ' 申请购房补贴'
-      this.basicData.flowVerId = 'BDB6AAC5734A2C5C3A44FA369A272E93',
+      this.basicData.flowVerId =  JSON.parse(localStorage.getItem('/rccore/Rcpo/flowUI'))[0].flowVerId;//'BDB6AAC5734A2C5C3A44FA369A272E93',
       this.basicData.flowEntityUI = '/rccore/Rcpo/flowUI'
       this.basicData.qtcyInfo = this.myChildren
       this.basicData.qtcyInfo = JSON.stringify(this.basicData.qtcyInfo)
@@ -487,6 +587,7 @@ export default{
         }
         if (this.files.length) Materialize.toast('保存成功,正在上传', 2000)
         else Materialize.toast('保存成功', 2000)
+         return this.$router.go('/')
         this.files.forEach(file => {
           file.upload()
         })
@@ -514,7 +615,23 @@ export default{
 
       return r
     },
-    modal () {
+    modal(index) {
+    if(this.disabled_edit)return;
+    //alert(JSON.stringify(this.myChildren));
+    //alert(JSON.stringify(this.child));
+      if(typeof index =='number'){
+
+        this.child=this.myChildren[index];
+      }else{
+      this.child={};/*
+        this.child.cyId='';
+        this.child.name='';
+        this.child.sex='';
+        this.child.birthday='';
+        this.child.idCard='';
+        this.child.dwInfo='';
+        this.child.cygx='';*/
+      }
       $('#modal1').openModal()
     },
     getFileList () {
@@ -568,5 +685,22 @@ export default{
   height: 100px;
   background-color: transparent;
   box-shadow: none;
+}
+.card .card-title{
+  font-size:16px;
+}
+table{
+table-layout:fixed;
+}
+table td{
+  word-wrap:break-word;
+}
+.vf-invalid-customValidator{
+  border-bottom: 1px solid #F44336 !important;
+  box-shadow: 0 1px 0 0 #F44336 !important;
+}
+.vf-invalid-required{
+ border-bottom: 1px solid #F44336 !important;
+    box-shadow: 0 1px 0 0 #F44336 !important;
 }
 </style>

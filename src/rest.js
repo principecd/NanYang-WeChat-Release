@@ -234,6 +234,39 @@ module.exports = {
       })
     })
   },
+  postFile2(user, query, formData, url) {
+    return new Promise((resolve, reject) => {
+      var data = init()
+
+      data = _.extend(data, query, user)
+      url = basicUrl + url + '?'
+      Object.keys(data).forEach(key => {
+        url = url + key + '=' + data[key] + '&'
+      })
+      //alert(url);
+      //var formData = new FormData($('#gauploadInput')[0]);
+      //alert(JSON.stringify(formData));
+      console.log(url);
+      $.ajax({
+        type: 'post',
+        url: url,
+        data: formData,
+        // 告诉jQuery不要去处理发送的数据
+        processData : false,
+        // 告诉jQuery不要去设置Content-Type请求头
+        contentType : false,
+        cache: false,
+        dataType: 'json',
+        beforeSend: function (xhr) {
+          //xhr.overrideMimeType('text/html;charset=GBK')
+        }
+      })
+        .done(res => {
+          //alert(JSON.stringify(res));
+          resolve(res)
+        })
+    })
+  },
   getOptions (dictCode) {
     return new Promise((resolve, reject) => {
       var url = basicUrl + '/corej2ee/utils/dict/all'

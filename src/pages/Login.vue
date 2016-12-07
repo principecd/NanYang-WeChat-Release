@@ -52,10 +52,10 @@ export default {
       this.loading = true
       this.user.wcOpenId = JSON.parse(localStorage.getItem('bind')).wcOpenId
       this.user.password = md5(this.user.password)
-      //alert(JSON.stringify(this.user))
+
       rest.post( this.user,{}, '/rccore/WeChatUser/insert').then(res => {
         this.loading = false
-        //alert(JSON.stringify(res))
+
         if (!res.success) return Materialize.toast(res.message, 4000)
         Materialize.toast('登录成功', 2000)
 

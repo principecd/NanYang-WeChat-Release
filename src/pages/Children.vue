@@ -1,15 +1,16 @@
 <template lang="jade">
 .row
   v-loading(:show='loading')
-  v-progress(:progress='progress', :uploading='uploading')
+  v-progress(:progress='progress', :uploading='uploading' )
   //- pre {{dataValue | json}}
   form.col.s12.content
     .input-field.col.s12
-      input.validate(type="text" v-model='basicData.najzdz' placeholder='')
+      input.validate(type="text" v-model='basicData.najzdz' placeholder='' v-bind:disabled="disabled_edit")
       label.active 在南安居住地址
     .input-field.col.s12
-      input.validate(type="text" v-model='basicData.hkss' placeholder='')
+      input.validate(type="text" v-model='basicData.hkss' placeholder='' v-bind:disabled="disabled_edit")
       label.active 户口所属单位
+    h6 子女情况基本信息
     table
       thead
         th 与申请人关系
@@ -18,14 +19,16 @@
         th 出生年月
         th 现就读学校及年级
         th 拟申请就读学校及年级
+        th 删除
       tbody
         tr(v-for='item in myChildren')
-          td {{item.syrgx}}
-          td {{item.xm}}
-          td {{item.xb}}
-          td {{item.csny}}
-          td {{item.xjdxxnj}}
-          td {{item.sqxxnj}}
+          td( @click='modal($index)' ) {{item.syrgx}}
+          td( @click='modal($index)' ) {{item.xm}}
+          td( @click='modal($index)' ) {{item.xb === "1" ? "男" : "女" }}
+          td( @click='modal($index)' ) {{item.csny}}
+          td( @click='modal($index)' ) {{item.xjdxxnj}}
+          td( @click='modal($index)' ) {{item.sqxxnj}}
+          td(@click='deletechild($index)' class='btn waves-effect waves-light red') 删除
     //- .card(v-for='item in cacheFile')
     //-  .card-content
     //-   img(style='width: 100%;', v-bind:src='getSrc(item.fileId)')
@@ -40,22 +43,23 @@
           div.modal-body
             div.form-group
               div.col-lg-10
-                input(type="text" class="form-control" placeholder="与申请人关系" v-model="child.syrgx")
+                input(type="text" class="form-control" placeholder="与申请人关系"     v-model="child.syrgx" ,v-bind:class="{ 'vf-invalid-required': startvl&&!child.syrgx }")
             div.form-group
               div.col-lg-10
-                input(type="text" class="form-control" placeholder="姓名" v-model="child.xm")
-            .col.s12
+                input(type="text" class="form-control" placeholder="姓名"     , v-model="child.xm"  ,v-bind:class="{ 'vf-invalid-required': startvl&&!child.xm }")
+            .col.s12(style="padding:0;")
               label.active 性别
-              v-select(:value.sync='child.xb', :options='xb')
+              v-select(:value.sync='child.xb', :options='xb'       ,v-bind:class="{ 'vf-invalid-required': startvl&&!child.xb }")
+            div.form-group
+              div.col-lg-10(style="padding:0;")
+                label.active 出生年月
+                input(type="month" class="form-control" placeholder="出生年月" v-model="child.csny"  ,v-bind:class="{ 'vf-invalid-required': startvl&&!child.csny }")
             div.form-group
               div.col-lg-10
-                input(type="month" class="form-control" placeholder="出生年月" v-model="child.csny")
+                input(type="text" class="form-control" placeholder="现就读学校及年级" v-model="child.xjdxxnj"  ,v-bind:class="{ 'vf-invalid-required': startvl&&!child.xjdxxnj }")
             div.form-group
               div.col-lg-10
-                input(type="text" class="form-control" placeholder="现就读学校及年级" v-model="child.xjdxxnj")
-            div.form-group
-              div.col-lg-10
-                input(type="text" class="form-control" placeholder="拟申请就读学校及年级" v-model="child.sqxxnj")
+                input(type="text" class="form-control" placeholder="拟申请就读学校及年级" v-model="child.sqxxnj"  ,v-bind:class="{ 'vf-invalid-required': startvl&&!child.sqxxnj }")
           div.modal-footer
             a(class="btn waves-effect waves-green" v-on:click="addChild") 确认
             a(class="modal-action modal-close waves-effect waves-green btn-flat") 取消
@@ -109,8 +113,11 @@
         .card-title 户口本
         .card-content(v-show='!cacheFile||!cacheFile.length||cacheFile.length==0') 暂无数据
         div(v-for='item in cacheFile')
-          .card-content
+          .card-content(v-if='item.fileType==".jpg"||item.fileType==".png"||item.fileType==".jpeg"||item.fileType==".bmp"||item.fileType==".gif"')
             img(style='width: 100%;'  v-bind:src='getSrc(item.fileId)')
+          .card-content(v-if='!(item.fileType==".jpg"||item.fileType==".png"||item.fileType==".jpeg"||item.fileType==".bmp"||item.fileType==".gif")')
+            span {{item.fileName}}{{item.fileType}}下载连接（请复制到浏览器中打开）
+              a(style='word-wrap:break-word;') {{getSrc(item.fileId)}}
           a(@click='deleteFile(item.fileId)') 删除
           .card-action
 
@@ -118,15 +125,32 @@
         .card-title 出生证
         .card-content(v-show='!cacheFile2||!cacheFile2.length||cacheFile2.length==0') 暂无数据
         div(v-for='item in cacheFile2')
-           .card-content
+           .card-content(v-if='item.fileType==".jpg"||item.fileType==".png"||item.fileType==".jpeg"||item.fileType==".bmp"||item.fileType==".gif"')
               img(style='width: 100%;'  v-bind:src='getSrc(item.fileId)')
+            .card-content(v-if='!(item.fileType==".jpg"||item.fileType==".png"||item.fileType==".jpeg"||item.fileType==".bmp"||item.fileType==".gif")')
+              span {{item.fileName}}{{item.fileType}}下载连接（请复制到浏览器中打开）
+                a(style='word-wrap:break-word;') {{getSrc(item.fileId)}}
            a(@click='deleteFile(item.fileId)') 删除
            .card-action
-    a.btn.btn-up(@click='uploadImg("ZXHKB")')
-      .fileupload-button 户口本
-    a.btn.btn-up(@click='uploadImg("ZXCSZ")')
-      .fileupload-button 出生证
-    button.waves-effect.waves-light.btn(@click='submitData') 保存
+  .btn.btn-up(v-if='!disabled_edit')
+      .card-title(style='color:black;text-align:left;') 户口本
+      .fileupload-button(@click='uploadImg("ZXHKB")') 图片文件
+      .fileupload-button(style="line-height: 0 !important;")
+        div(style="margin-top: 15px;") 其他类型文件
+          form(id="uploadForm" enctype="multipart/form-data")
+            input(style="margin-top: 10px;" id="ZXHKBuploadInput" type="file")
+            .waves-effect.waves-light.btn(style="width: 100%;margin-top: 10px;" @click='uploadFile("ZXHKB")')上传
+
+  .btn.btn-up(style='margin-top: 140px;' v-if='!disabled_edit')
+      .card-title(style='color:black;text-align:left;') 出生证
+      .fileupload-button(@click='uploadImg("ZXCSZ")') 图片文件
+      .fileupload-button(style="line-height: 0 !important;")
+        div(style="margin-top: 15px;") 其他类型文件
+          form(id="uploadForm" enctype="multipart/form-data")
+            input(style="margin-top: 10px;" id="ZXCSZuploadInput" type="file")
+            .waves-effect.waves-light.btn(style="width: 100%;margin-top: 10px;" @click='uploadFile("ZXCSZ")')上传
+
+  button.waves-effect.waves-light.btn(style="width: 100%;margin-top: 140px;" @click='submitData' v-if='!disabled_edit') 保存
 </template>
 <script>
 import rest from '../rest'
@@ -154,6 +178,8 @@ export default{
 
   data () {
     return {
+     startvl:false,
+      disabled_edit:false,
       media: [],
       xb: [
         {value: '1', label: '男'},
@@ -234,17 +260,20 @@ export default{
     this.$parent.index = false
 
     if (this.dataValue && this.$route.query.do) this.basicData = this.dataValue
-    if (this.dataValue) {
+    if (this.dataValue&& this.$route.query.do) {
       rest.post(this.user, {zxId: this.dataValue.zxId}, '/rccore/Zxzn/list').then(res => {
         res.datas.forEach(v => {
           v.saveInDatebase = 'false'
         })
         this.myChildren  = res.datas
       })
-    }
-     if (this.dataValue&&this.dataValue.zxId && this.$route.query.do) {
+
       this.getFileList();
-     }
+      if(this.$route.query.do=='edit'){
+              this.disabled_edit=false;
+          }else{ this.disabled_edit=true;
+      }
+    }
 
   },
   attached () {
@@ -254,8 +283,36 @@ export default{
   watch: {
   },
   methods: {
-    uploadImg (useType) {
+     deletechild(index){
 
+       this.myChildren.splice(index, 1);
+    },
+    uploadFile(useType){
+     let vm = this
+        if(this.disabled_edit)return;
+         let query = {
+        'Encoding': 'utf-8',
+        'Rpencoding': 'utf-8',
+        '_x-requested-with': true,
+        'zxId': vm.basicData.zxId||zxId,
+        'useType': useType
+      }
+
+        var file = $('#'+useType+'uploadInput')[0].files[0];
+        var formData = new FormData();
+        formData.append(file.name,file);
+        vm.loading = true;
+        rest.postFile2(vm.user, query, formData,'/rccore/ZxFile/insert')
+        .then(res => {
+            //alert(JSON.stringify(res));
+            if (!res.success) return Materialize.toast(res.message, 4000)
+            vm.getFileList();
+            vm.media=[];
+            vm.loading = false
+        });
+    },
+    uploadImg (useType) {
+     if(this.disabled_edit)return;
       let vm = this
       let formData = {
         'Encoding': 'utf-8',
@@ -285,10 +342,11 @@ export default{
 
     },
     deleteFile(fileId){
+      if(this.disabled_edit)return;
       var vm = this;
       vm.loading = true
       rest.delete(vm.user, {refId: fileId}, '/rccore/ZxFile/delete').then(res => {
-      //alert(JSON.stringify(res))
+
       if (!res.success) return Materialize.toast(res.message, 4000)
         vm.loading = false
         vm.getFileList();
@@ -315,13 +373,29 @@ export default{
       $('#modal1').closeModal()
     },
     addChild() {
-      this.child.znId = randomToken(32)
-      this.child.rcId = this.user.rcId
-      this.child.zxId = this.basicData.zxId || this.zxId
-      this.myChildren.push(this.child)
-      $('#modal1').closeModal()
+    if(!this.startvl){
+          this.startvl=true;
+    }
+    if(!this.child.syrgx||!this.child.xm||!this.child.xb||!this.child.csny||!this.child.xjdxxnj||!this.child.sqxxnj){
+      return;
+    }
+     if(!this.child.znId||this.child.znId==''){
+         this.child.znId = randomToken(32)
+        this.child.rcId = this.user.rcId
+        this.child.zxId = this.basicData.zxId || this.zxId
+        this.myChildren.push(this.child)
 
-      this.child = {}
+      }else{
+        for(var i =0;i<this.myChildren.length;i++){
+          if(this.child.znId==this.myChildren[i].znId){
+            this.myChildren[i]=this.child;
+            break;
+          }
+        }
+      }
+      $('#modal1').closeModal()
+      this.child={};
+      this.startvl=false;
     },
     fileUploadUrl (useType) {
       return rest.basicUrl + '/rccore/ZxFile/insert' + this.beforeUpload(useType)
@@ -404,7 +478,7 @@ export default{
       this.basicData.zxId = this.basicData.zxId || zxId
       this.basicData.flowEntityId = this.basicData.zxId
       this.basicData.flowEntityInfo = this.user.username + ' 申请子女择校'
-      this.basicData.flowVerId = '41B557D7F306047DE5AF2892BC543065',
+      this.basicData.flowVerId =  JSON.parse(localStorage.getItem('/rccore/Zx/flowUI'))[0].flowVerId;//'41B557D7F306047DE5AF2892BC543065',
       this.basicData.flowEntityUI = '/rccore/Zx/flowUI'
 
       this.basicData.zxznData = this.myChildren
@@ -417,6 +491,7 @@ export default{
         if (!res.success) return Materialize.toast(res.message, 4000)
         if (me.files.length) Materialize.toast('保存成功,正在上传', 2000)
         else Materialize.toast('保存成功', 2000)
+         return this.$router.go('/')
         me.files.forEach(file => {
           file.upload()
         })
@@ -443,7 +518,13 @@ export default{
       })
       return r
     },
-    modal () {
+    modal (index) {
+      if(this.disabled_edit)return;
+      if(typeof index =='number'){
+        this.child=this.myChildren[index];
+      }else{
+        this.child={};
+      }
       $('#modal1').openModal()
     },
     getFileList () {
@@ -456,14 +537,14 @@ export default{
       //})
 
         rest.post(me.user, {useType: 'ZXHKB', zxId: me.basicData.zxId||zxId}, '/rccore/ZxFile/fileList').then(res => {
-          //alert('1');
-          //alert(JSON.stringify(res));
+
+
           me.cacheFile  = res.datas
         })
 
         rest.post(me.user, {useType: 'ZXCSZ', zxId: me.basicData.zxId||zxId}, '/rccore/ZxFile/fileList').then(res => {
-        //alert('2')
-        //alert(JSON.stringify(res));
+
+
           me.cacheFile2  = res.datas
         })
 
@@ -510,5 +591,22 @@ export default{
   height: 100px;
   background-color: transparent;
   box-shadow: none;
+}
+.card .card-title{
+  font-size:16px;
+}
+.vf-invalid-customValidator{
+  border-bottom: 1px solid #F44336 !important;
+  box-shadow: 0 1px 0 0 #F44336 !important;
+}
+.vf-invalid-required{
+ border-bottom: 1px solid #F44336 !important;
+    box-shadow: 0 1px 0 0 #F44336 !important;
+}
+table{
+table-layout:fixed;
+}
+table td{
+  word-wrap:break-word;
 }
 </style>

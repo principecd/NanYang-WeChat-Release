@@ -165,4 +165,10 @@ export default{
 .modal {
   width: 100%;
 }
+table{
+table-layout:fixed;
+}
+table td{
+  word-wrap:break-word;
+}
 </style>

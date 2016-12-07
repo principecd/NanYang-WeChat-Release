@@ -18,19 +18,27 @@ div
           .card-action
             .btn-list
               a.waves-effect(v-for='i in filter[item.flowEntityUI].tranList', @click='verStart({"i": i, "flowEntityUI": item.flowEntityUI, "flowEntityId": item.flowEntityId, "flowEntityInfo": item.flowEntityInfo})') {{i.tranName}}
+              a.waves-effect(v-for='i in filter[item.flowEntityUI].tranList', @click='deleteItem({"i": i, "flowEntityUI": item.flowEntityUI, "flowEntityId": item.flowEntityId, "flowEntityInfo": item.flowEntityInfo})') 删除
 
     #active
 
             .card(v-if='item.flowDoStageInfo', v-for='item in list')
               .card-content
-                span.card-title
-                  i.fa(v-bind:class='{"fa-money": item.flowEntityUI === "/rccore/Shjt/flowUI", "fa-bookmark": item.flowEntityUI === "/rccore/SettledAddress/flowUI", "fa-level-up": item.flowEntityUI === "/rccore/Rcrd/flowUI", "fa-home": item.flowEntityUI === "/rccore/Rcpo/flowUI", "fa-child": item.flowEntityUI === "/rccore/Zx/flowUI", "fa-home": item.flowEntityUI === "/rccore/Poxx/flowUI"}')
-                |     {{item.flowEntityInfo}}
-                p {{item.flowEntityTime}}
-                p(v-if='item.flowDoStageInfo') 办理情况：{{item.flowDoStageInfo}}
-                p(id='ysq{{item.flowEntityId}}')
+                .fixed-action-btn.horizontal(style="bottom: 35px; right: 24px; position: absolute", @click='getItemDetail(item)')
+                  a.btn-floating.btn-large(v-bind:class='{"red": item.flowEntityUI === "/rccore/Shjt/flowUI", "pink": item.flowEntityUI === "/rccore/SettledAddress/flowUI", "purple": item.flowEntityUI === "/rccore/Rcrd/flowUI", "blue": item.flowEntityUI === "/rccore/Rcpo/flowUI", "green": item.flowEntityUI === "/rccore/Zx/flowUI", "amber": item.flowEntityUI === "/rccore/Poxx/flowUI"}')
+                    i.fa(v-bind:class='{"fa-money": item.flowEntityUI === "/rccore/Shjt/flowUI", "fa-bookmark": item.flowEntityUI === "/rccore/SettledAddress/flowUI", "fa-level-up": item.flowEntityUI === "/rccore/Rcrd/flowUI", "fa-line-chart": item.flowEntityUI === "/rccore/Rcpo/flowUI", "fa-child": item.flowEntityUI === "/rccore/Zx/flowUI", "fa-hotel": item.flowEntityUI === "/rccore/Poxx/flowUI"}')
+                div
+                  span.card-title
+                    i.fa(v-bind:class='{"fa-money": item.flowEntityUI === "/rccore/Shjt/flowUI", "fa-bookmark": item.flowEntityUI === "/rccore/SettledAddress/flowUI", "fa-level-up": item.flowEntityUI === "/rccore/Rcrd/flowUI", "fa-home": item.flowEntityUI === "/rccore/Rcpo/flowUI", "fa-child": item.flowEntityUI === "/rccore/Zx/flowUI", "fa-home": item.flowEntityUI === "/rccore/Poxx/flowUI"}')
+                  |     {{item.flowEntityInfo}}
+                  p {{item.flowEntityTime}}
+                  p(v-if='item.flowDoStageInfo') 办理情况：{{item.flowDoStageInfo}}
+                  p(id='ysq{{item.flowEntityId}}')
+              .card-action
+                .btn-list
+                //-  a.waves-effect(v-for='i in filter[item.flowEntityUI].tranList', @click='verStart({"i": i, "flowEntityUI": item.flowEntityUI, "flowEntityId": item.flowEntityId, "flowEntityInfo": item.flowEntityInfo})') {{i.tranName}}
 
-             //- .card(v-for='stageItems in stageList')
+  //- .card(v-for='stageItems in stageList')
              //-   .card-content
              //-     span.card-title
              //-       i.fa(v-bind:class='{"fa-money": stageItems.flowEntityUI === "/rccore/Shjt/flowUI", "fa-bookmark": stageItems.flowEntityUI === "/rccore/SettledAddress/flowUI", "fa-level-up": stageItems.flowEntityUI === "/rccore/Rcrd/flowUI", "fa-home": stageItems.flowEntityUI === "/rccore/Rcpo/flowUI", "fa-child": stageItems.flowEntityUI === "/rccore/Zx/flowUI", "fa-home": stageItems.flowEntityUI === "/rccore/Poxx/flowUI"}')
@@ -97,6 +105,7 @@ export default {
         '/rccore/Rcrd/flowUI': {
           name: 'HighLvPersonId',
           getUrl: '/rccore/Rcrd/get',
+          deleteUrl:'/rccore/Rcrd/entitySelfDel',
           tranListUrl: '/rccore/Rcrd/tranList',
           verStartUrl: '/rccore/Rcrd/verStart',
           flowId: '403942F8F0B920C372128083DCFF75A0'
@@ -104,6 +113,7 @@ export default {
         '/rccore/Shjt/flowUI': {
           name: 'LifePayment',
           getUrl: '/rccore/Shjt/get',
+          deleteUrl:'/rccore/Shjt/entitySelfDel',
           tranListUrl: '/rccore/Shjt/tranList',
           verStartUrl: '/rccore/Shjt/verStart',
           flowId: '1C4C5A0B871558CDE9C465856D5F3B0C'
@@ -111,6 +121,7 @@ export default {
         '/rccore/Zx/flowUI': {
           name: 'Children',
           getUrl: '/rccore/Zx/get',
+          deleteUrl:'/rccore/Zx/entitySelfDel',
           tranListUrl: '/rccore/Zx/tranList',
           verStartUrl: '/rccore/Zx/verStart',
           flowId: 'FE195B8E150946A5AB871DA314142C80',
@@ -120,6 +131,7 @@ export default {
         '/rccore/Rcpo/flowUI': {
           name: 'BuyHouse',
           getUrl: '/rccore/Rcpo/get',
+          deleteUrl: '/rccore/Rcpo/entitySelfDel',
           tranListUrl: '/rccore/Rcpo/tranList',
           verStartUrl: '/rccore/Rcpo/verStart',
           flowId: '092FBACA67D7442613CC824B7025F953',
@@ -129,6 +141,7 @@ export default {
         '/rccore/Poxx/flowUI': {
           name: 'RentHouse',
           getUrl: '/rccore/Poxx/get',
+          deleteUrl:'/rccore/Poxx/entitySelfDel',
           tranListUrl: '/rccore/Poxx/tranList',
           verStartUrl: '/rccore/Poxx/verStart',
           flowId: '2aecc2e9691811e6add500155d017903'
@@ -136,6 +149,7 @@ export default {
         '/rccore/SettledAddress/flowUI': {
           name: 'GetAddress',
           getUrl: '/rccore/SettledAddress/get',
+          deleteUrl:'/rccore/SettledAddress/entitySelfDel',
           tranListUrl: '/rccore/SettledAddress/tranList',
           verStartUrl: '/rccore/SettledAddress/verStart',
           flowId: '3937D50EF0AA76803976CF9B12EBA618',
@@ -161,6 +175,32 @@ export default {
   methods: {
     deleteItem(item) {
 
+      var url = this.filter[item.flowEntityUI].deleteUrl
+
+      var fff = {
+        '/rccore/Rcrd/flowUI': 'sqId',
+        '/rccore/Shjt/flowUI': 'jtId',
+        '/rccore/Zx/flowUI': 'zxId',
+        '/rccore/Rcpo/flowUI': 'poId',
+        '/rccore/Poxx/flowUI': 'poId',
+        '/rccore/SettledAddress/flowUI': 'settledGuid'
+      }
+      var key = fff[item.flowEntityUI]
+      var data = {}
+      // data[key] = item.flowEntityId
+      data[key] = item.flowEntityId
+      data.flowEntityId=item.flowEntityId;
+      data.flowId=this.filter[item.flowEntityUI].flowId
+      var me = this
+      this.loading = true
+      rest.post(this.user, data, url).then(res => {
+        me.loading = false
+
+        if (!res.success) return Materialize.toast(res.message, 4000)
+        Materialize.toast('已删除', 4000)
+        me.reflash()
+
+      })
     },
     redirect(item) {
       if (!item.detail) return
@@ -196,6 +236,7 @@ export default {
 
     },
     getItemDetail(item) {
+
       var url = this.filter[item.flowEntityUI].getUrl
 
       var fff = {
@@ -221,7 +262,11 @@ export default {
 
         var name = this.filter[item.flowEntityUI].name
         this.increment(res.data)
-        return this.$router.go({name:`${name}`, query: {'do': 'edit'}})
+        if(!item.flowDoStageInfo){
+           return this.$router.go({name:`${name}`, query: {'do': 'edit'}})
+        }else{
+         return this.$router.go({name:`${name}`, query: {'do': 'disedit'}})
+        }
         // window.location.href = `/${name}`
 
       })
@@ -244,6 +289,9 @@ export default {
       i.flowEntityInfo = a.flowEntityInfo
       i.flowEntityId = a.flowEntityId
       var url = this.filter[flowEntityUI].getUrl
+      var flowId = this.filter[flowEntityUI].flowId
+      i.flowId=this.filter[flowEntityUI].flowId;
+
 
       this.loading = true
       rest.post(this.user, i, url).then(res => {
@@ -259,8 +307,9 @@ export default {
         res.data.flowEntityInfo = i.flowEntityInfo
         res.data.flowVerId = i.flowVerId
         res.data.flowEntityUI = i.flowEntityUI
-
         var data = res.data
+        data.flowId=i.flowId;
+        //i.flowId=flowId;
 
         this.loading = true
 
@@ -270,8 +319,10 @@ export default {
               v.saveInDatebase = 'false'
             })
             data[this.filter[flowEntityUI].childrenKey] = JSON.stringify(myChildren.datas)
+            //alert(JSON.stringify(data));
             rest.post(this.user, data, this.filter[flowEntityUI].verStartUrl).then(cb => {
               // console.log(cb)
+              //alert(JSON.stringify(cb))
               this.loading = false
               if (!cb.success) {
                 return Materialize.toast(cb.message, 4000)
@@ -283,8 +334,10 @@ export default {
           })
         }
         else {
+          //alert(JSON.stringify(data));
           rest.post(this.user, data, this.filter[flowEntityUI].verStartUrl).then(cb => {
             // console.log(cb)
+            //alert(JSON.stringify(cb))
             this.loading = false
             if (!cb.success) {
               return Materialize.toast(cb.message, 4000)
@@ -363,32 +416,25 @@ export default {
             }
             //alert(JSON.stringify(item));
         })
-
-
     },
     reflash() {
       var me = this
       this.loading = true
-
       rest.post(this.user, {flowOwnerId: this.user.rcId, start: 0,limit: 50}, '/flowengine/run/full/entityPage').then(res => {
         this.loading = false
-
         if (!res.success) return Materialize.toast(res.message, 4000)
          this.listCache = res.datas
-
          if (me.filter['/rccore/Rcrd/flowUI'].tranList && me.filter['/rccore/Shjt/flowUI'].tranList && me.filter['/rccore/Zx/flowUI'].tranList && me.filter['/rccore/Rcpo/flowUI'].tranList && me.filter['/rccore/Poxx/flowUI'].tranList && me.filter['/rccore/SettledAddress/flowUI'].tranList && me.listCache.length) {
            me.list = me.listCache
          }
          setTimeout(function() {
            me.getStageList();
         }, 300)
-
       })
-
-
       Object.keys(this.filter).forEach(key => {
-        var value = JSON.parse(localStorage.getItem(key))
+        //var value = JSON.parse(localStorage.getItem(key))
         rest.get(this.user, {flowId: this.filter[key].flowId}, this.filter[key].tranListUrl).then(res => {
+          //alert(JSON.stringify(res))
           if (!res.success) return Materialize.toast(res.message, 4000)
           me.filter[key].tranList = res.datas
           localStorage.setItem(key, JSON.stringify(res.datas))

@@ -300,7 +300,7 @@ export default{
     submitData (e) {
       e.preventDefault()
       if(!this.postData.rych||this.postData.rych==null){
-        //alert('荣誉称号或等级不能为空')
+
         $('#modal1').closeModal()
         return Materialize.toast('荣誉称号不能为空', 2000) ;
       }
@@ -414,5 +414,11 @@ export default{
 }
 #formContent {
   margin-top: 40px;
+}
+table{
+table-layout:fixed;
+}
+table td{
+  word-wrap:break-word;
 }
 </style>

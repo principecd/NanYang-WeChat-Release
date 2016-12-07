@@ -215,7 +215,7 @@ export default{
   },
   methods:{
     uploadImg () {
-    //alert('添加专业职业证书')
+
     let formData = {
         'Encoding': 'utf-8',
         'Rpencoding': 'utf-8',
@@ -371,7 +371,7 @@ export default{
       var me = this
 
       rest.post(this.user, {useType: 'ZCZS'}, '/rccore/RcxxFile/fileList').then(res => {
-        //alert(JSON.stringify(res));
+
         me.fileList = res.datas
       })
     }
@@ -438,5 +438,11 @@ export default{
 }
 #formContent {
   margin-top: 40px;
+}
+table{
+table-layout:fixed;
+}
+table td{
+  word-wrap:break-word;
 }
 </style>

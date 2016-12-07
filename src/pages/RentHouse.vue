@@ -6,37 +6,37 @@
     //-   input.validate(type="text" v-model='basicData.rcName' placeholder='')
     //-   label.active 人才姓名
     .input-field.col.s12
-      input.validate(type="text" v-model='basicData.poXm' placeholder='')
+      input.validate(type="text" v-model='basicData.poXm' placeholder='' v-bind:disabled="disabled_edit")
       label.active 配偶姓名
     .col.s12
       label.active 性别
-      v-select(:value.sync='basicData.xb', :options='xb')
+      v-select(:value.sync='basicData.xb', :options='xb' v-bind:disabled="disabled_edit")
     .input-field.col.s12
-      input.validate(type="month" v-model='basicData.csny' placeholder='')
+      input.validate(type="month" v-model='basicData.csny' placeholder='' v-bind:disabled="disabled_edit")
       label.active 出生年月
     .input-field.col.s12
-      input.validate(type="text" v-model='basicData.jg' placeholder='')
+      input.validate(type="text" v-model='basicData.jg' placeholder='' v-bind:disabled="disabled_edit")
       label.active 国籍籍贯
     .input-field.col.s12
-      input.validate(type="text" v-model='basicData.sfz' placeholder='')
+      input.validate(type="text" v-model='basicData.sfz' placeholder='' v-bind:disabled="disabled_edit")
       label.active 身份证号(护照)
     .col.s12
       label.active 人才类别
-      v-select(:value.sync='basicData.sqcc', :options='rclb')
+      v-select(:value.sync='basicData.sqcc', :options='rclb' v-bind:disabled="disabled_edit")
     .input-field.col.s12
-      input.validate(type="text" v-model='basicData.xgzdw' placeholder='')
+      input.validate(type="text" v-model='basicData.xgzdw' placeholder='' v-bind:disabled="disabled_edit")
       label.active 工作单位及地址
     .input-field.col.s12
-      input.validate(type="text" v-model='basicData.xgzzw' placeholder='')
+      input.validate(type="text" v-model='basicData.xgzzw' placeholder='' v-bind:disabled="disabled_edit")
       label.active 职务
     .input-field.col.s12
-      input.validate(type="text" v-model='basicData.sjhm' placeholder='')
+      input.validate(type="text" v-model='basicData.sjhm' placeholder='' v-bind:disabled="disabled_edit")
       label.active 联系电话
     .input-field.col.s12
-      input.validate(type="text" v-model='basicData.dzyj' placeholder='')
+      input.validate(type="text" v-model='basicData.dzyj' placeholder='' v-bind:disabled="disabled_edit")
       label.active 邮箱
 
-    button.waves-effect.waves-light.btn(@click='submitData') 保存
+    button.waves-effect.waves-light.btn(@click='submitData' v-if='!disabled_edit') 保存
 </template>
 <script>
 import rest from '../rest'
@@ -60,6 +60,7 @@ export default{
 
   data () {
     return {
+      disabled_edit:false,
       loading: false,
       xb: [
         {value: '1', label: '男'},
@@ -75,6 +76,7 @@ export default{
       zgbmId: [],
       ryId: {},
       basicData: {
+        xb:''
       },
       list: [],
       files:[],
@@ -127,7 +129,19 @@ export default{
   ready () {
     this.$parent.index = false
 
-    if (this.dataValue && this.$route.query.do) this.basicData = this.dataValue
+    if (this.dataValue && this.$route.query.do)
+      {
+          this.basicData = this.dataValue
+          if(this.$route.query.do=='edit'){
+              this.disabled_edit=false;
+          }else{ this.disabled_edit=true;
+          }
+          if(this.basicData.xb=='男'){
+            this.basicData.xb='1';
+          }else{
+            this.basicData.xb='0';
+          }
+      }
   },
   attached () {
     $('#sidenav-overlay').remove()
@@ -205,11 +219,10 @@ export default{
     submitData (e) {
       e.preventDefault()
       var me = this
-
       this.basicData.isAdd = this.basicData.poId ? false : true
       this.basicData.poId = this.basicData.poId || randomToken(32)
       this.basicData.flowEntityId = this.basicData.poId
-      this.basicData.flowVerId = 'BDB6AAC5734A2C5C3A44FA369A272E93',
+      this.basicData.flowVerId =  JSON.parse(localStorage.getItem('/rccore/Poxx/flowUI'))[0].flowVerId;//'BDB6AAC5734A2C5C3A44FA369A272E93',
       this.basicData.flowEntityUI = '/rccore/Poxx/flowUI'
       this.basicData.flowEntityInfo = this.user.username + ' 申请租房补贴'
 

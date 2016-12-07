@@ -9,8 +9,8 @@
     .input-field.col.s10
       i.fa.fa-credit-card.prefix
       v-select.validate(:options='zjlx', :value.sync='user.zjlx', style='width: calc(100% - 42px); margin-left: 42px; z-index: 2; position: relative') 证件类型
-      input.validate(type="text", name='lxrZj' v-model='user.lxrZj', v-form-ctrl, required, v-if='user.zjlx==="sfz"', placeholder='填入号码')
-      input.validate(type="text", name='lxrZj' v-model='user.lxrZj', v-form-ctrl, required, v-if='user.zjlx==="hz"', placeholder='填入号码')
+      input.validate(type="text", name='lxrZj' v-model='user.lxrZj', v-form-ctrl, required,custom-validator="sfzValidator",v-if='user.zjlx==="sfz"', placeholder='填入号码')
+      input.validate(type="text", name='lxrZj' v-model='user.lxrZj', v-form-ctrl, required,custom-validator="hzValidator", v-if='user.zjlx==="hz"', placeholder='填入号码')
       label(v-if='!user.zjlx', style='z-index: 1;') 身份证（护照）
     //- .input-field.col.s10
     //-   i.fa.fa-credit-card.prefix
@@ -33,7 +33,8 @@
     //-   button.waves-effect.waves-light.btn(@click='getCode') {{verifyBtn}}
     //-   input.validate(type="text" v-model='user.codePhone' placeholder='')
     .button(style='margin-top: 50px !important')
-      a.waves-effect.waves-light.btn(@click='signUp', v-bind:disabled='myform.$invalid') 注册
+      a.waves-effect.waves-green.btn(@click='signUp', v-bind:disabled='myform.$invalid' v-if="!myform.$invalid") 注册
+      a.waves-effect.waves-light.btn(v-bind:disabled='myform.$invalid' v-if="myform.$invalid") 注册
       a.signUp.waves-effect(v-link="{ path: '/Login' }", style='height: 36px; text-align: center;line-height: 36px;') 登录
 </template>
 
@@ -75,15 +76,22 @@ export default {
   },
   attached() {},
   methods: {
+    sfzValidator(value){
+        //console.log(value);
+      // return true to set input as $valid, false to set as $invalid
+          return /^(\d{15}$|^\d{18}$|^\d{17}(\d|X|x))$/.test(value);
+    },
+    hzValidator(value){
+    //    /(P\d{7})|(G\d{8})/
+    //console.log(value);
+       return /^1[45][0-9]{7}|G[0-9]{8}|P[0-9]{7}|S[0-9]{7,8}|D[0-9]+$/.test(value)
+    },
     signUp() {
-      if(!this.isCardNo(this.user.lxrZj)){
-        return Materialize.toast('身份证格式验证失败', 4000)
-      }
       this.user.password = md5(this.user.pwd)
       this.user.wcOpenId = JSON.parse(localStorage.getItem('bind')).wcOpenId
- //alert(JSON.stringify(this.user));
+
       rest.post( this.user,{}, '/rccore/WeChatUser/noneToInsert').then(res => {
-      //alert(JSON.stringify(res));
+
         if (!res.success) return Materialize.toast(res.message, 4000)
         var baseInfo = {
           ssoOpenId: res.data.rcId,
@@ -98,15 +106,6 @@ export default {
 
       })
     },
-   isCardNo(card)
-    {
-       // 身份证号码为15位或者18位，15位时全为数字，18位前17位为数字，最后一位是校验位，可能为数字或字符X
-       var reg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
-       if(reg.test(card) === false)
-       {
-           return  false;
-       }  else return true
-    } ,
     getCode() {
       if (!this.user.mobilePhone || !this.user.lxrZj) {
         return Materialize.toast('请输入完整信息', 4000)
@@ -181,5 +180,9 @@ export default {
   margin-top: 30px;
   display: block;
   color: #666;
+}
+.vf-invalid-customValidator{
+  border-bottom: 1px solid #F44336 !important;
+  box-shadow: 0 1px 0 0 #F44336 !important;
 }
 </style>

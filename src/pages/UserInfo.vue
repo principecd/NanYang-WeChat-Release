@@ -5,7 +5,7 @@
   form.col.s12
     .input-field.col.s12
       input.validate(type="text" v-model='basic.xm' placeholder='', v-bind:disabled.once='basic.xm')
-      label.active 用户名
+      label.active 姓名
     .col.s12( @click='uploadImg')
       label.active(v-if='!meida' )
         span(style='font-size: 30px' ).fa.fa-cloud-upload
@@ -86,9 +86,17 @@
     .col.s12
       label.active 人才类别
       //- h1 {{basic.rclbs}}
-      .selectValue {{rclbsShow}}
-      select(v-model='rclbsCache', style='color: transparent')
-        option(v-for='item in rclbs', :value='item.value + "|" + item.label') {{item.label}}
+      //- .selectValue {{rclbsShow}}
+      //- select(v-model='rclbsCache', style='color: transparent')
+      //-   option(v-for='item in rclbs', :value='item.value + "|" + item.label') {{item.label}}
+      div(v-for="item in rclbs")
+        input(type="checkbox"   id="rcfw{{item.value}}" value='{{item.value}}' v-model="rclbsCache"  )
+        label(for="rcfw{{item.value}}") {{item.label}}
+      //- span Checked names: {{ rclbsCache }}
+      //- br
+      //- span basic.rclbs: {{basic.rclbs}}
+      //- br
+      //- span rclbs:  {{rclbs}}
     .col.s12
       br
       button(class="btn waves-effect waves-light" name="action" v-on:click='submitData') 保存
@@ -102,6 +110,20 @@ import { uploadImage } from '../rest'
 import { chooseImage } from '../rest'
 import sha1 from 'sha1'
 var localStorage = window.localStorage
+
+Array.prototype.unique = function()
+{
+	var n = {},r=[]; //n为hash表，r为临时数组
+	for(var i = 0; i < this.length; i++) //遍历当前数组
+	{
+		if (!n[this[i]]) //如果hash表中没有当前项
+		{
+			n[this[i]] = true; //存入hash表
+			r.push(this[i]); //把当前数组的当前项push到临时数组里面
+		}
+	}
+	return r;
+}
 
 export default {
   // vuex: {
@@ -120,6 +142,7 @@ export default {
         {value: '0', label: '女'}
       ],
       basic: {
+        rclbs: []
       },
       xgzdwxz: [],
       zzmm: [],
@@ -159,13 +182,15 @@ export default {
       me.zzmm = this.rebuildOptions(res)
     })
     rest.getOptions('rcfw_rclb').then(res => {
+
       me.rclbs = this.rebuildOptions(res)
+
     })
   },
   detached () {
   },
   watch: {
-    'rclbsCache': function(newVal, val) {
+    /*'rclbsCache': function(newVal, val) {
       let i = newVal.split('|')
       if (this.basic.rclbs && this.basic.rclbs.length) {
         if (typeof this.basic.rclbs === 'string') this.basic.rclbs = this.basic.rclbs.split(',')
@@ -179,7 +204,7 @@ export default {
         this.basic.rclbs = []
         this.basic.rclbs.push(i[0])
       }
-    }
+    }*/
   },
   ready () {
     var me = this
@@ -187,6 +212,8 @@ export default {
     rest.post(this.user, {}, '/rccore/Rcxx/get').then(res => {
       me.loading = false
       me.basic = res.data
+
+      me.rclbsCache=me.basic.rclbs.split(',').unique();
       // me.rclbsShow = this.formatVal()
     })
     rest.post(this.user, {useType: 'RCXXZP'}, '/rccore/RcxxFile/fileList').then(res => {
@@ -250,11 +277,11 @@ export default {
           }
           let vm = this
           rest.resetConfig(window.location.href,function(){
-                //alert('ready')
+
                 chooseImage()
                   .then(localId => {
                     vm.loading = true
-                    //alert(localId);
+
                     vm.media=localId;
                     vm.meida=true;
                     return uploadImage(localId)
@@ -285,13 +312,19 @@ export default {
       var me = this
       this.basic.isAdd = false
       this.loading = true
+
+      this.basic.rclbs=this.rclbsCache
+
       this.basic.rclbs = this.basic.rclbs.toString()
+
       rest.post(this.user, this.basic, '/rccore/Rcxx/save').then(res => {
+        this.loading = false
+
         if (!res.success) return Materialize.toast(res.message, 4000)
 
         this.basic = res.data
         Materialize.toast('保存成功', 2000)
-        this.loading = false
+         return this.$router.go('/')
       })
     }
   },

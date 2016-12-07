@@ -1,21 +1,22 @@
 <template lang="jade">
 .row
   v-loading(:show='loading')
-  form.col.s12.content
+  form.col.s12.content(v-form name="myformlp")
     //- pre {{dataValue | json}}
     .col.s12
       label.active 补贴层次
-      v-select(:value.sync='basicData.btcc', :options='sqcc')
+      v-select(:value.sync='basicData.btcc', :options='sqcc' v-bind:class="{ 'vf-invalid-required': startv&&!basicData.btcc }" v-bind:disabled="disabled_edit")
     .col.s12
       label.active 补贴标准（元/月）
-      v-select0(:value.sync='basicData.btje', :options='sqcc')
+      v-select0(:value.sync='basicData.btje', :options='sqcc' v-bind:class="{ 'vf-invalid-required': startv&&!basicData.btje }" v-bind:disabled="disabled_edit")
     .input-field.col.s12
-      input.validate(type="text" v-model='basicData.btMonth' placeholder='如：3')
+      input.validate(type="text" v-model='basicData.btMonth' placeholder='如：3' ,name="btMonth",  v-form-ctrl, required,custom-validator="btMonthValidator" v-bind:disabled="disabled_edit")
       label.active 补贴月份
     .input-field.col.s12
-      input.validate(type="text" v-model='basicData.sqnd' placeholder='如：2016')
+      input.validate(type="text" v-model='basicData.sqnd' placeholder='如：2016' name="sqnd",  v-form-ctrl, required,custom-validator="sqndValidator" v-bind:disabled="disabled_edit")
       label.active 申请年度
-    button.waves-effect.waves-light.btn(@click='submitData') 保存
+    a(class="btn waves-effect waves-light"      @click='submitData' v-if="!disabled_edit&&!(myformlp.$invalid||!basicData.btcc||!basicData.btje)") 保存
+    a(class="waves-effect waves-green btn-flat" @click='startvf'   v-if="!disabled_edit&&myformlp.$invalid||!basicData.btcc||!basicData.btje") 保存
     //- br
     //- br
     //- a.btn.btn-up
@@ -75,7 +76,10 @@ export default{
 
   data () {
     return {
+      disabled_edit:false,
+      startv:false,
       loading: false,
+      firstopened:true,
       dengJi: [],
       sqcc: [],
       rych: [],
@@ -83,6 +87,8 @@ export default{
       zgbmId: [],
       ryId: {},
       basicData: {
+        btcc:'',
+        btje:'',
       },
       list: [],
       files:[],
@@ -137,7 +143,16 @@ export default{
   ready () {
     this.$parent.index = false
 
-    if (this.dataValue && this.$route.query.do) this.basicData = this.dataValue
+    if (this.dataValue && this.$route.query.do) {
+      this.basicData = this.dataValue
+      this.firstopened=true;
+       if(this.$route.query.do=='edit'){
+              this.disabled_edit=false;
+          }else{ this.disabled_edit=true;
+        }
+    }else{
+      this.firstopened=false;
+    }
 
     // var me = this
     // me.loading = true
@@ -149,11 +164,62 @@ export default{
     //
     // this.getList()
   },
+  watch:{
+    'basicData.btcc':function (newVal, oldVal) {
+          if(this.firstopened){//第一次打开页面 津贴显示服务器的
+            this.firstopened=false;
+            return;
+          }
+
+
+            for(var i = 0;i<this.sqcc.length;i++){
+              if(this.basicData.btcc===this.sqcc[i].value)
+              {
+                this.basicData.btje=this.sqcc[i].itemNameB;
+              }
+            }
+
+    }
+
+  },
   attached () {
     $('#sidenav-overlay').remove()
 
   },
   methods: {
+    startvf(){
+      this.startv=true;//开启验证
+    },
+    btMonthValidator(){
+        //if(!this.startv){
+       //   return true;
+       // }else{
+       //   return /^(0?[1-9]|1[0-2])$/.test(this.basicData.btMonth);
+       // }
+         return /^(0?[1-9]|1[0-2])$/.test(this.basicData.btMonth);
+    },
+    sqndValidator(){
+       //if(!this.startv){
+       //   return true;
+        //}else{
+       //   return /^\d{4}$/.test(this.basicData.sqnd)&&this.basicData.sqnd>=1970&&this.basicData.sqnd<=3000;
+       // }
+         return /^\d{4}$/.test(this.basicData.sqnd)&&this.basicData.sqnd>=1970&&this.basicData.sqnd<=3000;
+    },
+    /*
+    validbtMonth(){
+      return startv&&!(/^(0?[1-9]|1[0-2])$/.test(basicData.btMonth))
+    },
+    validsqnd(){
+        return startv&&!(/^\d{4}$/.test(basicData.sqnd)&&basicData.sqnd>=1970&&basicData.sqnd<=3000)  //4位数字
+    },
+    invalidform(){
+      return !basicData.btcc||!basicData.btje||this.validbtMonth()||this.validsqnd();
+    },
+    validform(){
+      return !(!basicData.btcc||!basicData.btje||this.validbtMonth()||this.validsqnd());
+    },
+    */
     fileUploadUrl (useType) {
       return rest.basicUrl + '/rccore/RcpoFile/insert' + this.beforeUpload(useType)
     },
@@ -231,7 +297,7 @@ export default{
       this.basicData.jtId = this.basicData.jtId || randomToken(32)
       this.basicData.flowEntityId = this.basicData.jtId
       this.basicData.flowEntityInfo = this.user.username + ' 申请生活津贴'
-      this.basicData.flowVerId = 'BDB6AAC5734A2C5C3A44FA369A272E93',
+      this.basicData.flowVerId = JSON.parse(localStorage.getItem('/rccore/Shjt/flowUI'))[0].flowVerId  ; //'BDB6AAC5734A2C5C3A44FA369A272E93',
       this.basicData.flowEntityUI = '/rccore/Shjt/flowUI'
 
       this.loading = true
@@ -310,5 +376,13 @@ export default{
   width: 100%;
   background-color: transparent;
   box-shadow: none;
+}
+.vf-invalid-required{
+ border-bottom: 1px solid #F44336 !important;
+    box-shadow: 0 1px 0 0 #F44336 !important;
+}
+.vf-invalid-customValidator{
+  border-bottom: 1px solid #F44336 !important;
+  box-shadow: 0 1px 0 0 #F44336 !important;
 }
 </style>
