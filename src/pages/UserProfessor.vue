@@ -42,22 +42,22 @@
             form.col.s12
               .col.s12
                 label.active 性质
-                v-select(:options='zyxz', :value.sync='postData.zyxz')
+                v-select(:options='zyxz', :value.sync='postData.zyxz' ,v-bind:class="{ 'vf-invalid-required': startvl&&!postData.zyxz }")
               .col.s12
                 label.active 系列
-                v-select(:options='zyxl', :value.sync='postData.zyxl')
+                v-select(:options='zyxl', :value.sync='postData.zyxl' ,v-bind:class="{ 'vf-invalid-required': startvl&&!postData.zyxl }")
               .input-field.col.s12
                 input.validate(type="text" v-model='postData.zymc' placeholder='')
                 label.active 专业名称
               .col.s12
                 label.active 等级
-                v-select(:options='zydj', :value.sync='postData.zydj')
+                v-select(:options='zydj', :value.sync='postData.zydj' ,v-bind:class="{ 'vf-invalid-required': startvl&&!postData.zydj }")
               .input-field.col.s12
                 input.validate(type="text" v-model='postData.zshm' placeholder='')
                 label.active 证件号码
               .col.s12
                 label.active 主管部门
-                v-select(:options='zgbmId', :value.sync='postData.zgbmId')
+                v-select(:options='zgbmId', :value.sync='postData.zgbmId' ,v-bind:class="{ 'vf-invalid-required': startvl&&!postData.zgbmId }")
         .modal-footer
           a(class="btn waves-effect waves-light" v-on:click='submitData') 保存
           a(class="modal-action modal-close waves-effect waves-green btn-flat", @click='clear') 取消
@@ -131,6 +131,7 @@ export default{
   // },
   data () {
     return {
+    startvl:false,
       media: [],
       loading: false,
       fileUploadUrl: rest.basicUrl + '/rccore/RcxxFile/insert' + this.beforeUpload(),
@@ -209,6 +210,7 @@ export default{
     rest.post(this.user, {useType: 'ZCZS'}, '/rccore/RcxxFile/fileList').then(res => {
       me.fileList = res.datas
     })
+    this.startvl=false;
   },
   attached () {
     $('ul.tabs').tabs()
@@ -327,6 +329,14 @@ export default{
     },
     submitData (e) {
       e.preventDefault()
+       if(!this.startvl){
+            this.startvl=true;
+      }
+      if(!this.postData.zyxz||!this.postData.zyxl||!this.postData.zydj||!this.postData.zgbmId){
+        return;
+      }
+      this.startvl=false;
+
       var me = this
 
       this.postData.isAdd = this.postData.zyzcId ? 'false' : 'true'
@@ -444,5 +454,9 @@ table-layout:fixed;
 }
 table td{
   word-wrap:break-word;
+}
+.vf-invalid-required{
+ border-bottom: 1px solid #F44336 !important;
+    box-shadow: 0 1px 0 0 #F44336 !important;
 }
 </style>

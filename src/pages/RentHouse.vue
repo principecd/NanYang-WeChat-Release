@@ -6,31 +6,31 @@
     //-   input.validate(type="text" v-model='basicData.rcName' placeholder='')
     //-   label.active 人才姓名
     .input-field.col.s12
-      input.validate(type="text" v-model='basicData.poXm' placeholder='' v-bind:disabled="disabled_edit")
+      input.validate(type="text" v-model='basicData.poXm' placeholder='' v-bind:disabled="disabled_edit"  ,v-bind:class="{ 'vf-invalid-required': startvlwc&&!basicData.poXm}")
       label.active 配偶姓名
     .col.s12
       label.active 性别
-      v-select(:value.sync='basicData.xb', :options='xb' v-bind:disabled="disabled_edit")
+      v-select(:value.sync='basicData.xb', :options='xb' v-bind:disabled="disabled_edit" ,v-bind:class="{ 'vf-invalid-required': startvlwc&&!basicData.xb }")
     .input-field.col.s12
-      input.validate(type="month" v-model='basicData.csny' placeholder='' v-bind:disabled="disabled_edit")
+      input.validate(type="month" v-model='basicData.csny' placeholder='' v-bind:disabled="disabled_edit" ,v-bind:class="{ 'vf-invalid-required': startvlwc&&!basicData.csny }")
       label.active 出生年月
     .input-field.col.s12
-      input.validate(type="text" v-model='basicData.jg' placeholder='' v-bind:disabled="disabled_edit")
+      input.validate(type="text" v-model='basicData.jg' placeholder='' v-bind:disabled="disabled_edit" ,v-bind:class="{ 'vf-invalid-required': startvlwc&&!basicData.jg }")
       label.active 国籍籍贯
     .input-field.col.s12
-      input.validate(type="text" v-model='basicData.sfz' placeholder='' v-bind:disabled="disabled_edit")
+      input.validate(type="text" v-model='basicData.sfz' placeholder='' v-bind:disabled="disabled_edit" ,v-bind:class="{ 'vf-invalid-required': startvlwc&&!basicData.sfz }")
       label.active 身份证号(护照)
     .col.s12
       label.active 人才类别
-      v-select(:value.sync='basicData.sqcc', :options='rclb' v-bind:disabled="disabled_edit")
+      v-select(:value.sync='basicData.sqcc', :options='rclb' v-bind:disabled="disabled_edit" ,v-bind:class="{ 'vf-invalid-required': startvlwc&&!basicData.sqcc }")
     .input-field.col.s12
-      input.validate(type="text" v-model='basicData.xgzdw' placeholder='' v-bind:disabled="disabled_edit")
+      input.validate(type="text" v-model='basicData.xgzdw' placeholder='' v-bind:disabled="disabled_edit" ,v-bind:class="{ 'vf-invalid-required': startvlwc&&!basicData.xgzdw }")
       label.active 工作单位及地址
     .input-field.col.s12
       input.validate(type="text" v-model='basicData.xgzzw' placeholder='' v-bind:disabled="disabled_edit")
       label.active 职务
     .input-field.col.s12
-      input.validate(type="text" v-model='basicData.sjhm' placeholder='' v-bind:disabled="disabled_edit")
+      input.validate(type="text" v-model='basicData.sjhm' placeholder='' v-bind:disabled="disabled_edit" ,v-bind:class="{ 'vf-invalid-required': startvlwc&&!basicData.sjhm }")
       label.active 联系电话
     .input-field.col.s12
       input.validate(type="text" v-model='basicData.dzyj' placeholder='' v-bind:disabled="disabled_edit")
@@ -60,6 +60,7 @@ export default{
 
   data () {
     return {
+    startvlwc:false,
       disabled_edit:false,
       loading: false,
       xb: [
@@ -142,6 +143,7 @@ export default{
             this.basicData.xb='0';
           }
       }
+      this.startvlwc=false;
   },
   attached () {
     $('#sidenav-overlay').remove()
@@ -218,6 +220,14 @@ export default{
     },
     submitData (e) {
       e.preventDefault()
+       if(!this.startvlwc){
+          this.startvlwc=true;
+      }
+      if(!this.basicData.poXm||!this.basicData.xb||!this.basicData.csny||!this.basicData.jg ||!this.basicData.sfz||!this.basicData.sqcc||!this.basicData.xgzdw||!this.basicData.sjhm){
+        return;
+      }
+       this.startvlwc=false;
+
       var me = this
       this.basicData.isAdd = this.basicData.poId ? false : true
       this.basicData.poId = this.basicData.poId || randomToken(32)
@@ -302,5 +312,9 @@ export default{
   width: 100%;
   background-color: transparent;
   box-shadow: none;
+}
+.vf-invalid-required{
+ border-bottom: 1px solid #F44336 !important;
+    box-shadow: 0 1px 0 0 #F44336 !important;
 }
 </style>

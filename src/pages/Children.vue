@@ -5,10 +5,10 @@
   //- pre {{dataValue | json}}
   form.col.s12.content
     .input-field.col.s12
-      input.validate(type="text" v-model='basicData.najzdz' placeholder='' v-bind:disabled="disabled_edit")
+      input.validate(type="text" v-model='basicData.najzdz' placeholder='' v-bind:disabled="disabled_edit" ,v-bind:class="{ 'vf-invalid-required': startvlwc&&!basicData.najzdz }")
       label.active 在南安居住地址
     .input-field.col.s12
-      input.validate(type="text" v-model='basicData.hkss' placeholder='' v-bind:disabled="disabled_edit")
+      input.validate(type="text" v-model='basicData.hkss' placeholder='' v-bind:disabled="disabled_edit" ,v-bind:class="{ 'vf-invalid-required': startvlwc&&!basicData.hkss }")
       label.active 户口所属单位
     h6 子女情况基本信息
     table
@@ -179,6 +179,7 @@ export default{
   data () {
     return {
      startvl:false,
+     startvlwc:false,
       disabled_edit:false,
       media: [],
       xb: [
@@ -274,6 +275,8 @@ export default{
           }else{ this.disabled_edit=true;
       }
     }
+    this.startvlwc=false;
+    this.startvl=false;
 
   },
   attached () {
@@ -379,6 +382,7 @@ export default{
     if(!this.child.syrgx||!this.child.xm||!this.child.xb||!this.child.csny||!this.child.xjdxxnj||!this.child.sqxxnj){
       return;
     }
+     this.startvl=false;
      if(!this.child.znId||this.child.znId==''){
          this.child.znId = randomToken(32)
         this.child.rcId = this.user.rcId
@@ -395,7 +399,7 @@ export default{
       }
       $('#modal1').closeModal()
       this.child={};
-      this.startvl=false;
+
     },
     fileUploadUrl (useType) {
       return rest.basicUrl + '/rccore/ZxFile/insert' + this.beforeUpload(useType)
@@ -472,6 +476,14 @@ export default{
     submitData (e) {
 
       e.preventDefault()
+       if(!this.startvlwc){
+          this.startvlwc=true;
+      }
+      if(!this.basicData.hkss||!this.basicData.najzdz){
+        return;
+      }
+       this.startvlwc=false;
+
       var me = this
 
       this.basicData.isAdd = this.basicData.zxId ? false : true

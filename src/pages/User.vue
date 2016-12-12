@@ -68,10 +68,10 @@ div
       a.waves-effect(v-link="{ path: '/Suggestions' }")
         span.fa.fa-edit
         span(style='margin-left: 15px') 意见建议
-    li
-      a.waves-effect(v-link="{ path: '/Applications' }")
-        span.fa.fa-list
-        span(style='margin-left: 15px') 政策申报
+    //- li
+    //-   a.waves-effect(v-link="{ path: '/Applications' }")
+    //-     span.fa.fa-list
+    //-     span(style='margin-left: 15px') 政策申报
     //- br
     //- li
     //-   a.waves-effect(@click='logout') 注销
@@ -189,7 +189,7 @@ export default {
   color: white;
   background: #26a69a;
   font-size: 21px;
-  z-index: 99999999;
+  z-index: 99999;
 }
 #dropdown2 {
   width: 50% !important;

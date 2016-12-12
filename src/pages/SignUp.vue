@@ -10,7 +10,7 @@
       i.fa.fa-credit-card.prefix
       v-select.validate(:options='zjlx', :value.sync='user.zjlx', style='width: calc(100% - 42px); margin-left: 42px; z-index: 2; position: relative') 证件类型
       input.validate(type="text", name='lxrZj' v-model='user.lxrZj', v-form-ctrl, required,custom-validator="sfzValidator",v-if='user.zjlx==="sfz"', placeholder='填入号码')
-      input.validate(type="text", name='lxrZj' v-model='user.lxrZj', v-form-ctrl, required,custom-validator="hzValidator", v-if='user.zjlx==="hz"', placeholder='填入号码')
+      input.validate(type="text", name='lxrZj' v-model='user.lxrZj', v-form-ctrl, required, v-if='user.zjlx==="hz"', placeholder='填入号码')
       label(v-if='!user.zjlx', style='z-index: 1;') 身份证（护照）
     //- .input-field.col.s10
     //-   i.fa.fa-credit-card.prefix
@@ -81,11 +81,11 @@ export default {
       // return true to set input as $valid, false to set as $invalid
           return /^(\d{15}$|^\d{18}$|^\d{17}(\d|X|x))$/.test(value);
     },
-    hzValidator(value){
-    //    /(P\d{7})|(G\d{8})/
-    //console.log(value);
-       return /^1[45][0-9]{7}|G[0-9]{8}|P[0-9]{7}|S[0-9]{7,8}|D[0-9]+$/.test(value)
-    },
+    //hzValidator(value){
+   // //    /(P\d{7})|(G\d{8})/
+   // //console.log(value);
+   //    return /^1[45][0-9]{7}|G[0-9]{8}|P[0-9]{7}|S[0-9]{7,8}|D[0-9]+$/.test(value)
+   // },
     signUp() {
       this.user.password = md5(this.user.pwd)
       this.user.wcOpenId = JSON.parse(localStorage.getItem('bind')).wcOpenId

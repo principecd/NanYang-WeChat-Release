@@ -4,13 +4,13 @@
   v-progress(:progress='progress', :uploading='uploading')
   form.col.s12.content
     .input-field.col.s12
-      input.validate(type="text" v-model='basicData.oldAddressOrOrg' placeholder=''  v-bind:disabled="disabled_edit")
+      input.validate(type="text" v-model='basicData.oldAddressOrOrg' placeholder=''  v-bind:disabled="disabled_edit"  ,v-bind:class="{ 'vf-invalid-required': startvlwc&&!basicData.oldAddressOrOrg }")
       label.active 原住址或单位
     .input-field.col.s12
-      input.validate(type="text" v-model='basicData.oldResidenceUnit' placeholder=''  v-bind:disabled="disabled_edit")
+      input.validate(type="text" v-model='basicData.oldResidenceUnit' placeholder=''  v-bind:disabled="disabled_edit"  ,v-bind:class="{ 'vf-invalid-required': startvlwc&&!basicData.oldResidenceUnit }")
       label.active 原户口登记机关
     .input-field.col.s12
-      input.validate(type="text" v-model='basicData.planAddressOrOrg' placeholder=''  v-bind:disabled="disabled_edit" )
+      input.validate(type="text" v-model='basicData.planAddressOrOrg' placeholder=''  v-bind:disabled="disabled_edit"  ,v-bind:class="{ 'vf-invalid-required': startvlwc&&!basicData.planAddressOrOrg }" )
       label.active 拟迁入地址或单位名称
     .input-field.col.s12
       input.validate(type="text" v-model='basicData.transferCause' placeholder=''  v-bind:disabled="disabled_edit")
@@ -44,7 +44,7 @@
                 input(type="text" class="form-control" placeholder="姓名" v-model="child.transferName"   ,v-bind:class="{ 'vf-invalid-required': startvl&&!child.transferName }")
             div.form-group
               div.col-lg-10
-                input(type="text" class="form-control" placeholder="称谓" v-model="child.appellation"   ,v-bind:class="{ 'vf-invalid-required': startvl&&!child.appellation }")
+                input(type="text" class="form-control" placeholder="称谓" v-model="child.appellation"  )
             .col.s12(style="padding:0")
               label.active 性别
               v-select(:value.sync='child.transferSex', :options='xb2'   ,v-bind:class="{ 'vf-invalid-required': startvl&&!child.transferSex }")
@@ -53,7 +53,7 @@
                 input(type="text" class="form-control" placeholder="居民身份证号码" v-model="child.denizenSfz"   ,v-bind:class="{ 'vf-invalid-required': startvl&&!child.denizenSfz }")
             div.form-group
               div.col-lg-10
-                input(type="text" class="form-control" placeholder="所在单位" v-model="child.denizenOrg"   ,v-bind:class="{ 'vf-invalid-required': startvl&&!child.denizenOrg }")
+                input(type="text" class="form-control" placeholder="所在单位" v-model="child.denizenOrg"  )
           div.modal-footer
             a(class="btn waves-effect waves-green" v-on:click="addChild" v-if='!disabled_edit') 确认
             a(class="modal-action modal-close waves-effect waves-green btn-flat") 取消
@@ -157,6 +157,7 @@ export default{
     return {
     oFile:'',
      startvl:false,
+     startvlwc:false,
       disabled_edit:false,
       media: [],
       xb: [
@@ -277,38 +278,13 @@ export default{
       }
        this.getFileList();
     }
-    /*if (this.dataValue&&this.dataValue.settledGuid && this.$route.query.do) {
-       rest.post(this.user, {settledGuid: this.dataValue.settledGuid}, '/rccore/SettledAddressFile/fileList').then(res => {
-
-        //this.cacheFile  = res.datas
-        this.fileList = res.datas
-      })
-
-    }*/
-    // var me = this
-    // me.loading = true
-    // rest.post(this.user, {}, '/rccore/SettledAddress/get').then(res => {
-    //   me.loading = false
-    //   console.log(res)
-    //   me.basicData = res.data
-    // })
-    //
-    // this.getList()
     var vm = this
     $('#gauploadInput').change(function(){
         vm.oFile = this.files[0];
         //alert(JSON.stringify(vm.oFile))
-
-
-
-       // var xhr = new XMLHttpRequest();
-       // xhr.onload = function() {
-       //     alert("上传成功！");
-       // }
-       // xhr.open("POST", "upload.php", true);
-        // 发送表单数据
-        //xhr.send(formData);
     });
+    this.startvlwc=false;
+    this.startvl=false;
   },
   attached () {
     $('#sidenav-overlay').remove()
@@ -380,7 +356,7 @@ export default{
     if(!this.startvl){
           this.startvl=true;
     }
-    if(!this.child.transferName||!this.child.appellation||!this.child.transferSex||!this.child.denizenSfz||!this.child.denizenOrg){
+    if(!this.child.transferName||!this.child.transferSex||!this.child.denizenSfz){
       return;
     }
       if(!this.child.transferGuid||this.child.transferGuid==''){
@@ -474,6 +450,13 @@ export default{
     },
     submitData (e) {
       e.preventDefault()
+       if(!this.startvlwc){
+          this.startvlwc=true;
+      }
+      if(!this.basicData.oldAddressOrOrg||!this.basicData.oldResidenceUnit||!this.basicData.planAddressOrOrg){
+        return;
+      }
+       this.startvlwc=false;
       var me = this
 
       this.basicData.isAdd = this.basicData.settledGuid ? false : true

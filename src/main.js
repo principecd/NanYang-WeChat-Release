@@ -112,6 +112,10 @@ function init () {
                 'RentHouse': {
                     name: 'RentHouse',
                     component: require('./pages/RentHouse.vue')
+                },
+                'Suggestions': {
+                  name: 'Suggestions',
+                  component: require('./pages/Suggestions.vue')
                 }
               }
             },
@@ -127,14 +131,10 @@ function init () {
 
                 component: require('./pages/SignUp.vue')
             },
-            'Suggestions': {
-              name: 'Suggestions',
-              component: require('./pages/Suggestions.vue')
-            },
-            'Applications': {
-              name: 'Applications',
-              component: require('./pages/Applications.vue')
-            },
+            //'Applications': {
+            //  name: 'Applications',
+            //  component: require('./pages/Applications.vue')
+            //},
             '/User': {
                 component: require('./pages/User.vue'),
                 subRoutes: {
@@ -217,7 +217,11 @@ function init () {
             'RentHouse': {
                 name: 'RentHouse',
                 component: require('./pages/RentHouse.vue')
-            }
+            },
+            'Suggestions': {
+              name: 'Suggestions',
+              component: require('./pages/Suggestions.vue')
+            },
           }
         },
         '/Foo': {
@@ -235,14 +239,14 @@ function init () {
 
             component: require('./pages/SignUp.vue')
         },
-        'Applications': {
-          name: 'Applications',
-          component: require('./pages/Applications.vue')
-        },
-        'Suggestions': {
-          name: 'Suggestions',
-          component: require('./pages/Suggestions.vue')
-        },
+        //'Applications': {
+        //  name: 'Applications',
+        //  component: require('./pages/Applications.vue')
+        //},
+        //'Suggestions': {
+        //  name: 'Suggestions',
+        //  component: require('./pages/Suggestions.vue')
+        //},
         '/User': {
             component: require('./pages/User.vue'),
             subRoutes: {

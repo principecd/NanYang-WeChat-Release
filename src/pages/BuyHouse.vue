@@ -6,40 +6,40 @@
     //-   input.validate(type="text" v-model='basicData.rcName' placeholder='', v-bind:disabled='user.username')
     //-   label.active 人才姓名
     .input-field.col.s12
-      input.validate(type="text" v-model='basicData.name' placeholder='' v-bind:disabled="disabled_edit")
+      input.validate(type="text" v-model='basicData.name' placeholder='' v-bind:disabled="disabled_edit"  ,v-bind:class="{ 'vf-invalid-required': startvlwc&&!basicData.name }")
       label.active 配偶姓名
     .col.s12
       label.active 性别
-      v-select(:value.sync='basicData.sex', :options='xb' v-bind:disabled="disabled_edit")
+      v-select(:value.sync='basicData.sex', :options='xb' v-bind:disabled="disabled_edit"  ,v-bind:class="{ 'vf-invalid-required': startvlwc&&!basicData.sex }")
     .input-field.col.s12
-      input.validate(type="month" v-model='basicData.birthday' placeholder='' v-bind:disabled="disabled_edit")
+      input.validate(type="month" v-model='basicData.birthday' placeholder='' v-bind:disabled="disabled_edit"  ,v-bind:class="{ 'vf-invalid-required': startvlwc&&!basicData.birthday }")
       label.active 出生年月
     .input-field.col.s12
-      input.validate(type="text" v-model='basicData.gjjg' placeholder='' v-bind:disabled="disabled_edit")
+      input.validate(type="text" v-model='basicData.gjjg' placeholder='' v-bind:disabled="disabled_edit"  ,v-bind:class="{ 'vf-invalid-required': startvlwc&&!basicData.gjjg }")
       label.active 国籍籍贯
     .input-field.col.s12
-      input.validate(type="text" v-model='basicData.idCard' placeholder='' v-bind:disabled="disabled_edit")
+      input.validate(type="text" v-model='basicData.idCard' placeholder='' v-bind:disabled="disabled_edit"  ,v-bind:class="{ 'vf-invalid-required': startvlwc&&!basicData.idCard }")
       label.active 身份证号(护照)
     .col.s12
       label.active 人才类别
-      v-select(:value.sync='basicData.rclb', :options='rclb' v-bind:disabled="disabled_edit")
+      v-select(:value.sync='basicData.rclb', :options='rclb' v-bind:disabled="disabled_edit"  ,v-bind:class="{ 'vf-invalid-required': startvlwc&&!basicData.rclb }")
     .input-field.col.s12
-      input.validate(type="text" v-model='basicData.dwInfo' placeholder='' v-bind:disabled="disabled_edit")
+      input.validate(type="text" v-model='basicData.dwInfo' placeholder='' v-bind:disabled="disabled_edit"  ,v-bind:class="{ 'vf-invalid-required': startvlwc&&!basicData.dwInfo}")
       label.active 单位信息
     .input-field.col.s12
       input.validate(type="text" v-model='basicData.job' placeholder='' v-bind:disabled="disabled_edit")
       label.active 职务
     .input-field.col.s12
-      input.validate(type="text" v-model='basicData.telephone' placeholder='' v-bind:disabled="disabled_edit")
+      input.validate(type="text" v-model='basicData.telephone' placeholder='' v-bind:disabled="disabled_edit"  ,v-bind:class="{ 'vf-invalid-required': startvlwc&&!basicData.telephone }")
       label.active 联系电话
     .input-field.col.s12
       input.validate(type="text" v-model='basicData.email' placeholder='' v-bind:disabled="disabled_edit")
       label.active 邮箱
     .col.s12
       label.active 申请住房保障类别
-      v-select(:value.sync='basicData.sqlb', :options='sqlb' v-bind:disabled="disabled_edit")
+      v-select(:value.sync='basicData.sqlb', :options='sqlb' v-bind:disabled="disabled_edit"  ,v-bind:class="{ 'vf-invalid-required': startvlwc&&!basicData.sqlb }")
     .input-field.col.s12
-      input.validate(type="text" v-model='basicData.yhzh' placeholder='' v-bind:disabled="disabled_edit")
+      input.validate(type="text" v-model='basicData.yhzh' placeholder='' v-bind:disabled="disabled_edit"  ,v-bind:class="{ 'vf-invalid-required': startvlwc&&!basicData.yhzh }")
       label.active 开发商银行账号或申请人银行账号
     .input-field.col.s12
       input.validate(type="text" v-model='basicData.remark' placeholder='' v-bind:disabled="disabled_edit")
@@ -90,10 +90,10 @@
                 input(type="month" class="form-control" placeholder="出生年月" v-model="child.birthday" ,v-bind:class="{ 'vf-invalid-required': startvl&&!child.birthday }")
             div.form-group
               div.col-lg-10
-                input(type="text" class="form-control" placeholder="身份证(护照)" v-model="child.idCard" ,v-bind:class="{ 'vf-invalid-required': sfzValidator(child.idCard) }")
+                input(type="text" class="form-control" placeholder="身份证(护照)" v-model="child.idCard" ,v-bind:class="{ 'vf-invalid-required': startvl&&!child.idCard }")
             div.form-group
               div.col-lg-10
-                input(type="text" class="form-control" placeholder="单位信息" v-model="child.dwInfo" ,v-bind:class="{ 'vf-invalid-required': startvl&&!child.dwInfo }")
+                input(type="text" class="form-control" placeholder="单位信息" v-model="child.dwInfo" )
             div.form-group
               div.col-lg-10
                 input(type="text" class="form-control" placeholder="与申请人关系" v-model="child.cygx" ,v-bind:class="{ 'vf-invalid-required': startvl&&!child.cygx }")
@@ -223,6 +223,7 @@ export default{
     return {
       disabled_edit:false,
       startvl:false,
+      startvlwc:false,
       media: [],
       loading: false,
       xb: [
@@ -356,7 +357,7 @@ export default{
       }
        this.getFileList();
     }
-
+    this.startvlwc=false;
   },
   attached () {
     $('#sidenav-overlay').remove()
@@ -461,9 +462,10 @@ export default{
     if(!this.startvl){
       this.startvl=true;
     }
-    if(!this.child.name||!this.child.sex||!this.child.birthday||!this.child.idCard||!this.child.dwInfo||!this.child.cygx||this.sfzValidator(this.child.idCard)){
+    if(!this.child.name||!this.child.sex||!this.child.birthday||!this.child.idCard||!this.child.cygx){
       return;
     }
+     this.startvl=false;
       if(!this.child.cyId||this.child.cyId==''){
         this.child.cyId = randomToken(32)
         this.child.poId = this.basicData.poId || poId
@@ -478,7 +480,6 @@ export default{
           }
         }
       }
-      this.startvl=false;
       $('#modal1').closeModal()
       this.child={};/*
       this.child.cyId='';
@@ -562,6 +563,13 @@ export default{
     },
     submitData (e) {
       e.preventDefault()
+     if(!this.startvlwc){
+            this.startvlwc=true;
+      }
+      if(!this.basicData.name||!this.basicData.sex||!this.basicData.birthday||!this.basicData.gjjg||!this.basicData.idCard||!this.basicData.rclb||!this.basicData.dwInfo||!this.basicData.telephone||!this.basicData.sqlb||!this.basicData.yhzh){
+        return;
+      }
+      this.startvlwc=false;
       var me = this
 
       this.basicData.isAdd = this.basicData.poId ? false : true

@@ -4,7 +4,7 @@
 
   form.col.s12
     .input-field.col.s12
-      input.validate(type="text" v-model='basic.xm' placeholder='', v-bind:disabled.once='basic.xm')
+      input.validate(type="text" v-model='basic.xm' placeholder='', v-bind:disabled.once='basic.xm'  ,v-bind:class="{ 'vf-invalid-required': startvl&&!basic.xm }")
       label.active 姓名
     .col.s12( @click='uploadImg')
       label.active(v-if='!meida' )
@@ -14,34 +14,34 @@
       hr
     .col.s12
       label.active 性别
-      v-select(:value.sync='basic.xb', :options='xb')
+      v-select(:value.sync='basic.xb', :options='xb' ,v-bind:class="{ 'vf-invalid-required': startvl&&!basic.xb }")
     .input-field.col.s12
-      input.validate(type='month', v-model='basic.csny' placeholder='')
+      input.validate(type='month', v-model='basic.csny' placeholder='' ,v-bind:class="{ 'vf-invalid-required': startvl&&!basic.csny }")
       label.active 出生年月
     .input-field.col.s12
-      input(type="text" v-model='basic.sfz' placeholder='', v-bind:disabled.once='basic.sfz')
+      input(type="text" v-model='basic.sfz' placeholder='', v-bind:disabled.once='basic.sfz' ,v-bind:class="{ 'vf-invalid-required': startvl&&!basic.sfz }")
       label.active {{basic.zjlx === 'sfz' ? '身份证' : '护照'}}
     .input-field.col.s12
       input(type="text" v-model='basic.zym' placeholder='')
       label.active 曾用名
     .input-field.col.s12
-      input(type="text" v-model='basic.mz' placeholder='')
+      input(type="text" v-model='basic.mz' placeholder=''  ,v-bind:class="{ 'vf-invalid-required': startvl&&!basic.mz }")
       label.active 民族
     .input-field.col.s12
-      input(type="text" v-model='basic.jg' placeholder='')
+      input(type="text" v-model='basic.jg' placeholder=''  ,v-bind:class="{ 'vf-invalid-required': startvl&&!basic.jg }")
       label.active 籍贯
     .col.s12
       label.active 政治面貌
-      v-select(v-bind:value.sync='basic.zzmm', v-bind:options='zzmm')
+      v-select(v-bind:value.sync='basic.zzmm', v-bind:options='zzmm'  ,v-bind:class="{ 'vf-invalid-required': startvl&&!basic.zzmm }")
     .col.s12(style='border: 1px solid #ddd;padding: 20px 10px;')
       .input-field.col.s12
-        input(type="text" v-model='basic.csxl' placeholder='')
+        input(type="text" v-model='basic.csxl' placeholder=''  ,v-bind:class="{ 'vf-invalid-required': startvl&&!basic.csxl }")
         label.active 初始学历学位
       .input-field.col.s12
-        input(type="text" v-model='basic.csxlyx' placeholder='')
+        input(type="text" v-model='basic.csxlyx' placeholder=''  ,v-bind:class="{ 'vf-invalid-required': startvl&&!basic.csxlyx }")
         label.active 毕业学院
       .input-field.col.s12
-        input(type="text" v-model='basic.csxlzy' placeholder='')
+        input(type="text" v-model='basic.csxlzy' placeholder=''  ,v-bind:class="{ 'vf-invalid-required': startvl&&!basic.csxlzy}")
         label.active 专业
       .col.s12(style='position: relative; margin: 7px 0; ')
         input#csxl985(type="checkbox" v-model='basic.csxl985' v-bind:true-value='"Y"' v-bind:false-value='"N"')
@@ -66,16 +66,16 @@
         input#zgxl211(type="checkbox" v-model='basic.zgxl211' v-bind:true-value='"Y"' v-bind:false-value='"N"')
         label(for='zgxl211') 211学院
     .input-field.col.s12
-      input(type="text" v-model='basic.xgzdw' placeholder='')
+      input(type="text" v-model='basic.xgzdw' placeholder=''  ,v-bind:class="{ 'vf-invalid-required': startvl&&!basic.xgzdw}")
       label.active 现工作单位
     .input-field.col.s12
-      input(type="text" v-model='basic.xgzzw' placeholder='')
+      input(type="text" v-model='basic.xgzzw' placeholder=''  ,v-bind:class="{ 'vf-invalid-required': startvl&&!basic.xgzzw}")
       label.active 职务
     .col.s12
       label.active 企业所属乡镇
-      v-select(:value.sync='basic.xgzdwxz', :options='xgzdwxz')
+      v-select(:value.sync='basic.xgzdwxz', :options='xgzdwxz'  ,v-bind:class="{ 'vf-invalid-required': startvl&&!basic.xgzdwxz}")
     .input-field.col.s12
-      input(type="text" v-model='basic.sjhm' placeholder='')
+      input(type="text" v-model='basic.sjhm' placeholder='' ,v-bind:class="{ 'vf-invalid-required': startvl&&!basic.sjhm}")
       label.active 手机号码
     .input-field.col.s12
       input(type="text" v-model='basic.dzyj' placeholder='')
@@ -133,6 +133,7 @@ export default {
   // },
   data () {
     return {
+       startvl:false,
       rclbsCache: [],
       meida: false,
       media:'',
@@ -223,6 +224,7 @@ export default {
           me.media=this.getSrc(res.datas[0].fileId);
         }
       })
+      this.startvl=false;
   },
   attached () {
     $('#sidenav-overlay').remove()
@@ -309,6 +311,17 @@ export default {
     },
     submitData (e) {
       e.preventDefault()
+      if(!this.startvl){
+            this.startvl=true;
+      }
+      if(!this.basic.xm||!this.basic.xb||!this.basic.csny||!this.basic.sfz||!this.basic.mz||!this.basic.jg||!this.basic.zzmm||!this.basic.csxl||!this.basic.csxlyx||!this.basic.csxlzy||!this.basic.xgzdw||!this.basic.xgzzw||!this.basic.xgzdwxz||!this.basic.sjhm){
+        return;
+      }
+      if(this.rclbsCache.length<=0){
+        alert('人才类别不能为空');
+        return;
+      }
+      this.startvl=false;
       var me = this
       this.basic.isAdd = false
       this.loading = true
@@ -379,5 +392,9 @@ select {
 .selectValue {
   margin-bottom: -40px;
   margin-top: 25px;
+}
+.vf-invalid-required{
+  border-bottom: 1px solid #F44336 !important;
+  box-shadow: 0 1px 0 0 #F44336 !important;
 }
 </style>

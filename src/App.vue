@@ -50,10 +50,10 @@
       a.waves-effect(v-link="{ path: '/Suggestions' }")
         span.fa.fa-edit
         span(style='margin-left: 15px') 意见建议
-    li
-      a.waves-effect(v-link="{ path: '/Applications' }")
-        span.fa.fa-list
-        span(style='margin-left: 15px') 政策申报
+    //- li
+    //-   a.waves-effect(v-link="{ path: '/Applications' }")
+    //-     span.fa.fa-list
+     //-    span(style='margin-left: 15px') 政策申报
     //- a.menu.dropdown-button(data-activates='dropdown2')
     //-   span.fa.fa-ellipsis-v
 
@@ -113,6 +113,7 @@ export default {
   },
   ready() {
     var index = window.location.pathname
+    console.log(window.location.pathname);
     if (index !== '/') {
       this.index = false
     }
@@ -199,7 +200,7 @@ a:active{
   color: white;
   background: #26a69a;
   font-size: 21px;
-  z-index: 99999999;
+  z-index: 99999;
   /*box-shadow: 0 1px 2px #999;*/
 }
 #dropdown1 {

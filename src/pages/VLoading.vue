@@ -124,7 +124,7 @@ export default {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 200;
+  z-index: 9988888999;
 }
 .svg {
   opacity: 0.6;
