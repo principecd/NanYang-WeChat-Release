@@ -88,7 +88,7 @@
             label.active 内容
 
     .modal-footer
-      a(class="btn waves-effect waves-light" v-on:click='submitData') 保存
+      a(class="btn waves-effect waves-light" v-on:click='submitData') 提交
       a(class="modal-action modal-close waves-effect waves-green btn-flat") 取消
 </template>
 

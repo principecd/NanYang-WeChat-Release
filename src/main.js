@@ -139,6 +139,9 @@ function init () {
                 component: require('./pages/User.vue'),
                 subRoutes: {
                   '': {
+                    component: require('./pages/Usernav.vue')
+                  },
+                  '/UserInfo': {
                     component: require('./pages/UserInfo.vue')
                   },
                   '/UserProfessor': {
@@ -251,6 +254,9 @@ function init () {
             component: require('./pages/User.vue'),
             subRoutes: {
               '': {
+                component: require('./pages/Usernav.vue')
+              },
+              '/UserInfo': {
                 component: require('./pages/UserInfo.vue')
               },
               '/UserProfessor': {
@@ -336,3 +342,4 @@ $.ajax({
   //       })
   // });
 })
+

@@ -4,31 +4,6 @@ div
   .menu-content
     a.menu.button-collapse(data-activates="slide-out")
       span.fa.fa-bars
-    a.menu.dropdown-button(@click='itemBar', style='height: 50px; width: 50px; line-height: 50px; margin-right: -40px')
-      span.fa.fa-ellipsis-v
-    #itemBar.modal.bottom-sheet(style='max-height: 80%;background: #f3f3f3;')
-      .modal-content(style='padding: 0 !important')
-        ul.itemList
-          li
-            a.waves-effect(v-link="{ path: '/User/UserProfessor' }", @click='closeItemBar')
-              i.fa.fa-graduation-cap(style='margin:0 15px 0 20px; font-size: 20px')
-              | 专业职称
-          li
-            a.waves-effect(v-link="{ path: '/User/UserProSkill' }", @click='closeItemBar')
-              i.fa.fa-magic(style='margin:0 20px 0 20px; font-size: 20px')
-              | 专业技能
-          li
-            a.waves-effect(v-link="{ path: '/User/UserHonor' }", @click='closeItemBar')
-              i.fa.fa-book(style='margin:0 20px 0 20px; font-size: 20px')
-              | 荣誉称号
-          li
-            a.waves-effect(v-link="{ path: '/User/UserResults' }", @click='closeItemBar')
-              i.fa.fa-road(style='margin:0 20px 0 20px; font-size: 20px')
-              | 人才业绩成果
-          li
-            a.waves-effect(v-link="{ path: '/User/UserOtherFileList' }", @click='closeItemBar')
-              i.fa.fa-file(style='margin:0 20px 0 20px; font-size: 20px')
-              | 其他附件
   ul#slide-out.side-nav(style='color: #666')
     li
       a.waves-effect(style='height: 60px')
@@ -83,6 +58,7 @@ div
 
 <script>
 import UserInfo from './UserInfo.vue'
+import Usernav from './Usernav.vue'
 import UserProfessor from './UserProfessor.vue'
 
 export default {
@@ -143,6 +119,7 @@ export default {
   },
   components: {
     UserInfo,
+    Usernav,
     UserProfessor
   }
 };

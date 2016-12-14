@@ -44,6 +44,7 @@ import VLoading from './VLoading.vue'
 var sha1 = require('sha1')
 import md5 from 'md5'
 import vSelect from './VSelect.vue'
+import unit from '../unit'
 
 var localStorage = window.localStorage
 export default {
@@ -76,11 +77,16 @@ export default {
   },
   attached() {},
   methods: {
-    sfzValidator(value){
-        //console.log(value);
-      // return true to set input as $valid, false to set as $invalid
-          return /^(\d{15}$|^\d{18}$|^\d{17}(\d|X|x))$/.test(value);
-    },
+   sfzValidator(value){
+       console.log(value);
+     // return true to set input as $valid, false to set as $invalid
+     //unit.IdCardVType.idcard(value)
+         //return /^(\d{15}$|^\d{18}$|^\d{17}(\d|X|x))$/.test(value);
+         if(!value){
+         return false;
+         }
+         return unit.IdCardVType.idcard(value);
+   },
     //hzValidator(value){
    // //    /(P\d{7})|(G\d{8})/
    // //console.log(value);
@@ -182,6 +188,10 @@ export default {
   color: #666;
 }
 .vf-invalid-customValidator{
+  border-bottom: 1px solid #F44336 !important;
+  box-shadow: 0 1px 0 0 #F44336 !important;
+}
+.vf-invalid-required{
   border-bottom: 1px solid #F44336 !important;
   box-shadow: 0 1px 0 0 #F44336 !important;
 }
