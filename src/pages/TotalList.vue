@@ -153,7 +153,7 @@ export default {
           tranListUrl: '/rccore/SettledAddress/tranList',
           verStartUrl: '/rccore/SettledAddress/verStart',
           flowId: '3937D50EF0AA76803976CF9B12EBA618',
-          getMore: '/rccore/SettledAddressFile/fileList',
+          getMore: '/rccore/TransferPerson/listBySettledGuid',
           childrenKey: 'transferPersonJson'
         }
       }
@@ -401,11 +401,13 @@ export default {
                      */
                      var str = '';
                      res.datas.forEach(aaaa=>{
-                          if(aaaa.flowStageName)      str+='<p>环节名称:'+aaaa.flowStageName        +'</p>';
-                          if(aaaa.flowEntityTime)     str+='<p>提交时间:'+aaaa.flowEntityTime       +'</p>';
-                          if(aaaa.flowDoTime)         str+='<p>办理时间:'+aaaa.flowDoTime           +'</p>';
-                          if(aaaa.flowStageDoStateStr)str+='<p>办理状态:'+aaaa.flowStageDoStateStr  +'</p>';
-                          if(aaaa.flowTranName)       str+='<p>办理结果:'+aaaa.flowTranName         +'</p>';
+                          if(aaaa.flowStageTime)      str+='<p>到达时间:'+aaaa.flowStageTime          +'</p>';
+                          if(aaaa.flowStageName)      str+='<p>环节名称:'+aaaa.flowStageName          +'</p>';
+                          if(aaaa.flowStageDoStateStr)str+='<p>办理状态:'+aaaa.flowStageDoStateStr    +'</p>';
+                          //if(aaaa.flowUserInfo)       str+='<p>办理用户:'+aaaa.flowUserInfo           +'</p>';
+                          if(aaaa.flowTranName)       str+='<p>办理操作:'+aaaa.flowTranName           +'</p>';
+                          if(aaaa.flowDoTime)         str+='<p>办理时间:'+aaaa.flowDoTime             +'</p>';
+                          //if(aaaa.flowStageDoStateStr)str+='<p>办理说明:'+aaaa.flowStageDoStateStr    +'</p>';
                           str+='<br>'
                      })
 

@@ -1,72 +1,5 @@
 <template lang="jade">
-#app
-  div(style='height: 60px; width: 100%;')
-  .menu-content
-    a.menu.button-collapse(@click='slideBar', data-activates="slide-out")
-      span.fa.fa-bars
-  ul#slide-out.side-nav(style='color: #666')
-    li
-      a.waves-effect(style='height: 60px')
-    li
-      a.waves-effect(v-link="{ path: '/' }")
-        span.fa.fa-home
-        span(style='margin-left: 15px') 首页
-    li
-      a.waves-effect(v-link="{ path: '/User' }")
-        span.fa.fa-user
-        span(style='margin-left: 15px') 人才基本信息
-    li
-      a.waves-effect(v-link="{ path: '/Other/HighLvPersonId' }")
-        span.fa.fa-level-up
-        span(style='margin-left: 15px') 高层次人才认定
-    li
-      a.waves-effect(v-link="{ path: '/Other/LifePayment' }")
-        span.fa.fa-money
-        span(style='margin-left: 15px') 生活津贴
-    li
-      a.waves-effect(v-link="{ path: '/Other/BuyHouse' }")
-        span.fa.fa-home
-        span(style='margin-left: 15px') 购房补贴
-    li
-      a.waves-effect(v-link="{ path: '/Other/Children' }")
-        span.fa.fa-child
-        span(style='margin-left: 15px') 子女择校
-    li
-      a.waves-effect(v-link="{ path: '/Other/RentHouse' }")
-        span.fa.fa-hotel
-        span(style='margin-left: 15px') 租房补贴
-    li
-      a.waves-effect(v-link="{ path: '/Other/GetAddress' }")
-        span.fa.fa-bookmark
-        span(style='margin-left: 15px') 人才落户
-    li
-      a.waves-effect(v-link="{ path: '/Suggestions' }")
-        span.fa.fa-edit
-        span(style='margin-left: 15px') 意见建议
-    li
-      a.waves-effect(v-link="{ path: '/Applications' }")
-        span.fa.fa-list
-        span(style='margin-left: 15px') 政策申报
-    //- br
-    //- li
-    //-   a.waves-effect(@click='logout') 注销
-    //- ul#dropdown1.dropdown-content(style='margin-left: -20px')
-    //-   li(style='margin-top: 20px')
-    //-     a(v-link="{ path: '/User' }") 人才基本信息
-    //-   li
-    //-     a(v-link="{ path: '/Other/HighLvPersonId' }") 高层次人才认定
-    //-   li
-    //-     a(v-link="{ path: '/Other/LifePayment' }") 生活津贴
-    //-   li
-    //-     a(v-link="{ path: '/Other/BuyHouse' }") 购房补贴
-    //-   li
-    //-     a(v-link="{ path: '/Other/Children' }") 子女择校
-    //-   li
-    //-     a(v-link="{ path: '/Other/RentHouse' }") 租房补贴
-    //-   li
-    //-     a(v-link="{ path: '/Other/RentHouse' }") 人才落户
-    //- a.menu.dropdown-button(data-activates='dropdown2')
-    //-   span.fa.fa-ellipsis-v
+.row
   v-loading(:show='loading')
   h6(style='margin-top: 15px; color:#666; margin-left: 30px', v-if='today.length') 今天
   ul.collapsible(data-collapsible="accordion", v-if='today.length')
@@ -147,7 +80,7 @@
       .row
         form.col.s12
           .input-field.col.s12
-            input.validate(type="text" v-model='postData.jyzt' placeholder='')
+            input.validate(type="text" v-model='postData.jyzt' placeholder='' ,v-bind:class="{ 'vf-invalid-required': startvl&&!postData.jyzt }")
             label.active 主题
 
           .input-field.col.s12
@@ -155,7 +88,7 @@
             label.active 内容
 
     .modal-footer
-      a(class="btn waves-effect waves-light" v-on:click='submitData') 保存
+      a(class="btn waves-effect waves-light" v-on:click='submitData') 提交
       a(class="modal-action modal-close waves-effect waves-green btn-flat") 取消
 </template>
 
@@ -167,6 +100,7 @@ import Loadmore from '../components/loadmore.vue'
 // import MoonLoader from 'vue-spinner/src/MoonLoader.vue'
 import InfiniteLoading from 'vue-infinite-loading'
 import randomToken from 'random-token'
+import { getData } from '../vuex/getters'
 // /rccore/Rcrd/tranList
 // /rccore/Shjt/tranList
 // /rccore/Zx/tranList
@@ -177,8 +111,15 @@ import randomToken from 'random-token'
 var localStorage = window.localStorage
 
 export default {
+  vuex: {
+    getters: {
+      dataValue: getData
+    }
+  },
+  props: ['index'],
   data () {
     return {
+    startvl:false,
       today: [],
       threeDays: [],
       thisMonth: [],
@@ -290,7 +231,16 @@ export default {
 
     },
     submitData() {
+       if(!this.startvl){
+            this.startvl=true;
+      }
+      if(!this.postData.jyzt){
+        return;
+      }
+      this.startvl=false;
+
       var me = this
+
       this.loading = true
       this.postData.jyId = randomToken(32)
       this.postData.isAdd = true
@@ -501,6 +451,8 @@ export default {
     )
   },
   ready() {
+  this.$parent.index = false
+  this.startvl=false;
     var me = this
     this.loading = true
     rest.post(this.user, {start: 0, limit: 50}, '/rccore/Yjjy/page').then(res => {
@@ -642,5 +594,9 @@ hr {
 }
 .btn-list a{
   color: #666;
+}
+.vf-invalid-required{
+ border-bottom: 1px solid #F44336 !important;
+    box-shadow: 0 1px 0 0 #F44336 !important;
 }
 </style>

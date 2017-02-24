@@ -28,13 +28,13 @@
           form.col.s12
             .col.s12
               label.active 专业
-              v-select(:options='zy', :value.sync='postData.zy')
+              v-select(:options='zy', :value.sync='postData.zy'  ,v-bind:class="{ 'vf-invalid-required': startvl&&!postData.zy }")
             .col.s12
               label.active 等级
-              v-select(:options='zydj', :value.sync='postData.zydj')
+              v-select(:options='zydj', :value.sync='postData.zydj'  ,v-bind:class="{ 'vf-invalid-required': startvl&&!postData.zydj }")
             .col.s12
               label.active 主管部门
-              v-select(:options='zgbmId', :value.sync='postData.zgbmId')
+              v-select(:options='zgbmId', :value.sync='postData.zgbmId'  ,v-bind:class="{ 'vf-invalid-required': startvl&&!postData.zgbmId }")
       .modal-footer
         a(class="btn waves-effect waves-light" v-on:click='submitData') 保存
         a(class="modal-action modal-close waves-effect waves-green btn-flat", @click='clear') 取消
@@ -49,6 +49,7 @@ var localStorage = window.localStorage
 export default{
   data(){
     return {
+        startvl:false,
       loading: false,
       zy: [],
       zydj: [],
@@ -83,6 +84,7 @@ export default{
       me.loading = false
       me.list = res.datas
     })
+    this.startvl=false;
   },
   attached () {
   },
@@ -120,7 +122,16 @@ export default{
       return report
     },
     submitData (e) {
+
       e.preventDefault()
+       if(!this.startvl){
+            this.startvl=true;
+      }
+      if(!this.postData.zy||!this.postData.zydj||!this.postData.zgbmId ){
+        return;
+      }
+      this.startvl=false;
+
       var me = this
       this.loading = true
 
@@ -170,5 +181,9 @@ table-layout:fixed;
 }
 table td{
   word-wrap:break-word;
+}
+.vf-invalid-required{
+ border-bottom: 1px solid #F44336 !important;
+    box-shadow: 0 1px 0 0 #F44336 !important;
 }
 </style>

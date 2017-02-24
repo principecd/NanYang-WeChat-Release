@@ -3,12 +3,12 @@
   v-loading(:show='loading')
   form.col.s12.content
       .input-field.col.s12
-        input.validate(type="text" v-model='basicData.sqzz' placeholder='' v-bind:disabled="disabled_edit")
+        input.validate(type="text" v-model='basicData.sqzz' placeholder='' v-bind:disabled="disabled_edit" ,v-bind:class="{ 'vf-invalid-required': startvl&&!basicData.sqzz }")
         label.active 申请确认的资质
       .col.s12
         label.active 申请的人才层次
 
-        v-select(:value.sync='basicData.sqcc', :options='sqcc'  v-bind:disabled="disabled_edit")
+        v-select(:value.sync='basicData.sqcc', :options='sqcc'  v-bind:disabled="disabled_edit" ,v-bind:class="{ 'vf-invalid-required': startvl&&!basicData.sqcc }")
       .col.s12
         .card
             .card-title 资质材料
@@ -114,6 +114,7 @@ export default{
   props: ['index'],
   data () {
     return {
+        startvl:false,
       disabled_edit:false,
       media: [],
       cacheFile: [],
@@ -200,6 +201,7 @@ export default{
 
   },
   ready () {
+
      var me = this
     this.$parent.index = false
 
@@ -219,6 +221,7 @@ export default{
       this.getFileList();
 
     }
+        this.startvl=false;
 
     //this.initAll()
 
@@ -376,6 +379,13 @@ export default{
     },
     submitData (e) {
       e.preventDefault()
+       if(!this.startvl){
+            this.startvl=true;
+      }
+      if(!this.basicData.sqcc||!this.basicData.sqcc){
+        return;
+      }
+      this.startvl=false;
       var me = this
 
       this.basicData.isAdd = this.basicData.sqId ? false : true
@@ -476,5 +486,9 @@ export default{
 }
 .card .card-title{
   font-size:16px;
+}
+.vf-invalid-required{
+ border-bottom: 1px solid #F44336 !important;
+    box-shadow: 0 1px 0 0 #F44336 !important;
 }
 </style>

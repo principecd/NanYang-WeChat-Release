@@ -10,7 +10,7 @@
       i.fa.fa-credit-card.prefix
       v-select.validate(:options='zjlx', :value.sync='user.zjlx', style='width: calc(100% - 42px); margin-left: 42px; z-index: 2; position: relative') 证件类型
       input.validate(type="text", name='lxrZj' v-model='user.lxrZj', v-form-ctrl, required,custom-validator="sfzValidator",v-if='user.zjlx==="sfz"', placeholder='填入号码')
-      input.validate(type="text", name='lxrZj' v-model='user.lxrZj', v-form-ctrl, required,custom-validator="hzValidator", v-if='user.zjlx==="hz"', placeholder='填入号码')
+      input.validate(type="text", name='lxrZj' v-model='user.lxrZj', v-form-ctrl, required, v-if='user.zjlx==="hz"', placeholder='填入号码')
       label(v-if='!user.zjlx', style='z-index: 1;') 身份证（护照）
     //- .input-field.col.s10
     //-   i.fa.fa-credit-card.prefix
@@ -44,6 +44,7 @@ import VLoading from './VLoading.vue'
 var sha1 = require('sha1')
 import md5 from 'md5'
 import vSelect from './VSelect.vue'
+import unit from '../unit'
 
 var localStorage = window.localStorage
 export default {
@@ -76,16 +77,21 @@ export default {
   },
   attached() {},
   methods: {
-    sfzValidator(value){
-        //console.log(value);
-      // return true to set input as $valid, false to set as $invalid
-          return /^(\d{15}$|^\d{18}$|^\d{17}(\d|X|x))$/.test(value);
-    },
-    hzValidator(value){
-    //    /(P\d{7})|(G\d{8})/
-    //console.log(value);
-       return /^1[45][0-9]{7}|G[0-9]{8}|P[0-9]{7}|S[0-9]{7,8}|D[0-9]+$/.test(value)
-    },
+   sfzValidator(value){
+       console.log(value);
+     // return true to set input as $valid, false to set as $invalid
+     //unit.IdCardVType.idcard(value)
+         //return /^(\d{15}$|^\d{18}$|^\d{17}(\d|X|x))$/.test(value);
+         if(!value){
+         return false;
+         }
+         return unit.IdCardVType.idcard(value);
+   },
+    //hzValidator(value){
+   // //    /(P\d{7})|(G\d{8})/
+   // //console.log(value);
+   //    return /^1[45][0-9]{7}|G[0-9]{8}|P[0-9]{7}|S[0-9]{7,8}|D[0-9]+$/.test(value)
+   // },
     signUp() {
       this.user.password = md5(this.user.pwd)
       this.user.wcOpenId = JSON.parse(localStorage.getItem('bind')).wcOpenId
@@ -182,6 +188,10 @@ export default {
   color: #666;
 }
 .vf-invalid-customValidator{
+  border-bottom: 1px solid #F44336 !important;
+  box-shadow: 0 1px 0 0 #F44336 !important;
+}
+.vf-invalid-required{
   border-bottom: 1px solid #F44336 !important;
   box-shadow: 0 1px 0 0 #F44336 !important;
 }

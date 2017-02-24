@@ -31,13 +31,13 @@
             form.col.s12
               .col.s12
                 label.active 等级
-                v-select(:options='dengJi', :value.sync='postData.dengJi' v-on:change='clearRych')
+                v-select(:options='dengJi', :value.sync='postData.dengJi' v-on:change='clearRych' ,v-bind:class="{ 'vf-invalid-required': startvl&&!postData.dengJi }")
               .col.s12
                 label.active 荣誉称号
-                v-select(v-if='postData.dengJi ==="rych01_guoJia"', :options='guoJia', :value.sync='postData.rych')
-                v-select(v-if='postData.dengJi ==="rych02_shengJi"', :options='shengJi', :value.sync='postData.rych')
-                v-select(v-if='postData.dengJi ==="rych03_quanZhou"', :options='quanZhou', :value.sync='postData.rych')
-                v-select(v-if='postData.dengJi ==="rych04_nanAn"', :options='nanAn', :value.sync='postData.rych')
+                v-select( v-bind:class="{ 'vf-invalid-required': startvl&&!postData.rych }",v-if='postData.dengJi ==="rych01_guoJia"', id="rych01_guoJia", :options='guoJia', :value.sync='postData.rych' )
+                v-select(v-bind:class="{ 'vf-invalid-required': startvl&&!postData.rych }",  v-if='postData.dengJi ==="rych02_shengJi"',id="rych02_shengJi", :options='shengJi', :value.sync='postData.rych')
+                v-select(v-bind:class="{ 'vf-invalid-required': startvl&&!postData.rych }",  v-if='postData.dengJi ==="rych03_quanZhou"',id="rych03_quanZhou", :options='quanZhou', :value.sync='postData.rych')
+                v-select(v-bind:class="{ 'vf-invalid-required': startvl&&!postData.rych }",  v-if='postData.dengJi ==="rych04_nanAn"',id="rych04_nanAn", :options='nanAn', :value.sync='postData.rych'   )
 
         .modal-footer
           a(class="btn waves-effect waves-light" v-on:click='submitData') 保存
@@ -83,6 +83,7 @@ var localStorage = window.localStorage
 export default{
   data () {
     return {
+      startvl:false,
       media: [],
       loading: false,
       fileUploadUrl: rest.basicUrl + '/rccore/RcxxFile/insert' + this.beforeUpload(),
@@ -101,6 +102,7 @@ export default{
       nanAn: [],
       shengJi: [],
       postData: {
+        rych:''
       },
       list: [],
       files:[],
@@ -142,12 +144,13 @@ export default{
       }
     }
   },
-  // watch: {
-  //   'postData.dengJi': (newVal, old) => {
-  //     var k = newVal.split('_')[1]
-  //     this.rclb = this[k]
-  //   }
-  // },
+   watch: {
+   // 'postData.dengJi': (newVal, old) => {
+   //  //var k = newVal.split('_')[1]
+   //  //this.rclb = this[k]
+   //   delete this.postData.rych;
+   // }
+   },
   init () {
     var me = this
     this.user = JSON.parse(localStorage.getItem('baseInfo'))
@@ -181,6 +184,7 @@ export default{
 
       me.fileList = res.datas
     })
+      this.startvl=false;
   },
   attached () {
     $('ul.tabs').tabs()
@@ -299,6 +303,14 @@ export default{
     },
     submitData (e) {
       e.preventDefault()
+      if(!this.startvl){
+            this.startvl=true;
+      }
+      if(!this.postData.rych||!this.postData.dengJi){
+        return;
+      }
+      this.startvl=false;
+
       if(!this.postData.rych||this.postData.rych==null){
 
         $('#modal1').closeModal()
@@ -420,5 +432,9 @@ table-layout:fixed;
 }
 table td{
   word-wrap:break-word;
+}
+.vf-invalid-required{
+ border-bottom: 1px solid #F44336 !important;
+    box-shadow: 0 1px 0 0 #F44336 !important;
 }
 </style>

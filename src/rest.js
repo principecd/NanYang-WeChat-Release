@@ -4,8 +4,8 @@ var _ = require('lodash')
 // var enGbk = require('liveinjs-gbk')
 
 // var basicUrl = 'http://wechatordering.ngrok.cc'
-var basicUrl = 'http://www.nananzk.com/rcjk'
-// var basicUrl = 'http://www.hzts.com.cn:8088/rcjk'
+//var basicUrl = 'http://www.nananzk.com/rcjk'
+   var basicUrl = 'http://www.hzts.com.cn:80/rcjk'
 
 
 function init () {

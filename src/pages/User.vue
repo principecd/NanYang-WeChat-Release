@@ -4,31 +4,6 @@ div
   .menu-content
     a.menu.button-collapse(data-activates="slide-out")
       span.fa.fa-bars
-    a.menu.dropdown-button(@click='itemBar', style='height: 50px; width: 50px; line-height: 50px; margin-right: -40px')
-      span.fa.fa-ellipsis-v
-    #itemBar.modal.bottom-sheet(style='max-height: 80%;background: #f3f3f3;')
-      .modal-content(style='padding: 0 !important')
-        ul.itemList
-          li
-            a.waves-effect(v-link="{ path: '/User/UserProfessor' }", @click='closeItemBar')
-              i.fa.fa-graduation-cap(style='margin:0 15px 0 20px; font-size: 20px')
-              | 专业职称
-          li
-            a.waves-effect(v-link="{ path: '/User/UserProSkill' }", @click='closeItemBar')
-              i.fa.fa-magic(style='margin:0 20px 0 20px; font-size: 20px')
-              | 专业技能
-          li
-            a.waves-effect(v-link="{ path: '/User/UserHonor' }", @click='closeItemBar')
-              i.fa.fa-book(style='margin:0 20px 0 20px; font-size: 20px')
-              | 荣誉称号
-          li
-            a.waves-effect(v-link="{ path: '/User/UserResults' }", @click='closeItemBar')
-              i.fa.fa-road(style='margin:0 20px 0 20px; font-size: 20px')
-              | 人才业绩成果
-          li
-            a.waves-effect(v-link="{ path: '/User/UserOtherFileList' }", @click='closeItemBar')
-              i.fa.fa-file(style='margin:0 20px 0 20px; font-size: 20px')
-              | 其他附件
   ul#slide-out.side-nav(style='color: #666')
     li
       a.waves-effect(style='height: 60px')
@@ -68,10 +43,10 @@ div
       a.waves-effect(v-link="{ path: '/Suggestions' }")
         span.fa.fa-edit
         span(style='margin-left: 15px') 意见建议
-    li
-      a.waves-effect(v-link="{ path: '/Applications' }")
-        span.fa.fa-list
-        span(style='margin-left: 15px') 政策申报
+    //- li
+    //-   a.waves-effect(v-link="{ path: '/Applications' }")
+    //-     span.fa.fa-list
+    //-     span(style='margin-left: 15px') 政策申报
     //- br
     //- li
     //-   a.waves-effect(@click='logout') 注销
@@ -83,6 +58,7 @@ div
 
 <script>
 import UserInfo from './UserInfo.vue'
+import Usernav from './Usernav.vue'
 import UserProfessor from './UserProfessor.vue'
 
 export default {
@@ -143,6 +119,7 @@ export default {
   },
   components: {
     UserInfo,
+    Usernav,
     UserProfessor
   }
 };
@@ -189,7 +166,7 @@ export default {
   color: white;
   background: #26a69a;
   font-size: 21px;
-  z-index: 99999999;
+  z-index: 99999;
 }
 #dropdown2 {
   width: 50% !important;

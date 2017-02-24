@@ -56,41 +56,68 @@
                 label.active 所属乡镇
                 v-select(:options='csxzId', :value.sync='postData.csxzId'  v-bind:class="{ 'vf-invalid-required': startv&&!postData.csxzId }")
               .input-field.col.s12
-                input.validate(type="text" v-model='postData.ytDept' placeholder=''  v-bind:class="{ 'vf-invalid-required': startv&&!postData.ytDept }")
+                input.validate(type="text" v-model='postData.ytDept' placeholder='' )
                 label.active 依托单位
               .col.s12
                 label.active 主管部门
                 v-select(:options='zgbmId', :value.sync='postData.zgbmId'  v-bind:class="{ 'vf-invalid-required': startv&&!postData.zgbmId }")
               .input-field.col.s12
-                input.validate(type="text" v-model='postData.fzMan' placeholder=''  v-bind:class="{ 'vf-invalid-required': startv&&!postData.fzMan }")
+                input.validate(type="text" v-model='postData.fzMan' placeholder='' )
                 label.active 负责人
               .input-field.col.s12
                 input.validate(type="date" v-model='postData.xmTime' placeholder=''  v-bind:class="{ 'vf-invalid-required': startv&&!postData.xmTime }")
                 label.active 时间
               .input-field.col.s12
-                input.validate(type="text" v-model='postData.zyly' placeholder=''  v-bind:class="{ 'vf-invalid-required': startv&&!postData.zyly }")
-                label.active 业绩领域
+                input.validate(type="text" v-model='postData.zyly' placeholder='' )
+                label.active 专业领域
               .col.s12
                 label.active 等级
                 v-select(:options='dengji', :value.sync='postData.dengji'  v-bind:class="{ 'vf-invalid-required':startv&& !postData.dengji }")
               .col.s12
                 label.active 层次
                 v-select(:options='cengci', :value.sync='postData.cengci'  v-bind:class="{ 'vf-invalid-required': startv&&!postData.cengci }")
-              a.btn.btn-up(@click='uploadImg')
-                .fileupload-button 添加业绩成果附件
-              .col.s12(v-for='src in media')
+              //- a.btn.btn-up(@click='uploadImg')
+              //-   .fileupload-button 添加业绩成果附件
+              .col.s12
                 .card
-                  .card-image
-                    img(v-bind:src='src', style='width: 100%')
-              .card
-                div(v-for='item in fileList')
-                  .card-content
-                    img(style='width: 100%', v-bind:src='getSrc(item.fileId)')
-                  a(@click='deleteFile(item.fileId)') 删除
-                  .card-action
+                  .card-title 业绩成果附件
+                  .card-content(v-show='!fileList||!fileList.length||fileList.length==0') 暂无数据
+                  div(v-for='item in fileList')
+                    .card-content(v-if='item.fileType==".jpg"||item.fileType==".png"||item.fileType==".jpeg"||item.fileType==".bmp"||item.fileType==".gif"')
+                      img(style='width: 100%;'  v-bind:src='getSrc(item.fileId)')
+                    .card-content(v-if='!(item.fileType==".jpg"||item.fileType==".png"||item.fileType==".jpeg"||item.fileType==".bmp"||item.fileType==".gif")')
+                      span {{item.fileName}}{{item.fileType}}下载连接（请复制到浏览器中打开）
+                        a(style='word-wrap:break-word;') {{getSrc(item.fileId)}}
+                    a(@click='deleteFile(item.fileId)') 删除
+                    .card-action
+            .btn.btn-up(v-if='!disabled_edit')
+                .card-title(style='color:black;text-align:left;') 添加业绩成果附件
+                  .fileupload-button(@click='uploadImg') 图片文件
+                  .fileupload-button(style="line-height: 0 !important;")
+                    div(style="margin-top: 15px;") 其他类型文件
+                      form(id="uploadForm" enctype="multipart/form-data")
+                        input(style="margin-top: 10px;" id="URuploadInput" type="file")
+                        .waves-effect.waves-light.btn(style="width: 100%;margin-top: 10px;" @click='uploadFile("UR")')上传
+              //- .col.s12(v-for='src in media')
+              //-   .card
+              //-     .card-image
+              //-       img(v-bind:src='src', style='width: 100%')
+            //- .col.s12
+            //-     .card
+            //-       .card-title 业绩成果附件
+            //-       .card-content(v-show='!fileList||!fileList.length||fileList.length==0') 暂无数据
+            //-       div(v-for='item in fileList')
+            //-         .card-content(v-if='item.fileType==".jpg"||item.fileType==".png"||item.fileType==".jpeg"||item.fileType==".bmp"||item.fileType==".gif"')
+            //-           img(style='width: 100%;'  v-bind:src='getSrc(item.fileId)')
+            //-         .card-content(v-if='!(item.fileType==".jpg"||item.fileType==".png"||item.fileType==".jpeg"||item.fileType==".bmp"||item.fileType==".gif")')
+            //-           span {{item.fileName}}{{item.fileType}}下载连接（请复制到浏览器中打开）
+            //-             a(style='word-wrap:break-word;') {{getSrc(item.fileId)}}
+            //-         a(@click='deleteFile(item.fileId)') 删除
+            //-         .card-action
         .modal-footer
-          a(class="btn waves-effect waves-light" v-on:click='submitData'  v-if="!(!yjcgTypeChoose||((isnameText&&!postData.nameText)||(!isnameText&&!postData.nameCombo) )||!postData.csxzId||!postData.ytDept||!postData.zgbmId ||! postData.fzMan ||! postData.xmTime ||! postData.zyly ||! postData.dengji  ||!postData.dengji ||! postData.cengci)") 保存
-          a(class="waves-effect waves-green btn-flat"  v-on:click='startvf'  v-if="!yjcgTypeChoose||((isnameText&&!postData.nameText)||(!isnameText&&!postData.nameCombo) )||!postData.csxzId||!postData.ytDept||!postData.zgbmId ||! postData.fzMan ||! postData.xmTime ||! postData.zyly ||! postData.dengji  ||!postData.dengji ||! postData.cengci" ) 保存
+          //- a(class="btn waves-effect waves-light" v-on:click='submitData'  v-if="!(!yjcgTypeChoose||((isnameText&&!postData.nameText)||(!isnameText&&!postData.nameCombo) )||!postData.csxzId||!postData.ytDept||!postData.zgbmId ||! postData.fzMan ||! postData.xmTime ||! postData.zyly ||! postData.dengji  ||!postData.dengji ||! postData.cengci)") 保存
+          a(class="btn waves-effect waves-light" style="width: 100%;margin-top: 140px;" v-on:click='submitData'  ) 保存
+          //- a(class="waves-effect waves-green btn-flat"  v-on:click='startvf'  v-if="!yjcgTypeChoose||((isnameText&&!postData.nameText)||(!isnameText&&!postData.nameCombo) )||!postData.csxzId||!postData.ytDept||!postData.zgbmId ||! postData.fzMan ||! postData.xmTime ||! postData.zyly ||! postData.dengji  ||!postData.dengji ||! postData.cengci" ) 保存
           a(class="modal-action modal-close waves-effect waves-green btn-flat", @click='clear') 取消
     //- #fileContent
     //-   .col.s12(v-for='item in fileList')
@@ -117,6 +144,7 @@ import { uploadImage } from '../rest'
 import { chooseImage } from '../rest'
 
 var localStorage = window.localStorage
+var yjId = randomToken(32)
 export default{
   // vuex: {
   //   getters: {
@@ -182,7 +210,7 @@ export default{
   },
   init () {
     var me = this
-
+    yjId = randomToken(32)
     this.user = JSON.parse(localStorage.getItem('baseInfo'))
 
     // Rcyj_xsjlcg
@@ -262,6 +290,7 @@ export default{
 
       me.list = res.datas
     })
+    this.startv=false;
   },
   attached () {
     // $('ul.tabs').tabs()
@@ -276,6 +305,10 @@ export default{
     edit(item) {
 
       this.postData = item
+      this.postData.isAdd='false';
+      //if(!this.postData.yjId){
+      //  this.postData.yjId=randomToken(32);
+      //}
       $('#modal1').openModal()
       this.yjcgTypeChoose=item.yjcgType;
       if(this.yjcgTypeChoose=='rcyj_xsjlcg'||this.yjcgTypeChoose=='rcyj_cycxpt'){//手动输入nameText， nameCombo 空
@@ -289,14 +322,42 @@ export default{
       this.getFileList();
 
     },
+    uploadFile(useType){
+      let query = {
+        'Encoding': 'utf-8',
+        'Rpencoding': 'utf-8',
+        '_x-requested-with': true,
+        'rcId': this.user.rcId,
+        'yjId':this.postData.yjId||yjId
+      }
+      //alert(query.yjId);
+      let vm = this
+        var file = $('#'+useType+'uploadInput')[0].files[0];
+        var formData = new FormData();
+        formData.append(file.name,file);
+        vm.loading = true;
+        rest.postFile2(vm.user, query, formData,'/rccore/RcyjFile/insert')
+        .then(res => {
+            //alert(JSON.stringify(res));
+            vm.loading = false
+            if (!res.success) {
+              alert(res.message)
+              return ;
+            }
+            vm.getFileList();
+            vm.media=[];
+
+        });
+    },
     uploadImg () {
       let formData = {
         'Encoding': 'utf-8',
         'Rpencoding': 'utf-8',
         '_x-requested-with': true,
         'rcId': this.user.rcId,
-        'yjId':this.postData.yjId
+        'yjId':this.postData.yjId||yjId
       }
+      //alert(formData.yjId);
       let vm = this
        rest.resetConfig(window.location.href,function(){
              chooseImage()
@@ -321,6 +382,7 @@ export default{
       this.fileList = {}
       this.yjcgTypeChoose ='';
       this.loading=false;
+      yjId='';
     },
     deleteFile(fileId){
       var vm = this;
@@ -404,10 +466,18 @@ export default{
     },
     submitData (e) {
       e.preventDefault()
-      var me = this
-      this.postData.isAdd = this.postData.yjId ? 'false' : 'true'
-      this.postData.yjId = this.postData.yjId || randomToken(32)
+     // v-if="!(!yjcgTypeChoose||((isnameText&&!postData.nameText)||(!isnameText&&!postData.nameCombo) )||!postData.csxzId||!postData.ytDept||!postData.zgbmId ||! postData.fzMan ||! postData.xmTime ||! postData.zyly ||! postData.dengji  ||!postData.dengji ||! postData.cengci)"
+     if(!this.startv){
+          this.startv=true;
+      }
+      if(!this.yjcgTypeChoose||((this.isnameText&&!this.postData.nameText)||(!this.isnameText&&!this.postData.nameCombo) )||!this.postData.csxzId||!this.postData.zgbmId  ||!this.postData.xmTime  ||!this.postData.dengji  ||!this.postData.dengji ||!this.postData.cengci){
+        return;
+      }
+      this.startv=false;
 
+      var me = this
+      //this.postData.isAdd = this.postData.yjId ? 'false' : 'true'
+      this.postData.yjId = this.postData.yjId ||yjId;
       // this.postData.nameText = this.mc.filter(v => {
       //   return v.value === this.postData.nameCombo
       // })
@@ -415,15 +485,15 @@ export default{
       // this.postData.nameCombo = this.postData.nameText
 
       // if (!files.length) return Materialize.toast('')
-      $('#modal1').closeModal()
+      //$('#modal1').closeModal()
       this.loading = true
       rest.post(this.user, this.postData, '/rccore/Rcyj/save').then(res => {
 
           this.loading = false
           if (!res.success) {
-            Materialize.toast(res.message, 4000)
-
-            return $('#modal1').openModal()
+            //Materialize.toast(res.message, 4000)
+            alert(res.message)
+            return ;// $('#modal1').openModal()
           }
           this.postData = {}
           /*if (media.length) {
@@ -439,8 +509,9 @@ export default{
                 vm.loading = false
               })
           }*/
+          $('#modal1').closeModal();
           Materialize.toast('保存成功', 2000)
-
+          me.clear();
           me.getList()
       })
     },
@@ -467,9 +538,16 @@ export default{
 
       return r
     },
-    modal () {
+    modal() {
       $('#modal1').openModal()
       this.yjcgTypeChoose='';
+      yjId=randomToken(32);
+      this.postData.yjId=yjId;
+      this.postData.isAdd='true';
+      //alert(yjId);
+      //if(!this.postData.yjId){
+      //  this.postData.yjId=randomToken(32);
+      //}
     },
     getFileList () {
     /*
@@ -558,4 +636,11 @@ table-layout:fixed;
 table td{
   word-wrap:break-word;
 }
+.card .card-title{
+  font-size:16px;
+}
+.shadow{
+    z-index: 998888899999;
+}
+
 </style>
